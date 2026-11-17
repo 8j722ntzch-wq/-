@@ -86,7 +86,16 @@ test('service selection has keyboard focus and does not affect other choices', a
   });
   expect(focus.style).not.toBe('none');
   expect(focus.width).toBeGreaterThan(0);
-  await page.getByText('Шевроны и нашивки', { exact: true }).click();
+  const disabled = page.getByRole('checkbox', { name: 'Шевроны и нашивки' });
+  await expect(disabled).toBeDisabled();
+  const label = page.getByText('Шевроны и нашивки', { exact: true });
+  await label.scrollIntoViewIfNeeded();
+  const bounds = await label.boundingBox();
+  expect(bounds).not.toBeNull();
+  if (!bounds) throw new Error('Disabled option has no visible label');
+  // A physical pointer click bypasses Playwright's wait-for-enabled precondition,
+  // while preserving the browser's native disabled-control behavior.
+  await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
   await expect(page.getByRole('checkbox', { name: 'Шевроны и нашивки' })).not.toBeChecked();
 });
 
