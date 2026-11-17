@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/ComponentPreview.astro';
+import Button from '../components/ui/Button.astro';
+import ActionLink from '../components/ui/ActionLink.astro';
+import TextLink from '../components/ui/TextLink.astro';
+import TextField from '../components/ui/TextField.astro';
+import ServiceOption from '../components/ui/ServiceOption.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Accordion from '../components/ui/Accordion.astro';
+import StatusMessage from '../components/ui/StatusMessage.astro';
+---
+<Layout>
+  <div class="intro"><SectionHeading as="h1" eyebrow="Разработка / компоненты">Библиотека интерфейса</SectionHeading><p>Первый набор компонентов. Здесь проверяются реальные hover, нажатие, фокус и отключённое состояние. Иконки и составные блоки добавляются после экспорта ресурсов Figma.</p></div>
+  <section aria-labelledby="buttons"><SectionHeading id="buttons" size="section">Кнопки и переходы</SectionHeading>
+    {(['l','m','s'] as const).map(size => <div class="row"><Button size={size}>Оставить заявку</Button><Button size={size} variant="linear">Оставить заявку</Button><Button size={size} disabled>Недоступно</Button><Button size={size} busy>Отправка…</Button></div>)}
+    <div class="row"><ActionLink href="#fields">Перейти к полям</ActionLink><TextLink href="#accordions">Перейти к вопросам</TextLink></div>
+  </section>
+  <section id="fields" aria-labelledby="fields-title"><SectionHeading id="fields-title" size="section">Поля</SectionHeading>
+    <div class="fields-grid"><TextField name="example-name" label="Ваше имя" /><TextField name="example-phone" type="tel" label="Ваш номер телефона" required hint="Можно вставить номер целиком и редактировать любую его часть." /><TextField name="filled" label="Заполненное поле" value="Александр" /><TextField name="invalid" type="tel" label="Ошибка номера" value="123" error="Укажите номер в международном формате, например +375…" /><TextField name="disabled" label="Недоступное поле" disabled /><TextField name="another-name" label="Второй независимый экземпляр" /></div>
+  </section>
+  <section class="dark" aria-labelledby="options"><SectionHeading id="options" size="section" color="light">Выбор услуг</SectionHeading><fieldset><legend class="sr-only">Нужные услуги</legend><div class="row"><ServiceOption name="services" value="repair" label="Ремонт и подгонка" /><ServiceOption name="services" value="embroidery" label="Машинная вышивка" checked /><ServiceOption name="services" value="printing" label="Печать на одежде" /><ServiceOption name="services" value="patches" label="Шевроны и нашивки" disabled /></div></fieldset></section>
+  <section id="accordions" aria-labelledby="faq-title"><SectionHeading id="faq-title" size="section">FAQ — проверка поведения</SectionHeading><div class="stack"><Accordion question="Можно ли заказать одну вещь?">Для печати и вышивки подтверждён приём единичных заказов.</Accordion><Accordion question="Что происходит при длинном заголовке, увеличении масштаба и открытии нескольких вопросов одновременно?" open>Текст переносится, высота растёт по содержимому. Нажмите Tab, затем Enter или пробел. Каждый экземпляр независим.</Accordion></div></section>
+  <section aria-labelledby="status-title"><SectionHeading id="status-title" size="section">Технические состояния</SectionHeading><div class="stack"><StatusMessage>Отправка заявок в этой витрине не подключена.</StatusMessage><StatusMessage kind="error">Не удалось подтвердить доставку. Введённые данные сохранены.</StatusMessage></div></section>
+</Layout>
+<style>
+  .intro { display: grid; gap: 20px; padding-block: 48px; }
+  .intro p { max-width: 80ch; line-height: 1.5; }
+  section { display: grid; gap: 24px; margin-bottom: 48px; scroll-margin-top: 24px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .dark { background: var(--color-black); padding: 24px; border-radius: 4px; }
+  .stack { display: grid; gap: 8px; }
+  @media (max-width: 47.99rem) { .fields-grid { grid-template-columns: 1fr; } .dark { padding: 16px; } }
+</style>

@@ -1,0 +1,18 @@
+---
+import '../../styles/button.css';
+interface Props {
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'solid' | 'linear';
+  size?: 's' | 'm' | 'l';
+  disabled?: boolean;
+  busy?: boolean;
+  fullWidth?: boolean;
+  id?: string;
+  controls?: string;
+  expanded?: boolean;
+}
+const { type = 'button', variant = 'solid', size = 'l', disabled = false, busy = false, fullWidth = false, id, controls, expanded } = Astro.props;
+---
+<button id={id} type={type} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth }]} disabled={disabled || busy} aria-busy={busy || undefined} aria-controls={controls} aria-expanded={expanded}>
+  <slot />
+</button>

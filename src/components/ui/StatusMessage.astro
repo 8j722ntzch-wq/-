@@ -1,0 +1,10 @@
+---
+interface Props { kind?: 'info' | 'error' | 'success'; }
+const { kind = 'info' } = Astro.props;
+---
+<p class:list={['status', `status--${kind}`]} role={kind === 'error' ? 'alert' : 'status'} aria-atomic="true"><slot /></p>
+<style>
+  .status { padding: 1rem; border: 1px solid currentColor; border-radius: var(--radius-control); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
+  .status--error { color: #b52a1e; }
+  .status--success { color: #326000; }
+</style>

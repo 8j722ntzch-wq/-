@@ -1,0 +1,31 @@
+.button {
+  --button-bg: var(--color-green);
+  --button-border: transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  min-height: 60px;
+  padding: 18.5px 22.5px;
+  border: var(--border-control) solid var(--button-border);
+  border-radius: var(--radius-control);
+  background: var(--button-bg);
+  color: var(--color-black);
+  font: 700 1rem/1.25 var(--font-body);
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: background-color var(--motion-fast), border-color var(--motion-fast);
+}
+.button--m { min-height: 50px; padding: 14.5px 18.5px; font-size: .875rem; }
+.button--s { min-height: 38px; padding: 10.5px 14.5px; font-size: .75rem; line-height: 1.2; }
+.button--linear { --button-bg: transparent; --button-border: var(--color-black); }
+.button--full { width: 100%; }
+@media (hover: hover) and (pointer: fine) {
+  .button--solid:hover:not(:disabled) { background: transparent; border-color: var(--color-black); }
+  .button--linear:hover:not(:disabled) { background: var(--color-green); border-color: transparent; }
+}
+.button--solid:active:not(:disabled) { background: var(--color-green); border-color: transparent; }
+.button--linear:active:not(:disabled) { background: transparent; border-color: var(--color-black); }
+.button:disabled { background: transparent; border-color: var(--color-gray-3); color: var(--color-gray-3); }
+.button[aria-busy='true'] { cursor: progress; }

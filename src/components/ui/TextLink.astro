@@ -1,0 +1,19 @@
+---
+interface Props { href: string; emphasis?: 'regular' | 'bold'; size?: 'xs' | 's' | 'm' | 'l'; }
+const { href, emphasis = 'regular', size = 's' } = Astro.props;
+if (!/^(\/|#|https:\/\/|tel:|mailto:)/.test(href) || href.startsWith('//')) throw new Error('Unsupported text link destination');
+---
+<a href={href} class:list={['text-link', `text-link--${emphasis}`, `text-link--${size}`]}><slot /></a>
+<style>
+  .text-link { font: 500 .875rem/1.3 var(--font-body); text-decoration: none; overflow-wrap: anywhere; }
+  .text-link--bold { font-weight: 700; }
+  .text-link--xs { color: var(--color-gray-4); font-size: .75rem; line-height: 1.2; text-transform: uppercase; }
+  .text-link--m { font-size: 1rem; line-height: 1.25; }
+  .text-link--l { font-size: 2rem; }
+  .text-link:active { text-decoration: underline; }
+  .text-link--bold:active { color: var(--color-green); opacity: .7; }
+  @media (hover: hover) and (pointer: fine) {
+    .text-link:hover { text-decoration: underline; }
+    .text-link--bold:hover, .text-link--xs:hover { color: var(--color-green); }
+  }
+</style>

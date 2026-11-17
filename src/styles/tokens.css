@@ -1,0 +1,49 @@
+/* Figma page 1:6; actual values from nodes 24:1145, 24:1220 and UI variants.
+ * Layer names such as Purple and Superscript — 14 are not authoritative.
+ */
+:root {
+  --color-black: #0d0d0d;
+  --color-gray-6: #242424;
+  --color-gray-5: #43404a;
+  --color-gray-4: #736f79;
+  --color-gray-3: #c2bfc9;
+  --color-gray-2: #ebe7f1;
+  --color-gray-1: #f1eef8;
+  --color-milk: #f5f4ee;
+  --color-white: #fefefe;
+  --color-blue: #006dff;
+  --color-green: #c5ee69;
+  --color-error: #ef4435;
+  --surface: var(--color-milk);
+  --text: var(--color-black);
+  --text-muted: var(--color-gray-5);
+  --accent: var(--color-green);
+  --font-heading: 'Inter Variable', Inter, sans-serif;
+  --font-body: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+  --text-hero: 2.25rem;
+  --text-section: 2rem;
+  --text-title: 1.5rem;
+  --text-body: 1rem;
+  --text-small: .875rem;
+  --text-label: .75rem;
+  --line-heading: 1.25;
+  --line-body: 1.25;
+  --container: 77.25rem;
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-9: 2.25rem;
+  --space-section: 5rem;
+  --radius-control: .25rem;
+  --border-control: 1.5px;
+  /* Technical additions: stacking, transitions, keyboard focus. */
+  --z-header: 20;
+  --z-menu: 30;
+  --z-dialog: 50;
+  --motion-fast: 140ms;
+  --motion-ease: ease-out;
+  --focus-outline: 3px solid currentColor;
+}

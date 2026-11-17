@@ -1,0 +1,8 @@
+---
+import '../../styles/button.css';
+interface Props { href: string; variant?: 'solid' | 'linear'; size?: 's' | 'm' | 'l'; fullWidth?: boolean; }
+const { href, variant = 'solid', size = 'm', fullWidth = false } = Astro.props;
+// Links always navigate. Disabled navigation is not offered by this component.
+if (!/^(\/|#|https:\/\/|tel:|mailto:)/.test(href) || href.startsWith('//')) throw new Error('Unsupported action link destination');
+---
+<a href={href} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth }]}><slot /></a>
