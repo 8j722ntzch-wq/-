@@ -173,6 +173,8 @@ test('dialog traps focus, closes with Escape and restores its trigger', async ({
   await expect(dialog.getByRole('button', { name: 'Закрыть окно' })).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   expect(await dialog.evaluate(el => el.contains(document.activeElement))).toBeTruthy();
+  await page.keyboard.press('Tab');
+  await expect(dialog.getByRole('button', { name: 'Закрыть окно' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();

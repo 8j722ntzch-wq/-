@@ -16,6 +16,15 @@ document.addEventListener('click',event=>{
  if(closer)closer.closest('dialog')?.close();
 });
 document.querySelectorAll<HTMLDialogElement>('dialog[data-modal]').forEach(dialog=>{
+ // Keep sequential focus inside the window in browsers that otherwise move to browser chrome.
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab')return;
+  const focusable=Array.from(dialog.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex]:not([tabindex="-1"])')).filter(el=>el.getClientRects().length>0&&!el.closest('[hidden]'));
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(!first)return;
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ });
  let startedOutside=false;
  const outside=(event:MouseEvent)=>{const r=dialog.getBoundingClientRect();return event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom;};
  dialog.addEventListener('pointerdown',event=>{startedOutside=event.target===dialog&&outside(event);});
