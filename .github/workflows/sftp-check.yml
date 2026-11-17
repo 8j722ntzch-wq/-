@@ -1,0 +1,78 @@
+name: SFTP connection check (read only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sftp-connection-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Validate configuration
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in SFTP_HOST SFTP_USERNAME SFTP_PASSWORD SFTP_KNOWN_HOSTS; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Missing repository secret: $name"
+              exit 1
+            fi
+          done
+          [[ "$SFTP_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]] || { echo "::error::Invalid SFTP_HOST"; exit 1; }
+          [[ "$SFTP_USERNAME" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.@-]*$ ]] || { echo "::error::Invalid SFTP_USERNAME"; exit 1; }
+          port="${SFTP_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || { echo "::error::Invalid SFTP_PORT"; exit 1; }
+
+      - name: Install OpenSSH client and password helper
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass
+
+      - name: Authenticate and list initial directory without writing
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          umask 077
+          workdir="$(mktemp -d)"
+          trap 'rm -rf -- "$workdir"' EXIT
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$workdir/known_hosts"
+          printf '%s\n' 'pwd' 'ls -la' 'bye' > "$workdir/commands"
+          port="${SFTP_PORT:-22}"
+          lookup="$SFTP_HOST"
+          if [[ "$port" != 22 ]]; then lookup="[$SFTP_HOST]:$port"; fi
+          ssh-keygen -F "$lookup" -f "$workdir/known_hosts" > /dev/null || {
+            echo "::error::SFTP_KNOWN_HOSTS has no entry matching this host and port."
+            exit 1
+          }
+          sshpass -e sftp -P "$port" \
+            -oBatchMode=no \
+            -oStrictHostKeyChecking=yes \
+            -oUserKnownHostsFile="$workdir/known_hosts" \
+            -oGlobalKnownHostsFile=/dev/null \
+            -oConnectTimeout=20 \
+            -oConnectionAttempts=1 \
+            -oNumberOfPasswordPrompts=1 \
+            -oPreferredAuthentications=password,keyboard-interactive \
+            -oPubkeyAuthentication=no \
+            -b "$workdir/commands" "$SFTP_USERNAME@$SFTP_HOST"
+          echo "SFTP authentication and initial directory listing succeeded. Deployment is not enabled." >> "$GITHUB_STEP_SUMMARY"
