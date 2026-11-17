@@ -1,0 +1,219 @@
+[
+  {
+    "name": "tshirt-a3",
+    "id": "159:5474",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/tshirt-a3.svg"
+  },
+  {
+    "name": "polo",
+    "id": "159:5496",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/polo.svg"
+  },
+  {
+    "name": "jersey",
+    "id": "159:5520",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/jersey.svg"
+  },
+  {
+    "name": "work-jacket",
+    "id": "159:5521",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/work-jacket.svg"
+  },
+  {
+    "name": "vest",
+    "id": "159:5524",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/vest.svg"
+  },
+  {
+    "name": "cap",
+    "id": "159:5525",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/cap.svg"
+  },
+  {
+    "name": "arrow",
+    "id": "24:857",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/arrow.svg"
+  },
+  {
+    "name": "arrow-latex",
+    "id": "24:641",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/arrow-latex.svg"
+  },
+  {
+    "name": "close",
+    "id": "24:928",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/close.svg"
+  },
+  {
+    "name": "instagram",
+    "id": "24:1238",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/instagram.svg"
+  },
+  {
+    "name": "telegram",
+    "id": "24:1242",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/telegram.svg"
+  },
+  {
+    "name": "youtube",
+    "id": "24:1244",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/youtube.svg"
+  },
+  {
+    "name": "google",
+    "id": "24:898",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/google.svg"
+  },
+  {
+    "name": "yandex",
+    "id": "24:909",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/yandex.svg"
+  },
+  {
+    "name": "calculator",
+    "id": "76:4374",
+    "width": 32,
+    "height": 32,
+    "src": "/assets/figma/calculator.svg"
+  },
+  {
+    "name": "printer",
+    "id": "76:4376",
+    "width": 32,
+    "height": 32,
+    "src": "/assets/figma/printer.svg"
+  },
+  {
+    "name": "own-item",
+    "id": "76:4375",
+    "width": 32,
+    "height": 32,
+    "src": "/assets/figma/own-item.svg"
+  },
+  {
+    "name": "business",
+    "id": "72:3775",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/business.svg"
+  },
+  {
+    "name": "personal",
+    "id": "72:3776",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/personal.svg"
+  },
+  {
+    "name": "price",
+    "id": "127:10085",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/price.svg"
+  },
+  {
+    "name": "tick",
+    "id": "24:821",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/tick.svg"
+  },
+  {
+    "name": "patches",
+    "id": "38:531",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/patches.svg"
+  },
+  {
+    "name": "rhinestones",
+    "id": "38:535",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/rhinestones.svg"
+  },
+  {
+    "name": "repair",
+    "id": "38:539",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/repair.svg"
+  },
+  {
+    "name": "printing",
+    "id": "38:544",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/printing.svg"
+  },
+  {
+    "name": "embroidery",
+    "id": "38:548",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/embroidery.svg"
+  },
+  {
+    "name": "audience-self",
+    "id": "66:2956",
+    "width": 320,
+    "height": 320,
+    "src": "/assets/figma/audience-self.svg"
+  },
+  {
+    "name": "audience-team",
+    "id": "66:2955",
+    "width": 320,
+    "height": 320,
+    "src": "/assets/figma/audience-team.svg"
+  },
+  {
+    "name": "audience-business",
+    "id": "66:2954",
+    "width": 320,
+    "height": 320,
+    "src": "/assets/figma/audience-business.svg"
+  },
+  {
+    "name": "portfolio-ruckit",
+    "id": "70:3748",
+    "width": 612,
+    "height": 344,
+    "src": "/assets/figma/portfolio-ruckit.jpg"
+  },
+  {
+    "name": "portfolio-hello-kitty",
+    "id": "72:3755",
+    "width": 612,
+    "height": 344,
+    "src": "/assets/figma/portfolio-hello-kitty.jpg"
+  }
+]

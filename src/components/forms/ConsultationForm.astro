@@ -1,0 +1,45 @@
+---
+import TextField from '../ui/TextField.astro';
+import ServiceOption from '../ui/ServiceOption.astro';
+import Checkbox from '../ui/Checkbox.astro';
+import Icon from '../ui/Icon.astro';
+import '../../styles/button.css';
+interface Props { id?:string; }
+const {id='form-'+crypto.randomUUID()}=Astro.props;
+const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Термостразы'];
+---
+<consultation-form><form id={id} aria-describedby={id+'-note'}>
+ <div class="form-fields"><TextField name="name" label="Ваше имя" required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" required labelVisible={false}/></div>
+ <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service}/>)}</div></fieldset>
+ <Checkbox name="consent" required><span class="consent-copy">Я согласен с <a href="#preview-notice">политикой обработки персональных данных</a></span></Checkbox>
+ <button type="submit" class="button button--solid button--l button--full button--split" disabled><span class="button__label">Оставить заявку</span><span class="button__icon"><Icon name="arrow" size={20}/></span></button>
+ <p id={id+'-note'} class="form-note">Предпросмотр: данные никуда не отправляются.</p>
+ <p class="form-result" role="status" aria-live="polite" hidden></p>
+ <noscript><p>Для проверки формы включите JavaScript. Отправка не подключена.</p></noscript>
+</form></consultation-form>
+<script>
+class ConsultationForm extends HTMLElement{
+ connectedCallback(){
+  const form=this.querySelector('form')!;
+  const submit=form.querySelector<HTMLButtonElement>('[type=submit]')!;
+  const phone=form.querySelector<HTMLInputElement>('[name=phone]')!;
+  const name=form.querySelector<HTMLInputElement>('[name=name]')!;
+  const result=form.querySelector<HTMLParagraphElement>('.form-result')!;
+  submit.disabled=false;
+  const validatePhone=()=>{const digits=phone.value.replace(/\D/g,'');phone.setCustomValidity(phone.value&&(!/^[+\d\s()-]+$/.test(phone.value)||digits.length<7||digits.length>15)?'Укажите телефон: от 7 до 15 цифр. Можно использовать +, пробелы и скобки.':'');};
+  phone.addEventListener('input',validatePhone);
+  name.addEventListener('input',()=>name.setCustomValidity(name.value&&!name.value.trim()?'Введите имя.':''));
+  form.addEventListener('input',()=>{result.hidden=true;});
+  form.addEventListener('submit',event=>{
+   event.preventDefault();validatePhone();
+   if(!form.reportValidity())return;
+   result.textContent='Поля заполнены корректно. Это предпросмотр — заявка не отправлена.';
+   result.hidden=false;
+  });
+ }
+}
+if(!customElements.get('consultation-form'))customElements.define('consultation-form',ConsultationForm);
+</script>
+<style>
+consultation-form{display:block;min-width:0}form{display:grid;gap:16px}.form-fields{display:grid;gap:4px}legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.service-options{display:flex;gap:4px;flex-wrap:wrap}.consent-copy{text-transform:uppercase;font-size:16px}.consent-copy a{text-decoration:underline}.form-note{font-size:12px;color:var(--color-gray-3)}.form-result{font-size:14px;color:var(--color-green);line-height:1.5}.button--split:hover{color:var(--color-green)}.button--split:active{color:var(--color-black)}@media(max-width:40rem){.consent-copy{font-size:13px}}
+</style>

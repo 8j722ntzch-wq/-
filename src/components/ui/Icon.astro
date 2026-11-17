@@ -1,0 +1,9 @@
+---
+import assets from '../../data/figma-assets.json';
+interface Props { name: string; size?: number; }
+const {name,size=24}=Astro.props;
+const asset=assets.find(a=>a.name===name);
+if(!asset) throw new Error('Unknown Figma icon: '+name);
+---
+<span class="icon" aria-hidden="true" style={`--icon: url("${asset.src}"); --icon-size: ${size}px`}></span>
+<style>.icon{display:inline-block;flex:none;width:var(--icon-size);height:var(--icon-size);background:currentColor;mask:var(--icon) center/contain no-repeat;vertical-align:middle;}</style>

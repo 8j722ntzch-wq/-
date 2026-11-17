@@ -1,4 +1,5 @@
 @import './tokens.css';
+@import './typography.css';
 
 *, *::before, *::after { box-sizing: border-box; }
 html { color-scheme: light; scrollbar-gutter: stable; }
@@ -9,6 +10,8 @@ button { cursor: pointer; }
 button:disabled, input:disabled { cursor: not-allowed; }
 a { color: inherit; text-underline-offset: .2em; }
 h1, h2, h3, h4, p { margin: 0; }
+h5, h6 { margin: 0; }
+body:has(dialog[open]) { overflow: hidden; }
 h1, h2, h3, h4 { font-family: var(--font-heading); }
 img { display: block; max-width: 100%; height: auto; }
 fieldset { min-inline-size: 0; margin: 0; padding: 0; border: 0; }

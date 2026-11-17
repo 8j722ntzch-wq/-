@@ -1,8 +1,9 @@
 ---
 import '../../styles/button.css';
-interface Props { href: string; variant?: 'solid' | 'linear'; size?: 's' | 'm' | 'l'; fullWidth?: boolean; }
-const { href, variant = 'solid', size = 'm', fullWidth = false } = Astro.props;
+import Icon from './Icon.astro';
+interface Props { href: string; variant?: 'solid' | 'linear'; size?: 's' | 'm' | 'l'; fullWidth?: boolean; icon?:boolean; }
+const { href, variant = 'solid', size = 'm', fullWidth = false, icon=false } = Astro.props;
 // Links always navigate. Disabled navigation is not offered by this component.
 if (!/^(\/|#|https:\/\/|tel:|mailto:)/.test(href) || href.startsWith('//')) throw new Error('Unsupported action link destination');
 ---
-<a href={href} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth }]}><slot /></a>
+<a href={href} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth, 'button--split':icon }]}><span class="button__label"><slot /></span>{icon&&<span class="button__icon"><Icon name="arrow" size={size==='s'?14:size==='m'?16:20}/></span>}</a>

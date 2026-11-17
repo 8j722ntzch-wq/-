@@ -1,0 +1,7 @@
+---
+import PricingTag from '../ui/PricingTag.astro';
+interface Props { number:string;title:string;description:string;tag?:string;variant?:'dark'|'light'; }
+const {number,title,description,tag='Под заказ',variant='dark'}=Astro.props;
+---
+<article class:list={['work-stage',`work-stage--${variant}`]}><div><span class="stage-number">{number}</span><h3 class="type-h4">{title}</h3><p>{description}</p></div><PricingTag label={tag} inverse={variant==='light'}/></article>
+<style>.work-stage{min-height:320px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;gap:24px;background:var(--color-black);border-radius:4px;color:var(--color-white)}.stage-number{display:grid;place-items:center;background:var(--color-green);color:var(--color-black);width:24px;height:24px;border-radius:50%;font:700 12px/1.2 var(--font-body)}.work-stage h3{margin-top:4px}.work-stage p{margin-top:12px;color:var(--color-gray-4)}.work-stage--light{background:var(--color-milk);color:var(--color-black)}.work-stage--light p{color:inherit}.work-stage--light .stage-number{background:var(--color-black);color:var(--color-green)}</style>

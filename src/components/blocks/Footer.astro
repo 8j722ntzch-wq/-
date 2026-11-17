@@ -1,0 +1,26 @@
+---
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+import ActionLink from '../ui/ActionLink.astro';
+interface Props { email?:string;phone?:string;hours?:string[];socials?:{label:string;icon:string;href:string}[];maps?:{label:string;icon:'yandex'|'google';href:string}[];dialogId?:string; }
+const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation'}=Astro.props;
+---
+<footer id="footer" class="footer">
+ <div class="footer-inner">
+  <div class="footer-top">
+   <div class="footer-contact">
+    {email&&<p class="contact-line">{email}</p>}{phone&&<p class="contact-line">{phone}</p>}
+    {socials.length>0&&<div class="socials">{socials.map(s=><a href={s.href} aria-label={s.label}><Icon name={s.icon}/></a>)}</div>}
+    <Button size="m" openDialog={dialogId}>Оставить заявку</Button>
+   </div>
+   <div class="footer-column"><h3>Услуги</h3><a href="#services">Машинная вышивка</a><a href="#services">Печать на одежде</a><a href="#services">Ремонт и подгонка</a><a href="#services">Шевроны и нашивки</a><a href="#services">Термостразы</a></div>
+   <div class="footer-column"><h3>Навигация</h3><a href="#advantages">О нас</a><a href="#audiences">Бизнесу</a><a href="#portfolio">Портфолио</a><a href="#forms">Контакты</a><div class="maps">{maps.map(m=><a href={m.href}><img src={`/assets/figma/${m.icon}.svg`} width="18" height="18" alt=""/>{m.label}</a>)}</div>{hours.map(h=><p class="footer-hours">{h}</p>)}</div>
+  </div>
+  <div class="wordmark" aria-label="Мастерская">Мастерская</div>
+  <div class="footer-bottom"><p>© {new Date().getFullYear()} Мастерская</p><a href="#preview-notice">Политика конфиденциальности · макет</a><ActionLink href="#top" size="s" icon>Наверх</ActionLink></div>
+ </div>
+</footer>
+<style>
+.footer{background:var(--color-black);color:var(--color-white);padding:40px 0 24px;border-radius:4px}.footer-inner{width:min(var(--container),calc(100% - 2rem));margin:auto}.footer-top{display:grid;grid-template-columns:6fr 3fr 3fr;gap:12px}.footer-contact{display:flex;flex-direction:column;align-items:start;gap:12px}.contact-line{font:700 clamp(18px,2.2vw,32px)/1.25 var(--font-body);overflow-wrap:anywhere}.socials{display:flex;gap:8px;margin-block:12px}.socials a{display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--color-gray-6);border-radius:4px}.socials a:hover{background:var(--color-green);color:var(--color-black)}.footer-column{display:flex;flex-direction:column;align-items:start;gap:12px}.footer-column h3{color:var(--color-gray-4);font:600 14px/1.25 var(--font-heading);letter-spacing:-.02em}.footer-column>a{font-weight:700;text-decoration:none}.footer-column a:hover{text-decoration:underline}.maps{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}.maps a{display:flex;align-items:center;gap:4px;font-size:12px;text-decoration:none}.footer-hours{font-size:12px;color:var(--color-gray-3)}.wordmark{font:500 clamp(28px,8.6vw,120px)/1.3 var(--font-body);letter-spacing:-.04em;margin-top:48px;overflow-wrap:anywhere}.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:24px;border-top:1px solid var(--color-gray-6);color:var(--color-gray-3);font-size:12px}.footer-bottom>a:nth-child(2){margin-left:auto}.footer :global(.button--solid:hover){color:var(--color-green);border-color:var(--color-green)}
+@media(max-width:56rem){.footer-top{grid-template-columns:1fr 1fr;gap:32px}.footer-contact{grid-column:1/-1}.footer-bottom{flex-wrap:wrap}.footer-bottom>a:nth-child(2){margin:0}.wordmark{margin-top:32px;font-size:9vw}}
+</style>

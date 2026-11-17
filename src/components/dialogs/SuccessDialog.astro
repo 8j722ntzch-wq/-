@@ -1,0 +1,10 @@
+---
+import Modal from './Modal.astro';
+import Loading from '../ui/Loading.astro';
+import Icon from '../ui/Icon.astro';
+import '../../styles/button.css';
+interface Props { id?:string; preview?:boolean; }
+const {id='success',preview=false}=Astro.props;
+---
+<Modal id={id} title="Спасибо за вашу заявку!" description={preview?'Демонстрация окна подтверждения. В этом предпросмотре заявка не отправлялась.':'Свяжемся с вами, чтобы обсудить детали.'}><div class="success-content"><p class="type-h6">{preview?'Пример состояния обработки':'Заявка получена'}</p><Loading label={preview?'Демонстрация индикатора':'Заявка получена'} value={50}/><button type="button" data-close-dialog class="button button--solid button--l button--split button--full"><span class="button__label">Вернуться на сайт</span><span class="button__icon"><Icon name="arrow" size={20}/></span></button></div></Modal>
+<style>.success-content{display:grid;gap:16px}.success-content :global(.button:hover){color:var(--color-green)}.success-content :global(.button:active){color:var(--color-black)}</style>

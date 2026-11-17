@@ -1,0 +1,39 @@
+---
+import Button from '../ui/Button.astro';
+interface Props { links?:{label:string;href:string}[]; phone?:string; phoneHref?:string; dialogId?:string; }
+const {links=[{label:'Услуги',href:'#services'},{label:'О нас',href:'#advantages'},{label:'Бизнесу',href:'#audiences'},{label:'Портфолио',href:'#portfolio'},{label:'Контакты',href:'#footer'}],phone,phoneHref,dialogId='consultation'}=Astro.props;
+const menuId='menu-'+crypto.randomUUID();
+---
+<site-header class="site-header">
+ <header class="header-inner">
+  <a href="#top" class="logo" aria-label="Мастерская — к началу"><span aria-hidden="true"></span>LOGO</a>
+  <nav id={menuId} aria-label="Основная навигация">{links.map(link=><a href={link.href}>{link.label}</a>)}</nav>
+  {phone&&(phoneHref?<a class="header-phone" href={phoneHref}>{phone}</a>:<span class="header-phone">{phone}</span>)}
+  <div class="header-cta"><Button size="s" openDialog={dialogId}>Оставить заявку</Button></div>
+  <button class="burger" type="button" aria-label="Открыть меню" aria-controls={menuId} aria-expanded="false"><span></span><span></span><span></span></button>
+ </header>
+</site-header>
+<script>
+class SiteHeader extends HTMLElement {
+ connectedCallback(){
+  const button=this.querySelector<HTMLButtonElement>('.burger')!;
+  const menu=this.querySelector('nav')!;
+  const close=()=>{button.setAttribute('aria-expanded','false');button.setAttribute('aria-label','Открыть меню');this.removeAttribute('data-open');};
+  button.addEventListener('click',()=>{const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));button.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');this.toggleAttribute('data-open',open);});
+  menu.addEventListener('click',event=>{if((event.target as Element).closest('a'))close();});
+  this.addEventListener('keydown',event=>{if(event.key==='Escape'&&this.hasAttribute('data-open')){close();button.focus();}});
+ }
+}
+if(!customElements.get('site-header'))customElements.define('site-header',SiteHeader);
+</script>
+<style>
+.site-header{display:block;background:var(--color-milk);border-bottom:1px solid var(--color-gray-2);position:relative;z-index:var(--z-header)}
+.header-inner{width:min(var(--container),calc(100% - 2rem));min-height:64px;margin:auto;display:flex;align-items:center;gap:40px}
+.logo{display:inline-flex;gap:12px;align-items:center;font:700 24px/1.25 var(--font-heading);text-decoration:none;flex:none}
+.logo>span{width:28px;height:28px;background:var(--color-blue);transform:rotate(45deg);margin:6px}
+nav{display:flex;gap:12px;flex:1;align-items:center}nav a{font-size:14px;text-decoration:none;white-space:nowrap}nav a:hover{text-decoration:underline}.header-phone{font:700 14px/1.25 var(--font-body);white-space:nowrap;text-decoration:none}
+.burger{display:none;width:44px;height:44px;flex:none;padding:12px 9px;border:0;border-radius:4px;background:var(--color-green)}.burger span{display:block;height:2px;background:var(--color-black);margin:4px 0}
+@media(max-width:74rem){.header-inner{gap:20px}.header-phone{display:none}}
+@media(max-width:58rem){.header-inner{gap:12px;flex-wrap:wrap;padding-block:10px}.logo{margin-right:auto}.burger{display:block}.header-cta :global(.button){min-height:44px}nav{display:none;order:4;flex:0 0 100%;padding:8px 0 16px;flex-direction:column;align-items:stretch;gap:0}nav a{padding:14px 4px;border-top:1px solid var(--color-gray-2)}.site-header[data-open] nav{display:flex}.site-header[data-open] .burger span:nth-child(1){transform:translateY(6px) rotate(45deg)}.site-header[data-open] .burger span:nth-child(2){opacity:0}.site-header[data-open] .burger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}}
+@media(max-width:23rem){.logo{font-size:20px;gap:6px}.logo>span{width:22px;height:22px}.header-cta :global(.button){padding-inline:8px}}
+</style>

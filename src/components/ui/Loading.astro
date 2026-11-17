@@ -1,0 +1,6 @@
+---
+interface Props { label?:string; value?:number; }
+const {label='Обработка заявки',value}=Astro.props;
+---
+<div role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value} class:list={['loading',{'loading--active':value===undefined}]}><span></span><span></span></div>
+<style>.loading{display:grid;grid-template-columns:1fr 1fr;gap:4px;height:8px;width:100%}.loading span{background:var(--color-green);border-radius:500px}.loading span+span{opacity:.2}.loading--active span{animation:pulse 1.5s ease-in-out infinite alternate}.loading--active span+span{animation-delay:1.5s}@keyframes pulse{to{opacity:.2}}@media(prefers-reduced-motion:reduce){.loading--active span{animation:none}}</style>

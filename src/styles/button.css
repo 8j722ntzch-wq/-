@@ -29,3 +29,17 @@
 .button--linear:active:not(:disabled) { background: transparent; border-color: var(--color-black); }
 .button:disabled { background: transparent; border-color: var(--color-gray-3); color: var(--color-gray-3); }
 .button[aria-busy='true'] { cursor: progress; }
+/* A single semantic control with two visual segments, Figma 24:643. */
+.button--split { --control-height:60px; --control-padding:24px; gap:8px; min-height:0; padding:0; border:0; background:none !important; }
+.button--split.button--m { --control-height:50px; --control-padding:20px; }
+.button--split.button--s { --control-height:38px; --control-padding:16px; }
+.button--split .button__label,.button--split .button__icon { display:flex; justify-content:center; align-items:center; min-height:var(--control-height); border:1.5px solid var(--button-border); border-radius:4px; background:var(--button-bg); transition:background-color var(--motion-fast),border-color var(--motion-fast); }
+.button--split .button__label { flex:1; padding:8px calc(var(--control-padding) - 1.5px); }
+.button--split .button__icon { width:var(--control-height); flex:none; align-self:stretch; }
+@media(hover:hover) and (pointer:fine) {
+ .button--split.button--solid:hover:not(:disabled) { --button-bg:transparent; --button-border:currentColor; }
+ .button--split.button--linear:hover:not(:disabled) { --button-bg:var(--color-green); --button-border:transparent; }
+}
+.button--split.button--solid:active:not(:disabled){--button-bg:var(--color-green);--button-border:transparent;}
+.button--split.button--linear:active:not(:disabled){--button-bg:transparent;--button-border:currentColor;}
+.button--split:disabled { --button-bg:transparent; --button-border:var(--color-gray-3); }

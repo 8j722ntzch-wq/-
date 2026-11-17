@@ -1,0 +1,10 @@
+---
+import ConsultationForm from '../forms/ConsultationForm.astro';
+interface Props { title?:string;description?:string;eyebrow?:string; }
+const {title='Расскажите, что нужно сделать',description='Оставьте заявку — обсудим задачу и подберём решение для вашей вещи.',eyebrow='06 / Ваша идея — наша работа'}=Astro.props;
+---
+<section class="application"><div class="application-copy"><p class="type-superscript">{eyebrow}</p><h2 class="type-h1">{title}</h2><p>{description}</p><div class="application-decoration" aria-hidden="true"><div class="modules">{Array.from({length:9},()=> <i></i>)}</div><span></span><span></span></div></div><ConsultationForm/></section>
+<style>
+.application{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px;padding:36px;border-radius:4px;background:var(--gradient-application);box-shadow:var(--shadow);color:var(--color-white);overflow:hidden}.application-copy{position:relative;min-height:340px;isolation:isolate}.application-copy h2{max-width:480px;text-transform:uppercase;margin-top:8px}.application-copy>p:last-of-type{margin-top:12px;max-width:445px}.application-decoration{position:absolute;bottom:-110px;left:-20px;width:380px;height:280px;z-index:-1;opacity:.7}.modules{display:grid;grid-template-columns:repeat(3,56px);gap:12px;transform:rotate(-15deg)}.modules i{width:56px;height:56px;background:var(--color-green)}.modules i:nth-child(2),.modules i:nth-child(3),.modules i:nth-child(6){background:none;border:1px solid var(--color-green)}.application-decoration>span{position:absolute;top:50px;left:150px;width:280px;transform:rotate(-25deg);border-top:2px dashed var(--color-green)}.application-decoration>span+span{top:80px;left:170px;border-color:var(--color-white)}
+@media(max-width:58rem){.application{grid-template-columns:1fr;padding:24px;gap:32px}.application-copy{min-height:0}.application-decoration{display:none}.application-copy h2{font-size:28px}}@media(max-width:28rem){.application{padding:20px 16px}.application-copy h2{font-size:24px}}
+</style>

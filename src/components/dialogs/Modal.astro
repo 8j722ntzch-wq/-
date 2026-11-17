@@ -1,0 +1,28 @@
+---
+import Icon from '../ui/Icon.astro';
+interface Props { id:string;title:string;description?:string; }
+const {id,title,description}=Astro.props;
+---
+<dialog id={id} class="modal" data-modal aria-labelledby={id+'-title'} aria-describedby={description?id+'-description':undefined}>
+ <div class="modal-inner"><div class="modal-heading"><h2 id={id+'-title'} class="type-h1">{title}</h2><button type="button" class="modal-close" data-close-dialog aria-label="Закрыть окно"><Icon name="close"/></button></div>{description&&<p id={id+'-description'} class="modal-description">{description}</p>}<div class="modal-content"><slot/></div></div>
+</dialog>
+<script>
+const triggers=new WeakMap<HTMLDialogElement,HTMLElement>();
+document.addEventListener('click',event=>{
+ const target=event.target as Element;
+ const opener=target.closest<HTMLElement>('[data-open-dialog]');
+ if(opener){const dialog=document.getElementById(opener.dataset.openDialog!) as HTMLDialogElement|null;if(dialog?.tagName==='DIALOG'&&!dialog.open){triggers.set(dialog,opener);dialog.showModal();}return;}
+ const closer=target.closest('[data-close-dialog]');
+ if(closer)closer.closest('dialog')?.close();
+});
+document.querySelectorAll<HTMLDialogElement>('dialog[data-modal]').forEach(dialog=>{
+ let startedOutside=false;
+ const outside=(event:MouseEvent)=>{const r=dialog.getBoundingClientRect();return event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom;};
+ dialog.addEventListener('pointerdown',event=>{startedOutside=event.target===dialog&&outside(event);});
+ dialog.addEventListener('click',event=>{if(event.target===dialog&&startedOutside&&outside(event))dialog.close();startedOutside=false;});
+ dialog.addEventListener('close',()=>{triggers.get(dialog)?.focus();});
+});
+</script>
+<style>
+.modal{width:min(704px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white);overflow:auto;overscroll-behavior:contain}.modal::backdrop{background:#0d0d0db3;backdrop-filter:blur(3px)}.modal-inner{padding:36px}.modal-heading{display:flex;align-items:start;justify-content:space-between;gap:16px}.modal-heading h2{text-transform:uppercase;overflow-wrap:anywhere}.modal-close{display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid transparent;border-radius:4px;background:var(--color-green);color:var(--color-black);padding:0}.modal-close:hover{border-color:var(--color-green);color:var(--color-green);background:transparent}.modal-description{margin-top:12px;color:var(--color-gray-3)}.modal-content{margin-top:24px}@media(max-width:40rem){.modal-inner{padding:24px 20px}.modal-heading h2{font-size:24px}.modal-close{width:44px;height:44px}.modal-heading{gap:8px}.modal-description{font-size:14px}}
+</style>

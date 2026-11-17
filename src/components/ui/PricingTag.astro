@@ -1,0 +1,7 @@
+---
+interface Props { kind?:'stock'|'order'|'offer'|'soon'; label?:string; inverse?:boolean; }
+const {kind='soon',label,inverse=false}=Astro.props;
+const labels={stock:'В наличии',order:'Под заказ',offer:'Специальное предложение',soon:'Скоро в продаже'};
+---
+<span class:list={['pricing-tag',`pricing-tag--${kind}`,{'pricing-tag--inverse':inverse}]}><span aria-hidden="true"></span>{label??labels[kind]}</span>
+<style>.pricing-tag{display:inline-flex;align-items:center;gap:4px;width:fit-content;padding:4px 8px;border-radius:500px;font:700 12px/1.2 var(--font-body);text-transform:uppercase;background:var(--color-green);color:var(--color-black)}.pricing-tag>span{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}.pricing-tag--stock{background:var(--color-stock)}.pricing-tag--order{background:var(--color-gray-3)}.pricing-tag--offer{background:var(--color-blue);color:var(--color-milk)}.pricing-tag--inverse{background:var(--color-black);color:var(--color-green)}</style>

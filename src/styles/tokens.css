@@ -13,6 +13,16 @@
   --color-white: #fefefe;
   --color-blue: #006dff;
   --color-green: #c5ee69;
+  --color-blue-dark: #2448b8;
+  --color-green-dark: #697e3b;
+  /* Component-local fills in Figma; not variables in its color collection. */
+  --color-stock: #07a038;
+  --color-pink: #f96ac7;
+  --gradient-application: linear-gradient(114.4556deg, #006dff 0%, #0d0d0d 100%);
+  --shadow: 0 5px 11px #006dff0f, 0 20px 20px #006dff0d, 0 46px 28px #006dff08, 0 82px 33px #006dff03;
+  --grid-columns: 12;
+  --grid-column: 92px;
+  --grid-gutter: 12px;
   --color-error: #ef4435;
   --surface: var(--color-milk);
   --text: var(--color-black);
@@ -38,6 +48,7 @@
   --space-9: 2.25rem;
   --space-section: 5rem;
   --radius-control: .25rem;
+  --radius-pill: 500px;
   --border-control: 1.5px;
   /* Technical additions: stacking, transitions, keyboard focus. */
   --z-header: 20;

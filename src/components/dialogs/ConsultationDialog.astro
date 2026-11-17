@@ -1,0 +1,7 @@
+---
+import Modal from './Modal.astro';
+import ConsultationForm from '../forms/ConsultationForm.astro';
+interface Props { id?:string; }
+const {id='consultation'}=Astro.props;
+---
+<Modal id={id} title="Оставьте заявку" description="Расскажите, что нужно сделать. Поможем подобрать подходящий вариант."><ConsultationForm/></Modal>

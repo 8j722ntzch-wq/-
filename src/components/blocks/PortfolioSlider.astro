@@ -1,0 +1,31 @@
+---
+import Icon from '../ui/Icon.astro';
+interface Props { label?:string; }
+const {label='Примеры работ'}=Astro.props;
+---
+<portfolio-slider role="region" aria-roledescription="карусель" aria-label={label}>
+ <div class="slider-track"><slot/></div>
+ <div class="slider-controls"><div class="pagination" aria-label="Выбор работы"></div><p class="slider-counter" aria-live="polite"></p><button type="button" class="slider-prev" aria-label="Предыдущая работа" disabled><Icon name="arrow-latex"/></button><button type="button" class="slider-next" aria-label="Следующая работа"><Icon name="arrow-latex"/></button></div>
+</portfolio-slider>
+<script>
+class PortfolioSlider extends HTMLElement{
+ connectedCallback(){
+  const track=this.querySelector<HTMLElement>('.slider-track')!;
+  const slides=Array.from(track.children) as HTMLElement[];
+  const previous=this.querySelector<HTMLButtonElement>('.slider-prev')!;
+  const next=this.querySelector<HTMLButtonElement>('.slider-next')!;
+  const counter=this.querySelector<HTMLElement>('.slider-counter')!;
+  const pagination=this.querySelector<HTMLElement>('.pagination')!;
+  let current=0;
+  const move=(index:number)=>{const slide=slides[Math.max(0,Math.min(slides.length-1,index))];track.scrollTo({left:slide.offsetLeft-track.offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});};
+  slides.forEach((slide,index)=>{slide.setAttribute('role','group');slide.setAttribute('aria-roledescription','слайд');slide.setAttribute('aria-label',`${index+1} из ${slides.length}`);const dot=document.createElement('button');dot.type='button';dot.setAttribute('aria-label',`Показать работу ${index+1}`);dot.addEventListener('click',()=>move(index));pagination.append(dot);});
+  const update=()=>{current=slides.reduce((best,slide,i)=>Math.abs(slide.offsetLeft-track.offsetLeft-track.scrollLeft)<Math.abs(slides[best].offsetLeft-track.offsetLeft-track.scrollLeft)?i:best,0);previous.disabled=track.scrollLeft<=1;next.disabled=track.scrollLeft+track.clientWidth>=track.scrollWidth-2;counter.textContent=`${current+1} / ${slides.length}`;Array.from(pagination.children).forEach((dot,i)=>dot.setAttribute('aria-current',String(i===current)));};
+  previous.addEventListener('click',()=>move(current-1));next.addEventListener('click',()=>move(current+1));track.addEventListener('scroll',update,{passive:true});
+  new ResizeObserver(update).observe(track);update();
+ }
+}
+if(!customElements.get('portfolio-slider'))customElements.define('portfolio-slider',PortfolioSlider);
+</script>
+<style>
+portfolio-slider{display:block;min-width:0}.slider-track{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 12px)/2);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px;margin:-4px}.slider-track::-webkit-scrollbar{display:none}.slider-track>:global(*){scroll-snap-align:start;min-width:0}.slider-controls{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:20px}.slider-controls>button{width:36px;height:36px;border:1.5px solid transparent;background:var(--color-black);color:var(--color-green);border-radius:4px;display:grid;place-items:center}.slider-controls>button:disabled{opacity:.3}.slider-controls>button:hover:not(:disabled){background:var(--color-green);color:var(--color-black);border-color:currentColor}.slider-next :global(.icon){transform:rotate(90deg)}.slider-prev :global(.icon){transform:rotate(-90deg)}.slider-counter{font-size:12px;margin-right:12px}.pagination{display:flex;margin-right:auto;gap:4px}.pagination :global(button){width:24px;height:24px;border:0;background:none;padding:0;position:relative}.pagination :global(button)::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--color-gray-3)}.pagination :global(button[aria-current=true])::after{background:var(--color-black)}@media(max-width:50rem){.slider-track{grid-auto-columns:100%}.slider-controls>button{width:44px;height:44px}.pagination :global(button){width:44px;height:44px}.pagination :global(button)::after{inset:17px}}
+</style>

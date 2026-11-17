@@ -1,0 +1,8 @@
+---
+import assets from '../../data/figma-assets.json';
+interface Props { illustration:'tshirt-a3'|'polo'|'jersey'|'work-jacket'|'vest'|'cap'; title:string; description:string; }
+const {illustration,title,description}=Astro.props;
+const asset=assets.find(a=>a.name===illustration)!;
+---
+<article class="print-format"><p class="type-superscript">Форматы нанесения</p><h3 class="type-h4">{title}</h3><img src={asset.src} width={asset.width} height={asset.height} alt={description} loading="lazy"/></article>
+<style>.print-format{background:var(--color-white);border-radius:4px;padding:20px;display:flex;flex-direction:column;min-height:344px}.print-format h3{margin-top:8px;color:var(--color-blue-dark)}.print-format img{width:260px;height:232px;object-fit:contain;align-self:center;margin-top:auto;max-width:100%}</style>

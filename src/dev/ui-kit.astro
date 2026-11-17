@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/ComponentPreview.astro';
+import StyleGallery from './StyleGallery.astro';
+import '../styles/ui-kit.css';
 import Button from '../components/ui/Button.astro';
 import ActionLink from '../components/ui/ActionLink.astro';
 import TextLink from '../components/ui/TextLink.astro';
@@ -8,27 +10,70 @@ import ServiceOption from '../components/ui/ServiceOption.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import Accordion from '../components/ui/Accordion.astro';
 import StatusMessage from '../components/ui/StatusMessage.astro';
+import Checkbox from '../components/ui/Checkbox.astro';
+import Icon from '../components/ui/Icon.astro';
+import PricingTag from '../components/ui/PricingTag.astro';
+import Loading from '../components/ui/Loading.astro';
+import PrintFormatCard from '../components/ui/PrintFormatCard.astro';
+import Header from '../components/blocks/Header.astro';
+import Footer from '../components/blocks/Footer.astro';
+import PromoBar from '../components/blocks/PromoBar.astro';
+import ApplicationSection from '../components/blocks/ApplicationSection.astro';
+import PriceTable from '../components/blocks/PriceTable.astro';
+import PortfolioSlider from '../components/blocks/PortfolioSlider.astro';
+import ServiceCard from '../components/cards/ServiceCard.astro';
+import AudienceCard from '../components/cards/AudienceCard.astro';
+import AdvantageCard from '../components/cards/AdvantageCard.astro';
+import PortfolioCard from '../components/cards/PortfolioCard.astro';
+import WorkStage from '../components/cards/WorkStage.astro';
+import ConsultationDialog from '../components/dialogs/ConsultationDialog.astro';
+import SuccessDialog from '../components/dialogs/SuccessDialog.astro';
+import assets from '../data/figma-assets.json';
+const formats=[
+ {illustration:'tshirt-a3' as const,title:'А3: грудь',description:'Футболка с зоной нанесения А3 на груди'},
+ {illustration:'polo' as const,title:'Поло',description:'Поло с обозначениями зон нанесения А6 и А7'},
+ {illustration:'jersey' as const,title:'Джерси',description:'Джерси с зоной нанесения А4 на спине'},
+ {illustration:'work-jacket' as const,title:'Рабочая куртка',description:'Рабочая куртка с зонами нанесения на спине и рукаве'},
+ {illustration:'vest' as const,title:'Жилет',description:'Рабочий жилет с обозначением зоны нанесения А5'},
+ {illustration:'cap' as const,title:'Кепка',description:'Кепка с зоной нанесения А7 над козырьком'},
+];
+const services=[
+ {title:'Ремонт и подгонка',description:'Вторая жизнь любимых вещей.',illustration:'repair'},
+ {title:'Машинная вышивка',description:'Детали, которые делают вещь вашей.',illustration:'embroidery'},
+ {title:'Печать на одежде',description:'Переносим ваши идеи на ткань.',illustration:'printing'},
+ {title:'Шевроны и нашивки',description:'Знак вашей команды и характера.',illustration:'patches'},
+ {title:'Термостразы',description:'Яркий акцент на любимой вещи.',illustration:'rhinestones'},
+];
+const nav=[['styles','Стили'],['illustrations','6 иллюстраций'],['controls','Элементы'],['services','Услуги'],['audiences','Аудитории'],['advantages','Преимущества'],['portfolio','Портфолио'],['stages','Этапы'],['prices','Прайс'],['forms','Форма и окна'],['faq','FAQ'],['footer','Футер']];
 ---
 <Layout>
-  <div class="intro"><SectionHeading as="h1" eyebrow="Разработка / компоненты">Библиотека интерфейса</SectionHeading><p>Первый набор компонентов. Здесь проверяются реальные hover, нажатие, фокус и отключённое состояние. Иконки и составные блоки добавляются после экспорта ресурсов Figma.</p></div>
-  <section aria-labelledby="buttons"><SectionHeading id="buttons" size="section">Кнопки и переходы</SectionHeading>
-    {(['l','m','s'] as const).map(size => <div class="row"><Button size={size}>Оставить заявку</Button><Button size={size} variant="linear">Оставить заявку</Button><Button size={size} disabled>Недоступно</Button><Button size={size} busy>Отправка…</Button></div>)}
-    <div class="row"><ActionLink href="#fields">Перейти к полям</ActionLink><TextLink href="#accordions">Перейти к вопросам</TextLink></div>
-  </section>
-  <section id="fields" aria-labelledby="fields-title"><SectionHeading id="fields-title" size="section">Поля</SectionHeading>
-    <div class="fields-grid"><TextField name="example-name" label="Ваше имя" /><TextField name="example-phone" type="tel" label="Ваш номер телефона" required hint="Можно вставить номер целиком и редактировать любую его часть." /><TextField name="filled" label="Заполненное поле" value="Александр" /><TextField name="invalid" type="tel" label="Ошибка номера" value="123" error="Укажите номер в международном формате, например +375…" /><TextField name="disabled" label="Недоступное поле" disabled /><TextField name="another-name" label="Второй независимый экземпляр" /></div>
-  </section>
-  <section class="dark" aria-labelledby="options"><SectionHeading id="options" size="section" color="light">Выбор услуг</SectionHeading><fieldset><legend class="sr-only">Нужные услуги</legend><div class="row"><ServiceOption name="services" value="repair" label="Ремонт и подгонка" /><ServiceOption name="services" value="embroidery" label="Машинная вышивка" checked /><ServiceOption name="services" value="printing" label="Печать на одежде" /><ServiceOption name="services" value="patches" label="Шевроны и нашивки" disabled /></div></fieldset></section>
-  <section id="accordions" aria-labelledby="faq-title"><SectionHeading id="faq-title" size="section">FAQ — проверка поведения</SectionHeading><div class="stack"><Accordion question="Можно ли заказать одну вещь?">Для печати и вышивки подтверждён приём единичных заказов.</Accordion><Accordion question="Что происходит при длинном заголовке, увеличении масштаба и открытии нескольких вопросов одновременно?" open>Текст переносится, высота растёт по содержимому. Нажмите Tab, затем Enter или пробел. Каждый экземпляр независим.</Accordion></div></section>
-  <section aria-labelledby="status-title"><SectionHeading id="status-title" size="section">Технические состояния</SectionHeading><div class="stack"><StatusMessage>Отправка заявок в этой витрине не подключена.</StatusMessage><StatusMessage kind="error">Не удалось подтвердить доставку. Введённые данные сохранены.</StatusMessage></div></section>
+<div id="top"></div>
+<PromoBar text="Промоблок · пример оформления акции" href="#controls" linkLabel="Смотреть элементы"/>
+<Header phone="+375 (29) 777-77-77"/>
+<div class="container">
+ <div class="kit-intro"><div><p class="type-superscript">Мастерская / Figma → Astro</p><h1 class="type-h1">Библиотека интерфейса</h1></div><p>Составные блоки, стили и оригинальные ресурсы из макета. Наведите курсор, нажмите Tab, откройте меню, прайс или окно заявки.</p><p id="preview-notice" class="kit-note">Это рабочий предпросмотр. Контакты, цены и тексты проектов из макета — демонстрационные. Формы проверяют ввод без отправки. Юридический текст ещё не подключён.</p></div>
+ <nav class="kit-nav" aria-label="Разделы библиотеки">{nav.map(([id,label])=><a href={'#'+id}>{label}</a>)}</nav>
+ <section id="styles" class="kit-section"><SectionHeading eyebrow="01 / Design tokens">Все стили проекта</SectionHeading><StyleGallery/></section>
+ <section id="illustrations" class="kit-section"><SectionHeading eyebrow="02 / Оригинальные SVG">Шесть новых иллюстраций</SectionHeading><p>Каждый рисунок экспортирован из вашего компонента без перерисовки.</p><div class="grid grid--3">{formats.map(format=><PrintFormatCard {...format}/>)}</div></section>
+ <section id="controls" class="kit-section">
+  <SectionHeading eyebrow="03 / Базовые компоненты">Элементы и состояния</SectionHeading>
+  <h3 class="type-h4">Кнопки S / M / L</h3>
+  {(['l','m','s'] as const).map(size=><div class="control-size"><p class="type-superscript">{size}</p><div class="row"><Button size={size} openDialog="consultation">Оставить заявку</Button><Button size={size} variant="linear" openDialog="consultation">Оставить заявку</Button><Button size={size} icon openDialog="consultation">Оставить заявку</Button><Button size={size} variant="linear" icon openDialog="consultation">Оставить заявку</Button><Button size={size} icon disabled>Недоступно</Button><Button size={size} busy>Отправка…</Button></div></div>)}
+  <div class="row"><ActionLink href="#forms" icon>К форме</ActionLink><TextLink href="#faq">Перейти к вопросам</TextLink></div>
+  <h3 class="type-h4">Иконки из Figma</h3><div class="icons-grid">{assets.filter(a=>['arrow','arrow-latex','close','instagram','telegram','youtube','calculator','printer','own-item','business','personal','price','tick'].includes(a.name)).map(asset=><div><Icon name={asset.name}/><code>{asset.name}</code></div>)}</div>
+  <h3 class="type-h4">Метки</h3><div class="row">{(['stock','order','offer','soon'] as const).map(kind=><PricingTag kind={kind}/>)}</div>
+  <h3 class="type-h4">Поля ввода</h3><div class="grid grid--2"><TextField name="example-name" label="Ваше имя"/><TextField name="example-phone" type="tel" label="Ваш номер телефона" required hint="Можно вставить номер целиком."/><TextField name="filled" label="Заполненное поле" value="Александр"/><TextField name="invalid" type="tel" label="Ошибка номера" value="123" error="Укажите номер в международном формате, например +375…"/><TextField name="disabled" label="Недоступное поле" disabled/><TextField name="second-name" label="Второй независимый экземпляр"/></div>
+  <div class="dark-panel"><h3 class="type-h4">Выбор услуг и согласие</h3><fieldset><legend class="sr-only">Услуги в образце</legend><div class="row"><ServiceOption name="demo-services" value="repair" label="Ремонт и подгонка"/><ServiceOption name="demo-services" value="embroidery" label="Машинная вышивка" checked/><ServiceOption name="demo-services" value="printing" label="Печать на одежде"/><ServiceOption name="demo-services" value="patches" label="Шевроны и нашивки" disabled/></div></fieldset><div class="row"><Checkbox name="demo-consent" label="Не выбрано"/><Checkbox name="demo-checked" label="Выбрано" checked/><Checkbox name="demo-disabled" label="Недоступно" disabled/><Checkbox name="demo-error" label="Согласие обязательно" error="Подтвердите согласие"/></div><Loading label="Пример состояния загрузки"/></div>
+ </section>
+ <section id="services" class="kit-section"><SectionHeading eyebrow="04 / Услуги" size="section">Карточки услуг · M / L</SectionHeading><div class="grid grid--3">{services.slice(0,3).map(service=><ServiceCard {...service} href="#prices"/>)}</div><div class="grid grid--2">{services.slice(3).map(service=><ServiceCard {...service} href="#prices" size="l" tag="Скоро в продаже"/>)}</div></section>
+ <section id="audiences" class="kit-section audience-section"><SectionHeading eyebrow="05 / Для кого" color="light">Вещи со своим характером</SectionHeading><div class="grid grid--3"><AudienceCard eyebrow="Для себя" title="Вещь, которую хочется носить" illustration="audience-self"/><AudienceCard eyebrow="Для команды" title="Один стиль, общая идея" illustration="audience-team"/><AudienceCard eyebrow="Для бизнеса" title="Бренд, который узнают" illustration="audience-business"/></div></section>
+ <section id="advantages" class="kit-section"><SectionHeading eyebrow="06 / Преимущества">Светлый и синий варианты</SectionHeading><div class="grid grid--3"><AdvantageCard eyebrow="Расчёт" title="Понятная стоимость" description="Обсуждаем задачу, материалы и детали до начала работы."/><AdvantageCard eyebrow="Печать" title="Ваша идея на ткани" description="Подбираем подходящий способ нанесения." icon="printer" variant="blue"/><AdvantageCard eyebrow="Ваша вещь" title="Любимая основа" description="Помогаем обновить и дополнить готовое изделие." icon="own-item"/></div></section>
+ <section id="portfolio" class="kit-section"><SectionHeading eyebrow="07 / Портфолио">Примеры из макета</SectionHeading><PortfolioSlider><PortfolioCard title="Ruckit. Watch what you came for." image="/assets/figma/portfolio-ruckit.jpg" imageAlt="Чёрная футболка с принтом Ruckit из макета портфолио" audience="Для бизнеса" price="Цена из макета" quantity="15 штук" tag="Печать на одежде"/><PortfolioCard title="Джинсы Hello Kitty" image="/assets/figma/portfolio-hello-kitty.jpg" imageAlt="Джинсы с вышивкой Hello Kitty из макета портфолио" audience="Для себя" price="~100 BYN · демо" quantity="1 штука" tag="Машинная вышивка" tone="pink" ownItem/></PortfolioSlider></section>
+ <section id="stages" class="kit-section"><SectionHeading eyebrow="08 / Этапы">От идеи к готовой вещи</SectionHeading><div class="grid grid--4 stages-grid"><WorkStage number="01" title="Расскажите о задаче" description="Оставьте заявку и вкратце опишите, что хотите сделать"/><WorkStage number="02" title="Согласуем детали" description="Обсудим макет, материал и способ нанесения" variant="light"/><WorkStage number="03" title="Приступим к работе" description="Выполним согласованную задачу" tag="В работе"/><WorkStage number="04" title="Заберите результат" description="Готовую вещь остаётся примерить" variant="light" tag="Готово"/></div></section>
+ <section id="prices" class="kit-section"><SectionHeading eyebrow="09 / Прайс">Таблицы и раскрывающиеся группы</SectionHeading><p class="kit-note">Цены воспроизводят демонстрационные строки Figma. Актуальный прайс не подтверждён.</p><PriceTable caption="Демонстрационный прайс ремонта брюк" group="01 / Брюки" open headers={['Вид услуг','Цена, BYN']} rows={[['Замена молнии: обычная (шт.)','23,00'],['Замена молнии: потайная (шт.)','23,00'],['Укоротить или удлинить: на клеевую, с отстрочкой (пар.)','23,00'],['Укоротить или удлинить: подшив руками (пар.)','23,00'],['Обработка оверлоком низа брюк','23,00']]}/><PriceTable caption="Демонстрация второй группы прайса" group="02 / Вторая группа — проверка раскрытия" headers={['Вид услуг','Цена']} rows={[['Индивидуальная работа','После оценки']]}/><PriceTable caption="Варианты тиража машинной вышивки" headers={['Машинная вышивка',{label:'Тираж (шт.)',span:7}]} rows={[['Крой','01','02–09','10–19','20–49','50–99','100–199','200+'],['Готовое изделие','01','02–09','10–19','20–49','50–99','100–199','200+']]}/></section>
+ <section id="forms" class="kit-section"><SectionHeading eyebrow="10 / Заявки">Форма и всплывающие окна</SectionHeading><div class="row"><Button openDialog="consultation" icon>Открыть форму заявки</Button><Button variant="linear" openDialog="success">Окно подтверждения · демо</Button></div><ApplicationSection/><div class="stack"><StatusMessage>Отправка заявок в витрине не подключена. Проверка полей работает.</StatusMessage><StatusMessage kind="error">Пример ошибки: не удалось подтвердить доставку. Введённые данные сохранены.</StatusMessage></div></section>
+ <section id="faq" class="kit-section"><SectionHeading eyebrow="11 / Вопросы">FAQ и длинные заголовки</SectionHeading><div class="stack"><Accordion question="Можно ли заказать одну вещь?">Для печати и вышивки предусмотрены единичные заказы. Детали согласуются при обращении.</Accordion><Accordion question="Как подготовить макет для нанесения?">Подготовьте изображение и опишите желаемое расположение. Требования к файлу зависят от выбранной технологии.</Accordion><Accordion question="Что происходит при длинном заголовке, увеличении масштаба и открытии нескольких вопросов одновременно?" open>Высота блока растёт по содержимому. Каждый вопрос открывается независимо и доступен с клавиатуры.</Accordion></div></section>
+</div>
+<Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" socials={[{label:'Instagram — образец',icon:'instagram',href:'#preview-notice'},{label:'Telegram — образец',icon:'telegram',href:'#preview-notice'},{label:'YouTube — образец',icon:'youtube',href:'#preview-notice'}]} maps={[{label:'Яндекс Карты',icon:'yandex',href:'#preview-notice'},{label:'Google Maps',icon:'google',href:'#preview-notice'}]} hours={['Пн–Пт 9:00–18:00 · демо','Сб–Вс 10:00–20:00 · демо']}/>
+<ConsultationDialog/><SuccessDialog preview/>
 </Layout>
-<style>
-  .intro { display: grid; gap: 20px; padding-block: 48px; }
-  .intro p { max-width: 80ch; line-height: 1.5; }
-  section { display: grid; gap: 24px; margin-bottom: 48px; scroll-margin-top: 24px; }
-  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-  .fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-  .dark { background: var(--color-black); padding: 24px; border-radius: 4px; }
-  .stack { display: grid; gap: 8px; }
-  @media (max-width: 47.99rem) { .fields-grid { grid-template-columns: 1fr; } .dark { padding: 16px; } }
-</style>

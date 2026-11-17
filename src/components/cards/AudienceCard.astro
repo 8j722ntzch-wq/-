@@ -1,0 +1,7 @@
+---
+import assets from '../../data/figma-assets.json';
+interface Props { eyebrow:string;title:string;illustration:string; }
+const {eyebrow,title,illustration}=Astro.props;const asset=assets.find(a=>a.name===illustration)!;
+---
+<article class="audience-card"><p class="type-superscript">{eyebrow}</p><h3 class="type-h4">{title}</h3><img src={asset.src} width={asset.width} height={asset.height} alt="" loading="lazy"/></article>
+<style>.audience-card{padding:20px 20px 10px;border-radius:4px;background:#fefefe33;color:var(--color-white);min-height:431px;display:flex;flex-direction:column;gap:8px}.audience-card img{width:320px;height:320px;max-width:100%;object-fit:contain;margin:auto auto 0}</style>
