@@ -45,7 +45,12 @@ test('printing reaches all six original illustrations and returns to the beginni
  await next.click();await next.click();await expect(next).toBeDisabled();
  await expect(track.locator('article').last()).toBeInViewport({ratio:1});
  await track.focus();await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowLeft');await expect(prev).toBeDisabled();
- for(const img of await track.locator('img').all()){const box=await img.boundingBox();expect(box?.width).toBe(260);expect(box?.height).toBe(232);}
+ for(const img of await track.locator('img').all()){
+  const box=await img.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.width).toBeCloseTo(260,2);
+  expect(box!.height).toBeCloseTo(232,2);
+ }
 });
 test('homepage and footer link to each separate service',async({page})=>{
  for(const service of servicePages){

@@ -97,7 +97,9 @@ test('inline form validates name, phone and consent without transmitting data', 
   await submit.click();
   await expect(form.getByRole('status')).not.toBeVisible();
   await form.getByRole('checkbox', { name: /Я согласен/ }).check();
-  await form.getByRole('checkbox', { name: 'Печать на одежде', exact: true }).check();
+  const printingOption = form.getByRole('checkbox', { name: 'Печать на одежде', exact: true });
+  await form.getByText('Печать на одежде', { exact: true }).click();
+  await expect(printingOption).toBeChecked();
   await submit.click();
   await expect(form.getByRole('status')).toContainText('заявка не отправлена');
   await page.locator('header').getByRole('button', { name: 'Оставить заявку' }).click();
