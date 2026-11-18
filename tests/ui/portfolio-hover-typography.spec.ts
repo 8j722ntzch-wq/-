@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import styles from '../../src/data/figma-styles.json';
+
 
 test('all local Astro text styles are normalized from -2% to 0%', async ({ page }) => {
   const sourceRoot = join(process.cwd(), 'src');
+  const styles = JSON.parse(readFileSync(join(sourceRoot, 'data', 'figma-styles.json'), 'utf8')) as {
+    text: { name: string; letterSpacing: { value: number } }[];
+  };
   const problems: string[] = [];
   const scan = (directory: string) => {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
