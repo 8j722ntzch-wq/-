@@ -1,0 +1,42 @@
+name: Public form endpoint safety probe (read only)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/telegram-live-security-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Inspect redirect, media type, and PHP source exposure without submitting data
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp="$(mktemp -d)"
+          trap 'rm -rf "$temp"' EXIT
+          for item in 'HOME|/' 'POLICY|/policy/' 'POLICY_PDF|/documents/personal-data-policy.pdf' 'PHP_ENDPOINT|/api/submit.php'; do
+            IFS='|' read -r label path <<< "$item"
+            status="$(curl -sS --connect-timeout 8 --max-time 20 -D "$temp/$label.headers" -o "$temp/$label.body" -w '%{http_code}' "https://baltmotors.by$path" || true)"
+            if [[ ! "$status" =~ ^[0-9]{3}$ ]]; then echo "$label NETWORK_UNAVAILABLE"; continue; fi
+            redirect='NO'
+            if grep -qi '^location:' "$temp/$label.headers"; then redirect='YES'; fi
+            type='UNKNOWN'
+            if grep -qi '^content-type:.*text/html' "$temp/$label.headers"; then type='HTML'; fi
+            if grep -qi '^content-type:.*application/json' "$temp/$label.headers"; then type='JSON'; fi
+            if grep -qi '^content-type:.*application/pdf' "$temp/$label.headers"; then type='PDF'; fi
+            printf '%s HTTP_%s REDIRECT_%s TYPE_%s\n' "$label" "$status" "$redirect" "$type"
+            if grep -aq '<?php' "$temp/$label.body"; then
+              echo "::error::$label RAW_PHP_SOURCE_EXPOSED"
+              exit 1
+            fi
+            if [[ "$label" == HOME ]]; then
+              if grep -qa '<consultation-form' "$temp/$label.body"; then echo "HOME_FORM_PRESENT"; else echo "HOME_FORM_NOT_PRESENT"; fi
+            fi
+          done
+          echo "No writes or Telegram messages." >> "$GITHUB_STEP_SUMMARY"
