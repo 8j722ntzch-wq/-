@@ -33,15 +33,17 @@ try {
     await writeFile(configPath, "<?php return ['username'=>'preview', 'password_hash'=>'"+escapedHash+"'];\n", {mode:0o600});
     const initial=await request('/portfolio/');
     ensure(initial.status===302,'Private portfolio redirects before auth');
+    const initialCookie = initial.headers.get('set-cookie')?.split(';')[0];
+    if (!initialCookie) throw new Error('Missing first-session cookie');
     ensure(initial.headers.get('location')==='https://baltmotors.by/preview-login/','Redirect stays on HTTPS canonical domain');
     for(const path of ['/', '/assets/figma/portfolio-ruckit.jpg', '/documents/personal-data-policy.pdf','/robots.txt','/_astro/nonexistent.css']){
         const res=await request(path);
         ensure(res.status===302,'Unauthorized file denied: '+path);
         ensure(res.headers.get('x-robots-tag')?.includes('noindex'),'Noindex response: '+path);
     }
-    const login=await request('/preview-login/');
+    const login=await request('/preview-login/',{headers:{Cookie:initialCookie}});
     ensure(login.status===200,'Login is public');
-    const cookie=login.headers.get('set-cookie')?.split(';')[0];
+    const cookie=login.headers.get('set-cookie')?.split(';')[0] || initialCookie;
     ensure(cookie?.startsWith('__Host-MSKPreview='),'Secure session cookie issued');
     if (!cookie) throw new Error('Secure preview session cookie is missing');
     const html=await login.text();
