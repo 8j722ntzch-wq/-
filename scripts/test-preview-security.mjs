@@ -56,6 +56,18 @@ try {
     ensure(bad.status===303 && bad.headers.get('location')?.endsWith('/preview-login/?error=1'),'Incorrect password denied');
     const good=await send(testPassword);
     ensure(good.status===303 && good.headers.get('location')==='https://baltmotors.by/portfolio/','Correct password continues to original page');
+    // API is protected by the same session but accepts POST after login.
+    // No actual secrets are installed in this fixture, so it must fail closed.
+    const synthetic='{"request_id":"8d79f9b0-0d6f-4d78-8306-74e06e16f188","name":"Test","phone":"+375 (29) 123-45-67","services":[],"context":"","consent":true,"website":""}';
+    const postHeaders={'Content-Type':'application/json','Origin':'https://baltmotors.by'};
+    const unauthApi=await request('/api/submit.php',{method:'POST',headers:postHeaders,body:synthetic});
+    ensure(unauthApi.status===401, 'API blocks anonymous submissions');
+    const authedApi=await request('/api/submit.php',{method:'POST',headers:{...postHeaders,Cookie:cookie},body:synthetic});
+    ensure(authedApi.status===503,'Authorized API runs server-side and fails closed without config');
+    ensure((await authedApi.json()).code==='not_configured','Authorized API response is JSON and hides config');
+    const sourceApi=await request('/api/submit.php',{headers:{Cookie:cookie}});
+    ensure(sourceApi.status===404,'Protected API source cannot be read as GET');
+
     const authorized=await request('/portfolio/',{headers:{Cookie:cookie}});
     ensure(authorized.status===200,'Authorized portfolio can be read');
     ensure((await authorized.text()).includes('<html'),'Authorized content is returned');
