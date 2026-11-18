@@ -73,7 +73,10 @@ if ($path === '/preview-login' || $path === '/preview-login/') {
 }
 
 if (!preview_authorized()) {
-    $_SESSION['preview_after_login'] = preview_safe_next($requestUri);
+    // Preserve the first requested page; subsequent blocked assets must not overwrite it.
+    if (!isset($_SESSION['preview_after_login'])) {
+        $_SESSION['preview_after_login'] = preview_safe_next($requestUri);
+    }
     preview_redirect('/preview-login/', 302);
 }
 
