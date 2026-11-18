@@ -78,9 +78,22 @@ async function main() {
 
   // Once the recipient is stored as a GitHub Secret, validate it without
   // printing its value, making it an Actions output, or sending a message.
-  const configuredChatId = (process.env.TELEGRAM_CHAT_ID || '').trim();
-  if (configuredChatId) {
-    if (!/^-\d{5,20}$/.test(configuredChatId)) return fail('CHAT_ID_FORMAT_INVALID');
+  const rawChatId = (process.env.TELEGRAM_CHAT_ID || '').trim();
+  if (rawChatId) {
+    // Normalize copy/paste artifacts without ever disclosing the secret. Only
+    // permit a single negative ID candidate, and verify the exact group via API.
+    const cleanedChatId = rawChatId
+      .replace(/[\u2212\u2013\u2014]/g, '-')
+      .replace(/[\u200B-\u200D\uFEFF]/g, '');
+    const candidates = [...new Set(cleanedChatId.match(/-\d{5,20}(?!\d)/g) || [])];
+    let configuredChatId;
+    if (/^-\d{5,20}$/.test(cleanedChatId)) configuredChatId = cleanedChatId;
+    else if (candidates.length === 1) {
+      configuredChatId = candidates[0];
+      status('CHAT_ID_CONTAINS_EXTRA_COPY_TEXT');
+    } else if (/^\d{5,20}$/.test(cleanedChatId)) {
+      return fail('CHAT_ID_MISSING_NEGATIVE_SIGN');
+    } else return fail('CHAT_ID_NO_UNIQUE_GROUP_NUMBER');
     let group;
     try {
       group = await telegram('getChat', { chat_id: configuredChatId });
