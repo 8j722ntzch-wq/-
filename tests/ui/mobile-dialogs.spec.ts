@@ -66,7 +66,8 @@ test('Mobile consultation validates real inputs without fake delivery',async({pa
  await expect(d.getByPlaceholder('Ваше имя*')).toBeFocused();
  await d.getByPlaceholder('Ваше имя*').fill('Тест');
  await d.getByPlaceholder('Ваш номер телефона*').fill('+375 (29) 123-45-67');
- await d.getByRole('checkbox',{name:'Машинная вышивка'}).check();
+ await d.locator('.service-options .option').filter({hasText:'Машинная вышивка'}).click();
+ await expect(d.getByRole('checkbox',{name:'Машинная вышивка'})).toBeChecked();
  await d.getByRole('checkbox',{name:/Согласен \(-а\)/i}).check();
  await submit.click();
  await expect(d.getByRole('status')).toContainText('заявка не отправлена');
