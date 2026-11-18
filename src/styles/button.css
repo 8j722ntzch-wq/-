@@ -43,3 +43,42 @@
 .button--split.button--solid:active:not(:disabled){--button-bg:var(--color-green);--button-border:transparent;}
 .button--split.button--linear:active:not(:disabled){--button-bg:transparent;--button-border:currentColor;}
 .button--split:disabled { --button-bg:transparent; --button-border:var(--color-gray-3); }
+
+
+/* button_Basic 24:643 — new type/size variants, preserving Solid/Linear S/M/L. */
+.button--solid.button--xl,.button--linear.button--xl{min-height:60px;font-size:16px}
+.button--solid.button--xs,.button--linear.button--xs{min-height:30px;padding:6px 10px;font-size:12px}
+.button--split.button--xl{--control-height:60px;--control-padding:24px}
+.button--split.button--xs{--control-height:30px;--control-padding:10px}
+.button--text,.button--text-bold,.button--text-latex{
+  --button-bg:transparent;
+  --button-border:transparent;
+  justify-content:flex-start;
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  letter-spacing:0;
+}
+.button--text,.button--text-latex{font-weight:500}
+.button--text-bold{font-weight:700}
+.button--text.button--s,.button--text-latex.button--s{font-size:14px;line-height:1.3}
+.button--text.button--xs,.button--text-latex.button--xs{font-size:12px;line-height:1.2}
+.button--text-bold.button--s{font-size:14px;line-height:1.25}
+.button--text-bold.button--m,.button--text.button--m{font-size:16px;line-height:1.25}
+.button--text-bold.button--l,.button--text.button--l{font-size:28px;line-height:1.3}
+.button--text-bold.button--xl,.button--text.button--xl{font-size:32px;line-height:1.3}
+.button--text.button--xs:not(.button--inline-icon){color:var(--color-gray-4);text-transform:uppercase}
+.button--inline-icon{display:inline-flex;align-items:center;gap:6px}
+.button--inline-icon .button__label{padding:0;min-height:0}
+.button--inline-icon .button__icon{display:grid;place-items:center;flex:none}
+.button--text-latex .button__icon{width:18px;height:18px}
+.button--text-bold.button--l .button__icon{width:20px;height:20px;background:var(--color-black);color:var(--color-green);border-radius:50%}
+.button--text:hover:not(:disabled),.button--text-latex:hover:not(:disabled){text-decoration:underline}
+.button--text-bold:hover:not(:disabled){color:var(--color-green);text-decoration:underline}
+.button--text:active:not(:disabled),.button--text-latex:active:not(:disabled){text-decoration:underline;opacity:.7}
+.button--text-bold:active:not(:disabled){color:var(--color-green);opacity:.7}
+.button--text:disabled,.button--text-latex:disabled,.button--text-bold:disabled{background:transparent;border:0;color:var(--color-gray-3)}

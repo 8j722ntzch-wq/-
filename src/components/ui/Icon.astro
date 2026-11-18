@@ -1,9 +1,10 @@
 ---
 import assets from '../../data/figma-assets.json';
 interface Props { name: string; size?: number; }
-const {name,size=24}=Astro.props;
+const {name,size}=Astro.props;
 const asset=assets.find(a=>a.name===name);
 if(!asset) throw new Error('Unknown Figma icon: '+name);
+const resolvedSize=size??((name==='arrow-latex'||name==='arrow-up-14'||name==='arrow-left-14'||name.endsWith('-20'))?asset.width:24);
 ---
-<span class="icon" aria-hidden="true" style={`--icon: url("${asset.src}"); --icon-size: ${size}px`}></span>
+<span class="icon" aria-hidden="true" style={`--icon: url("${asset.src}"); --icon-size: ${resolvedSize}px`}></span>
 <style>.icon{display:inline-block;flex:none;width:var(--icon-size);height:var(--icon-size);background:currentColor;mask:var(--icon) center/contain no-repeat;vertical-align:middle;}</style>

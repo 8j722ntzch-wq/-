@@ -1,23 +1,31 @@
 ---
 import '../../styles/button.css';
 import Icon from './Icon.astro';
+type Variant='solid'|'linear'|'text'|'text-bold'|'text-latex';
+type Size='xs'|'s'|'m'|'l'|'xl';
+type Direction='right'|'left'|'up'|'down';
 interface Props {
-  type?: 'button' | 'submit' | 'reset';
-  variant?: 'solid' | 'linear';
-  size?: 's' | 'm' | 'l';
-  disabled?: boolean;
-  busy?: boolean;
-  fullWidth?: boolean;
-  id?: string;
-  controls?: string;
-  expanded?: boolean;
-  icon?: boolean;
-  openDialog?: string;
-  service?: string;
-  context?: string;
+  type?:'button'|'submit'|'reset';
+  variant?:Variant;
+  size?:Size;
+  disabled?:boolean;
+  busy?:boolean;
+  fullWidth?:boolean;
+  id?:string;
+  controls?:string;
+  expanded?:boolean;
+  icon?:boolean;
+  iconDirection?:Direction;
+  openDialog?:string;
+  service?:string;
+  context?:string;
 }
-const { type = 'button', variant = 'solid', size = 'l', disabled = false, busy = false, fullWidth = false, id, controls, expanded, icon=false, openDialog, service, context } = Astro.props;
+const {type='button',variant='solid',size='l',disabled=false,busy=false,fullWidth=false,id,controls,expanded,icon=false,iconDirection='right',openDialog,service,context}=Astro.props;
+const isText=variant==='text'||variant==='text-bold'||variant==='text-latex';
+const iconName=variant==='text-latex'?'arrow-latex':iconDirection==='left'?'arrow-left-14':iconDirection==='up'?(size==='s'||size==='xs'?'arrow-up-14':'arrow-up-20'):'arrow';
+const iconSize=variant==='text-latex'?18:iconDirection==='left'?14:iconDirection==='up'?(size==='s'||size==='xs'?14:20):size==='xs'||size==='s'?14:size==='m'?16:20;
 ---
-<button id={id} type={type} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth, 'button--split': icon }]} disabled={disabled || busy} aria-busy={busy || undefined} aria-controls={controls||openDialog} aria-haspopup={openDialog?'dialog':undefined} aria-expanded={expanded} data-open-dialog={openDialog} data-service={service} data-context={context}>
-  <span class="button__label"><slot /></span>{icon&&<span class="button__icon"><Icon name="arrow" size={size==='s'?14:size==='m'?16:20}/></span>}
+<button id={id} type={type} class:list={['button','button--'+variant,'button--'+size,{'button--full':fullWidth,'button--split':icon&&!isText,'button--inline-icon':icon&&isText}]} disabled={disabled||busy} aria-busy={busy||undefined} aria-controls={controls||openDialog} aria-haspopup={openDialog?'dialog':undefined} aria-expanded={expanded} data-open-dialog={openDialog} data-service={service} data-context={context}>
+  <span class="button__label"><slot/></span>
+  {icon&&<span class="button__icon"><Icon name={iconName} size={iconSize}/></span>}
 </button>

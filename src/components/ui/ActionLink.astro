@@ -1,9 +1,17 @@
 ---
 import '../../styles/button.css';
 import Icon from './Icon.astro';
-interface Props { href: string; variant?: 'solid' | 'linear'; size?: 's' | 'm' | 'l'; fullWidth?: boolean; icon?:boolean; }
-const { href, variant = 'solid', size = 'm', fullWidth = false, icon=false } = Astro.props;
-// Links always navigate. Disabled navigation is not offered by this component.
-if (!/^(\/|#|https:\/\/|tel:|mailto:)/.test(href) || href.startsWith('//')) throw new Error('Unsupported action link destination');
+type Variant='solid'|'linear'|'text'|'text-bold'|'text-latex';
+type Size='xs'|'s'|'m'|'l'|'xl';
+type Direction='right'|'left'|'up'|'down';
+interface Props { href:string; variant?:Variant; size?:Size; fullWidth?:boolean; icon?:boolean; iconDirection?:Direction; }
+const {href,variant='solid',size='m',fullWidth=false,icon=false,iconDirection='right'}=Astro.props;
+if(!/^(\/|#|https:\/\/|tel:|mailto:)/.test(href)||href.startsWith('//'))throw new Error('Unsupported action link destination');
+const isText=variant==='text'||variant==='text-bold'||variant==='text-latex';
+const iconName=variant==='text-latex'?'arrow-latex':iconDirection==='left'?'arrow-left-14':iconDirection==='up'?(size==='s'||size==='xs'?'arrow-up-14':'arrow-up-20'):'arrow';
+const iconSize=variant==='text-latex'?18:iconDirection==='left'?14:iconDirection==='up'?(size==='s'||size==='xs'?14:20):size==='xs'||size==='s'?14:size==='m'?16:20;
 ---
-<a href={href} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth, 'button--split':icon }]}><span class="button__label"><slot /></span>{icon&&<span class="button__icon"><Icon name="arrow" size={size==='s'?14:size==='m'?16:20}/></span>}</a>
+<a href={href} class:list={['button','button--'+variant,'button--'+size,{'button--full':fullWidth,'button--split':icon&&!isText,'button--inline-icon':icon&&isText}]}>
+  <span class="button__label"><slot/></span>
+  {icon&&<span class="button__icon"><Icon name={iconName} size={iconSize}/></span>}
+</a>

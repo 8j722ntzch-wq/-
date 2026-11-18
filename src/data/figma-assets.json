@@ -51,8 +51,8 @@
   {
     "name": "arrow-latex",
     "id": "24:641",
-    "width": 24,
-    "height": 24,
+    "width": 18,
+    "height": 18,
     "src": "/assets/figma/arrow-latex.svg"
   },
   {
@@ -219,43 +219,43 @@
   {
     "name": "hero-grid",
     "id": "66:3685",
-    "width": 473.0,
-    "height": 549.0,
+    "width": 473,
+    "height": 549,
     "src": "/assets/figma/hero-grid.svg"
   },
   {
     "name": "stitch-white",
     "id": "66:3721",
-    "width": 156.0,
-    "height": 3.0,
+    "width": 156,
+    "height": 3,
     "src": "/assets/figma/stitch-white.svg"
   },
   {
     "name": "stitch-green",
     "id": "66:3731",
-    "width": 156.0,
-    "height": 3.0,
+    "width": 156,
+    "height": 3,
     "src": "/assets/figma/stitch-green.svg"
   },
   {
     "name": "ruler-white",
     "id": "66:3633",
-    "width": 553.0,
-    "height": 10.0,
+    "width": 553,
+    "height": 10,
     "src": "/assets/figma/ruler-white.svg"
   },
   {
     "name": "ruler-black",
     "id": "88:2848",
-    "width": 553.0,
-    "height": 10.0,
+    "width": 553,
+    "height": 10,
     "src": "/assets/figma/ruler-black.svg"
   },
   {
     "name": "application-grid",
     "id": "88:3064",
-    "width": 365.0,
-    "height": 309.0,
+    "width": 365,
+    "height": 309,
     "src": "/assets/figma/application-grid.svg"
   },
   {
@@ -264,5 +264,61 @@
     "width": 1863,
     "height": 844,
     "src": "/assets/figma/home-hero.webp"
+  },
+  {
+    "name": "instagram-20",
+    "id": "204:13068",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/instagram-20.svg"
+  },
+  {
+    "name": "telegram-20",
+    "id": "204:13072",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/telegram-20.svg"
+  },
+  {
+    "name": "youtube-20",
+    "id": "204:13074",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/youtube-20.svg"
+  },
+  {
+    "name": "arrow-up-20",
+    "id": "208:14404",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/arrow-up-20.svg"
+  },
+  {
+    "name": "arrow-up-14",
+    "id": "208:14412",
+    "width": 14,
+    "height": 14,
+    "src": "/assets/figma/arrow-up-14.svg"
+  },
+  {
+    "name": "arrow-left-14",
+    "id": "209:15802",
+    "width": 14,
+    "height": 14,
+    "src": "/assets/figma/arrow-left-14.svg"
+  },
+  {
+    "name": "burger-open",
+    "id": "24:1125",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/burger-open.svg"
+  },
+  {
+    "name": "burger-close",
+    "id": "24:1129",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/burger-close.svg"
   }
 ]

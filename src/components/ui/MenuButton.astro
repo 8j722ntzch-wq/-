@@ -1,0 +1,19 @@
+---
+import Icon from './Icon.astro';
+interface Props { id?:string; controls?:string; state?:'default'|'pressed'|'opened'; className?:string; }
+const {id,controls,state='default',className}=Astro.props;
+const opened=state==='opened';
+---
+<button type="button" id={id} class:list={['menu-button',className]} data-menu-toggle data-state={state} aria-controls={controls} aria-expanded={opened} aria-label={opened?'Закрыть меню':'Открыть меню'}>
+  <Icon name="burger-open" size={24}/>
+  <Icon name="burger-close" size={24}/>
+</button>
+<style>
+.menu-button{display:grid;place-items:center;position:relative;flex:none;width:36px;height:36px;border:1.5px solid transparent;border-radius:4px;padding:4.5px;background:var(--color-green);color:var(--color-black)}
+.menu-button :global(.icon){grid-area:1/1}
+.menu-button :global(.icon:nth-child(2)){display:none}
+.menu-button[aria-expanded=true]{background:transparent;border-color:var(--color-black)}
+.menu-button[aria-expanded=true] :global(.icon:first-child){display:none}
+.menu-button[aria-expanded=true] :global(.icon:nth-child(2)){display:inline-block}
+.menu-button:active{background:var(--color-green);border-color:transparent}
+</style>
