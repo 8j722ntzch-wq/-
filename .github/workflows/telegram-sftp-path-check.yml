@@ -43,26 +43,37 @@ jobs:
           temp="$(mktemp -d)"
           trap 'rm -rf -- "$temp"' EXIT
           printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$temp/known_hosts"
-          printf '%s\n' 'pwd' 'ls -la www' 'ls -la www/baltmotors.by' 'bye' > "$temp/check.sftp"
+          printf '%s\n' 'pwd' 'ls -la www' 'bye' > "$temp/check-parent.sftp"
+          printf '%s\n' 'pwd' 'ls -la www/baltmotors.by' 'bye' > "$temp/check-site.sftp"
           lookup="$SFTP_HOST"
           if [[ "$port" != "22" ]]; then lookup="[$SFTP_HOST]:$port"; fi
           if ! ssh-keygen -F "$lookup" -f "$temp/known_hosts" >/dev/null; then
             echo "::error::SFTP host key not pinned"
             exit 1
           fi
-          if ! sshpass -e sftp -P "$port" \
-            -oBatchMode=no \
-            -oStrictHostKeyChecking=yes \
-            -oUserKnownHostsFile="$temp/known_hosts" \
-            -oGlobalKnownHostsFile=/dev/null \
-            -oConnectTimeout=15 \
-            -oConnectionAttempts=1 \
-            -oNumberOfPasswordPrompts=1 \
-            -oPreferredAuthentications=password,keyboard-interactive \
-            -oPubkeyAuthentication=no \
-            -b "$temp/check.sftp" "$SFTP_USERNAME@$SFTP_HOST" \
-            >"$temp/result" 2>&1; then
-            echo "::error::SFTP site directory is not readable. Nothing changed on the server."
+          sftp_read() {
+            local script="$1"
+            local output="$2"
+            sshpass -e sftp -P "$port" \
+              -oBatchMode=no \
+              -oStrictHostKeyChecking=yes \
+              -oUserKnownHostsFile="$temp/known_hosts" \
+              -oGlobalKnownHostsFile=/dev/null \
+              -oConnectTimeout=15 \
+              -oConnectionAttempts=1 \
+              -oNumberOfPasswordPrompts=1 \
+              -oPreferredAuthentications=password,keyboard-interactive \
+              -oPubkeyAuthentication=no \
+              -b "$script" "$SFTP_USERNAME@$SFTP_HOST" \
+              >"$output" 2>&1
+          }
+          if ! sftp_read "$temp/check-parent.sftp" "$temp/parent-result"; then
+            echo "::error::SFTP_WWW_DIRECTORY_NOT_READABLE"
+            exit 1
+          fi
+          echo "SFTP_WWW_DIRECTORY_READABLE"
+          if ! sftp_read "$temp/check-site.sftp" "$temp/site-result"; then
+            echo "::error::SFTP_SITE_DIRECTORY_NOT_READABLE"
             exit 1
           fi
           echo "SFTP_SITE_DIRECTORY_READABLE"
