@@ -13,7 +13,7 @@ const services=['Ремонт и подгонка','Машинная вышив�
  <p class="form-context" hidden></p>
  <div class="form-fields"><TextField name="name" label="Ваше имя" required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" required labelVisible={false}/></div>
  <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service} checked={service===defaultService}/>)}</div></fieldset>
- <Checkbox name="consent" required><span class="consent-copy">Я согласен с {home&&<><a href="#preview-notice" data-open-dialog={policyDialog}>политикой конфиденциальности</a> и </>}<a href="#preview-notice" data-open-dialog={policyDialog}>политикой обработки персональных данных</a></span></Checkbox>
+ <Checkbox name="consent" required><span class="consent-copy">Я согласен с {home&&<><a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a> и </>}<a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></span></Checkbox>
  <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home}]} disabled><span class="button__label">Оставить заявку</span>{!home&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
  <p id={id+'-note'} class="form-note">Предпросмотр: данные никуда не отправляются.</p>
  <p class="form-result" role="status" aria-live="polite" hidden></p>

@@ -1,0 +1,115 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Header from '../../components/blocks/Header.astro';
+import PromoBar from '../../components/blocks/PromoBar.astro';
+import Footer from '../../components/blocks/Footer.astro';
+import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import Modal from '../../components/dialogs/Modal.astro';
+const pdf='/documents/personal-data-policy.pdf';
+const dialogId='policy-consultation';
+const links=[
+  {label:'Услуги',href:'/#services'},
+  {label:'О нас',href:'/#advantages'},
+  {label:'Бизнесу',href:'/#audiences'},
+  {label:'Портфолио',href:'/portfolio/'},
+  {label:'Контакты',href:'#footer'},
+];
+// The text below is a selective, not exhaustive, presentation of the supplied PDF.
+// Do not copy unrelated text from the old Figma privacy mockup (revolis.by).
+const sections=[
+  {title:'1. Общие положения',parts:[
+    'Настоящая Политика в отношении обработки персональных данных определяет порядок, цели, правовые основания и условия обработки персональных данных индивидуальным предпринимателем Бугаёвой Александрой Сергеевной, а также меры по обеспечению их защиты.',
+    'Политика разработана в соответствии с Законом Республики Беларусь от 7 мая 2021 г. № 99-З «О защите персональных данных» и иными актами законодательства Республики Беларусь.',
+  ]},
+  {title:'2. Цели, категории и основания обработки',parts:[
+    'В документе рассматриваются заявки на консультацию, запросы об условиях кредитования, заключение и исполнение договоров, обращения и законодательные обязанности. Перечень целей и категорий данных полностью приведён в PDF.',
+    'Оператор обрабатывает только персональные данные, необходимые для достижения соответствующих целей. Персональные данные, полученные при отправке заявки через Сайт, не используются для направления самостоятельных рекламных рассылок без соответствующего правового основания.',
+  ]},
+  {title:'3. Порядок обработки персональных данных',parts:[
+    'Обработка персональных данных осуществляется с использованием средств автоматизации и без использования таких средств.',
+    'В зависимости от цели обработки Оператор может осуществлять сбор, систематизацию, хранение, изменение, использование, обезличивание, блокирование, предоставление и удаление персональных данных.',
+  ]},
+  {title:'4. Предоставление и трансграничная передача',parts:[
+    'Документ предусматривает использование сервиса Telegram для доставки заявок и описывает связанные с этим вопросы трансграничной передачи персональных данных.',
+    'Персональные данные могут предоставляться третьим лицам при наличии правовых оснований, предусмотренных законодательством Республики Беларусь.',
+  ]},
+  {title:'5. Сроки хранения персональных данных',parts:[
+    'Персональные данные обрабатываются и хранятся в течение периода, необходимого для достижения заявленных целей обработки, если иной срок не предусмотрен законодательством Республики Беларусь.',
+  ]},
+  {title:'6. Права субъектов персональных данных',parts:[
+    'В документе описаны право на отзыв согласия, получение информации об обработке, изменение неточных данных, получение информации о предоставлении данных третьим лицам, прекращение обработки и удаление данных, а также порядок обжалования.',
+    'Порядок обращения к Оператору и сроки рассмотрения заявлений приведены в разделе 6 полного документа.',
+  ]},
+  {title:'7. Защита персональных данных',parts:[
+    'Оператор принимает необходимые организационные, правовые и технические меры, направленные на предотвращение неправомерного доступа, изменения, распространения, утраты и уничтожения персональных данных.',
+  ]},
+  {title:'8. Использование файлов cookie',parts:[
+    'Для обеспечения корректной работы Сайта могут использоваться технически необходимые файлы cookie и аналогичные технологии. Использование иных файлов cookie, при котором осуществляется обработка персональных данных, допускается с соблюдением требований законодательства.',
+  ]},
+  {title:'9. Заключительные положения',parts:[
+    'Политика действует с даты её утверждения Оператором и размещения на Сайте. Актуальная редакция размещается в открытом доступе. Полный текст и реквизиты Оператора приведены в PDF.',
+  ]},
+];
+---
+<SiteLayout title="Политика конфиденциальности — Мастерская" description="Информация об обработке и защите персональных данных и документ политики для ознакомления.">
+  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="/#forms"/>
+  <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
+  <main id="content" class="policy-page">
+    <article id="privacy" class="container policy-document" aria-labelledby="policy-title">
+      <h1 id="policy-title">Политика конфиденциальности</h1>
+      <p class="policy-lead">Ниже представлены основные положения предоставленного документа об обработке персональных данных. Полный текст документа доступен для просмотра и скачивания в формате PDF.</p>
+      <div class="policy-sections">
+        {sections.map(section=><section class="policy-section">
+          <h2>{section.title}</h2>
+          <div class="policy-section__text">{section.parts.map(part=><p>{part}</p>)}</div>
+        </section>)}
+      </div>
+    </article>
+    <section id="personal-data" class="container personal-data" aria-labelledby="personal-data-title">
+      <div class="personal-data__header">
+        <div>
+          <p class="personal-data__eyebrow">Документы / PDF</p>
+          <h2 id="personal-data-title">Политика обработки персональных данных</h2>
+          <p>Полный документ ИП Бугаёвой Александры Сергеевны, 5 страниц. Содержание PDF сохранено без изменений.</p>
+        </div>
+        <div class="personal-data__actions">
+          <a class="personal-data__action" href={pdf} target="_blank" rel="noopener noreferrer">Открыть PDF <span aria-hidden="true">↗</span></a>
+          <a class="personal-data__action personal-data__action--download" href={pdf} download="Политика-обработки-персональных-данных.pdf">Скачать PDF <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="personal-data__preview">
+        <object data={pdf} type="application/pdf" aria-label="Политика обработки персональных данных, пять страниц" class="personal-data__object">
+          <p>Если браузер не поддерживает просмотр PDF, <a href={pdf} target="_blank" rel="noopener noreferrer">откройте документ</a>.</p>
+        </object>
+      </div>
+    </section>
+  </main>
+  <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation/>
+  <ConsultationDialog id={dialogId}/>
+  <Modal id="preview-notice" title="Предпросмотр сайта" description="Отправка заявок пока не подключена."><p>Данные из форм пока никуда не передаются.</p></Modal>
+</SiteLayout>
+<style>
+.policy-page{display:grid;gap:64px;padding:40px 0 80px}
+.policy-document{display:grid;gap:24px}
+.policy-document h1{font:700 36px/1.25 var(--font-heading)}
+.policy-lead{font:500 16px/1.25 var(--font-body);color:var(--color-gray-5)}
+.policy-sections{display:grid;gap:16px}
+.policy-section{display:grid;gap:12px}
+.policy-section h2{font:700 24px/1.25 var(--font-heading);color:var(--color-black)}
+.policy-section__text{display:grid;gap:8px;font:500 16px/1.25 var(--font-body);color:var(--color-gray-5)}
+.personal-data{display:grid;gap:24px;scroll-margin-top:24px}
+.personal-data__header{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+.personal-data__header>div:first-child{display:grid;gap:12px;max-width:780px}
+.personal-data__eyebrow{font:700 12px/1.2 var(--font-body);text-transform:uppercase}
+.personal-data h2{font:700 36px/1.25 var(--font-heading)}
+.personal-data__header p:last-child{font:500 16px/1.25 var(--font-body);color:var(--color-gray-5)}
+.personal-data__actions{display:flex;gap:8px;flex-wrap:wrap}
+.personal-data__action{display:inline-flex;align-items:center;justify-content:center;gap:12px;text-decoration:none;border:1.5px solid var(--color-black);border-radius:4px;padding:16px 20px;min-height:50px;font:700 14px/1.25 var(--font-body)}
+.personal-data__action:hover{background:var(--color-black);color:var(--color-white)}
+.personal-data__action--download{background:var(--color-green);border-color:var(--color-green)}
+.personal-data__action--download:hover{background:var(--color-black);border-color:var(--color-black)}
+.personal-data__preview{border:1px solid var(--color-gray-2);border-radius:4px;overflow:hidden;background:var(--color-white)}
+.personal-data__object{display:block;width:100%;height:760px}
+#privacy{scroll-margin-top:24px}
+@media(max-width:55rem){.policy-page{gap:48px}.policy-document h1,.personal-data h2{font-size:28px}.policy-section h2{font-size:22px}.personal-data__object{height:540px}}
+</style>

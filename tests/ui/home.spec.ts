@@ -110,20 +110,22 @@ test('inline form validates name, phone and consent without transmitting data', 
   expect(posts).toEqual([]);
 });
 
-test('policy notice returns to the modal draft and restores focus', async ({ page }) => {
+test('privacy links open the policy in a new tab without losing modal form data', async ({ page }) => {
   await openHome(page);
   await page.locator('header').getByRole('button', { name: 'Оставить заявку' }).click();
   const dialog = page.locator('#home-consultation');
   const name = dialog.getByRole('textbox', { name: 'Ваше имя', exact: true });
   await name.fill('Тест');
   const policy = dialog.getByRole('link', { name: 'политикой обработки персональных данных' });
-  await policy.click();
-  await expect(page.locator('#preview-notice')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#preview-notice')).not.toBeVisible();
+  await expect(policy).toHaveAttribute('href', '/policy/#personal-data');
+  await expect(policy).toHaveAttribute('target', '_blank');
+  const [popup] = await Promise.all([page.waitForEvent('popup'), policy.click()]);
+  await popup.waitForLoadState('domcontentloaded');
+  await expect(popup).toHaveURL(/\/policy\/#personal-data$/);
+  await expect(popup.getByRole('heading', { name: 'Политика обработки персональных данных' })).toBeVisible();
+  await popup.close();
   await expect(dialog).toBeVisible();
   await expect(name).toHaveValue('Тест');
-  await expect(policy).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
 });
