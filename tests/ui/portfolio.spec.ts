@@ -9,7 +9,7 @@ test('portfolio catalog: Figma preview placements, filters and correct case rout
   await expect(page.getByRole('button',{name:'Все',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
-  await page.getByRole('button',{name:'Машинная вышивка',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.getByRole('button',{name:'Машинная вышивка',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Нанесение страз',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
   await page.getByRole('button',{name:'Ремонт и подгонка',exact:true}).click();
