@@ -1,0 +1,35 @@
+---
+import PrintFormatCard from '../ui/PrintFormatCard.astro';
+import Icon from '../ui/Icon.astro';
+const formats=[
+ {illustration:'tshirt-a3' as const,title:'А3: Грудь',description:'Зона нанесения А3 на груди футболки'},
+ {illustration:'jersey' as const,title:'А4: Спина',description:'Зона нанесения А4 на спине джерси'},
+ {illustration:'vest' as const,title:'А5: Лого на спине',description:'Зона нанесения А5 на спине жилета'},
+ {illustration:'polo' as const,title:'А6/А7: Лого на груди',description:'Зона нанесения А6/А7 на груди поло'},
+ {illustration:'cap' as const,title:'А7: Кепка',description:'Зона нанесения А7 на кепке'},
+ {illustration:'work-jacket' as const,title:'А7: Рукав',description:'Зона нанесения А7 на рукаве рабочей куртки'},
+];
+---
+<print-formats aria-label="Форматы нанесения" role="region">
+ <div class="format-controls"><button type="button" aria-label="Предыдущие форматы" disabled><Icon name="arrow-latex"/></button><button type="button" aria-label="Следующие форматы"><Icon name="arrow-latex"/></button></div>
+ <div class="format-track" tabindex="0" aria-label="Шесть форматов нанесения">{formats.map(format=><PrintFormatCard {...format}/>)}</div>
+</print-formats>
+<script>
+class PrintFormats extends HTMLElement{
+ private observer?:ResizeObserver;
+ connectedCallback(){
+  const track=this.querySelector<HTMLElement>('.format-track')!;
+  const [previous,next]=Array.from(this.querySelectorAll('button'));
+  const update=()=>{previous.disabled=track.scrollLeft<=1;next.disabled=track.scrollLeft+track.clientWidth>=track.scrollWidth-2;};
+  const move=(direction:number)=>track.scrollBy({left:direction*312,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
+  track.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}});
+  track.addEventListener('scroll',update,{passive:true});this.observer=new ResizeObserver(update);this.observer.observe(track);update();
+ }
+ disconnectedCallback(){this.observer?.disconnect();}
+}
+if(!customElements.get('print-formats'))customElements.define('print-formats',PrintFormats);
+</script>
+<style>
+print-formats{display:block;position:relative;min-width:0}.format-controls{position:absolute;right:0;top:-60px;display:flex;gap:8px}.format-controls button{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:4px;color:var(--color-white);background:var(--color-black)}.format-controls button:disabled{opacity:.4}.format-controls button:first-child :global(.icon){transform:rotate(90deg)}.format-controls button:last-child :global(.icon){transform:rotate(-90deg)}.format-track{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.format-track :global(article){scroll-snap-align:start}.format-track::-webkit-scrollbar{display:none}@media(min-width:80rem){.format-track{margin-right:calc((var(--container) - 100vw)/2);padding-right:calc((100vw - var(--container))/2)}}
+</style>

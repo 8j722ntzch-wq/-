@@ -1,12 +1,12 @@
 ---
 import Button from '../ui/Button.astro';
-interface Props { links?:{label:string;href:string}[]; phone?:string; phoneHref?:string; dialogId?:string; }
-const {links=[{label:'Услуги',href:'#services'},{label:'О нас',href:'#advantages'},{label:'Бизнесу',href:'#audiences'},{label:'Портфолио',href:'#portfolio'},{label:'Контакты',href:'#footer'}],phone,phoneHref,dialogId='consultation'}=Astro.props;
+interface Props { links?:{label:string;href:string}[]; phone?:string; phoneHref?:string; dialogId?:string;logoHref?:string; }
+const {links=[{label:'Услуги',href:'#services'},{label:'О нас',href:'#advantages'},{label:'Бизнесу',href:'#audiences'},{label:'Портфолио',href:'#portfolio'},{label:'Контакты',href:'#footer'}],phone,phoneHref,dialogId='consultation',logoHref='#top'}=Astro.props;
 const menuId='menu-'+crypto.randomUUID();
 ---
 <site-header class="site-header">
  <header class="header-inner">
-  <a href="#top" class="logo" aria-label="Мастерская — к началу"><span aria-hidden="true"></span>LOGO</a>
+  <a href={logoHref} class="logo" aria-label="Мастерская — к началу"><span aria-hidden="true"></span>LOGO</a>
   <nav id={menuId} aria-label="Основная навигация">{links.map(link=><a href={link.href}>{link.label}</a>)}</nav>
   {phone&&(phoneHref?<a class="header-phone" href={phoneHref}>{phone}</a>:<span class="header-phone">{phone}</span>)}
   <div class="header-cta"><Button size="s" openDialog={dialogId}>Оставить заявку</Button></div>

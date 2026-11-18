@@ -47,3 +47,11 @@
 - Production/SEO/performance/security review.
 
 Production заблокирован `scripts/release-gate.mjs`. Ветка master и хостинг не меняются.
+
+
+## 18.11.2026 — пять страниц услуг
+
+Реализованы пять маршрутов `/services/`, переходы с главной и футера, предвыбор услуги
+в формах. Astro check и build:kit проходят. Ручные проверки подключённого Chrome
+при 1470 px проходят; локальный Playwright остановлен запретом macOS на запуск
+Chrome/Crashpad до выполнения сценариев. Подробности и спорный контент — SERVICE_PAGES.md.

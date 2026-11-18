@@ -1,14 +1,14 @@
 ---
 import ConsultationForm from '../forms/ConsultationForm.astro';
-interface Props { title?:string;description?:string;eyebrow?:string;home?:boolean;policyDialog?:string; }
-const {title='Расскажите, что нужно сделать',description='Оставьте заявку — обсудим задачу и подберём решение для вашей вещи.',eyebrow='06 / Ваша идея — наша работа',home=false,policyDialog}=Astro.props;
+interface Props { title?:string;description?:string;eyebrow?:string;home?:boolean;policyDialog?:string;defaultService?:string; }
+const {title='Расскажите, что нужно сделать',description='Оставьте заявку — обсудим задачу и подберём решение для вашей вещи.',eyebrow='06 / Ваша идея — наша работа',home=false,policyDialog,defaultService}=Astro.props;
 ---
 <section class="application" aria-labelledby="application-title">
  <div class="application-copy"><p class="type-superscript">{eyebrow}</p><h2 id="application-title" class="type-h1">{title}</h2><p>{description}</p></div>
  <img class="application-grid" src="/assets/figma/application-grid.svg" width="365" height="309" alt="" loading="lazy"/>
  <img class="application-stitch application-stitch--white" src="/assets/figma/stitch-white.svg" width="156" height="3" alt="" loading="lazy"/>
  <img class="application-stitch application-stitch--green" src="/assets/figma/stitch-green.svg" width="156" height="3" alt="" loading="lazy"/>
- <ConsultationForm home={home} policyDialog={policyDialog}/>
+ <ConsultationForm home={home} policyDialog={policyDialog} defaultService={defaultService}/>
 </section>
 <style>
 .application{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px;padding:36px;min-height:432px;border-radius:4px;background:var(--gradient-application);box-shadow:var(--shadow);color:var(--color-white);overflow:hidden}

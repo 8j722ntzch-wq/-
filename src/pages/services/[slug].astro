@@ -1,0 +1,44 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Header from '../../components/blocks/Header.astro';
+import PromoBar from '../../components/blocks/PromoBar.astro';
+import Footer from '../../components/blocks/Footer.astro';
+import ApplicationSection from '../../components/blocks/ApplicationSection.astro';
+import PriceTable from '../../components/blocks/PriceTable.astro';
+import PrintFormats from '../../components/blocks/PrintFormats.astro';
+import PortfolioCard from '../../components/cards/PortfolioCard.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+import Button from '../../components/ui/Button.astro';
+import Icon from '../../components/ui/Icon.astro';
+import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import Modal from '../../components/dialogs/Modal.astro';
+import {servicePages as pages} from '../../data/service-pages';
+import {projects} from '../../data/home';
+export function getStaticPaths(){return pages.map(page=>({params:{slug:page.slug},props:{page}}));}
+const {page}=Astro.props;
+const dialogId='service-consultation';
+const links=[{label:'Услуги',href:'/#services'},{label:'О нас',href:'/#advantages'},{label:'Бизнесу',href:'/#audiences'},{label:'Портфолио',href:'#portfolio'},{label:'Контакты',href:'#footer'}];
+---
+<SiteLayout title={`${page.title} — Мастерская`} description={`${page.title}: прейскурант, условия и примеры работ.`}>
+ <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="#forms"/>
+ <Header phone="+375 (29) 777-77-77" links={links} logoHref="/" dialogId={dialogId}/>
+ <main id="content" class:list={['service-page','service-page--'+page.slug]}>
+  <section class="container service-content" aria-labelledby="service-title">
+   <SectionHeading as="h1" id="service-title" eyebrow={page.title}>{page.heading.split('\n')[0]}<br/>{page.heading.split('\n')[1]}</SectionHeading>
+   {page.blocks.map(block=>block.type==='table'?<PriceTable caption={block.caption!} headers={block.headers} rows={block.rows} superheading={block.superheading} servicePage/>:block.type==='groups'?<div class="repair-groups">{block.groups?.map(group=><PriceTable caption={group.title} headers={group.headers} rows={group.rows} group={group.title} servicePage/>)}</div>:block.type==='formats'?<PrintFormats/>:block.type==='heading'?<h2 class="table-heading type-h4">{block.text}</h2>:<div class="service-copy" set:html={block.html}/>) }
+   <Button size="m" fullWidth icon openDialog={dialogId} service={page.title} context={page.title}>Оставить заявку</Button>
+  </section>
+  <section id="portfolio" class="container service-portfolio" aria-labelledby="portfolio-title">
+   <SectionHeading id="portfolio-title" eyebrow="07 / Портфолио">Наши работы<button slot="action" type="button" class="portfolio-all" data-open-dialog="portfolio-gallery" aria-haspopup="dialog" aria-controls="portfolio-gallery">Смотреть все работы<span><Icon name="arrow" size={14}/></span></button></SectionHeading>
+   <div class="portfolio-grid">{projects.map(project=><PortfolioCard {...project} dialogId={dialogId} home/>)}</div>
+  </section>
+  <div id="forms" class="container"><ApplicationSection title={'Расскажите, что\nнужно сделать'} description="Опишите вещь и желаемый результат" eyebrow="08 / Давайте обсудим" home policyDialog="preview-notice" defaultService={page.title}/></div>
+ </main>
+ <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation policyDialog="preview-notice"/>
+ <ConsultationDialog id={dialogId} policyDialog="preview-notice" defaultService={page.title}/>
+ <Modal id="portfolio-gallery" title="Наши работы"><div class="gallery">{projects.map(project=><figure><img src={project.image} width="612" height="344" alt={project.imageAlt} loading="lazy"/><figcaption>{project.title}</figcaption></figure>)}</div></Modal>
+ <Modal id="preview-notice" title="Предпросмотр сайта" description="Отправка заявок пока не подключена."><div class="preview-copy"><p>Введённые имя, телефон и выбранные услуги остаются в браузере и никуда не передаются.</p><p>Тексты политик, контакты и условия предложений из макета ещё предстоит подтвердить перед публикацией сайта.</p></div></Modal>
+</SiteLayout>
+<style>
+.service-page{--gradient-application:linear-gradient(114.4556deg,var(--color-blue) 71.635%,rgb(197 238 105 / .8) 100%);display:flex;flex-direction:column;gap:80px;padding:40px 0 80px}.service-content,.service-portfolio{display:grid;gap:24px}.service-copy{font:500 16px/1.25 var(--font-body)}.service-copy :global(.copy-group){display:grid;gap:12px}.service-copy :global(.copy-group .copy-group){gap:8px}.service-copy :global(ul){list-style:disc;margin:0;padding-left:24px}.service-copy :global(h2){font:700 24px/1.25 var(--font-heading)}.service-copy :global(h3){font:700 20px/1.3 var(--font-heading)}.service-page--repair .service-copy :global(.copy-group){gap:8px}.service-page--repair .service-copy :global(.copy-group .copy-group){gap:0}.service-portfolio .portfolio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.table-heading{margin-bottom:-12px}.service-page--rhinestones .service-copy:nth-child(5){margin-top:-12px}.portfolio-all{display:flex;align-items:center;gap:6px;border:0;background:none;font:500 14px/1.25 var(--font-body);padding:0;color:var(--color-black)}.portfolio-all>span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}.portfolio-all:hover{text-decoration:underline}.gallery{display:grid;gap:28px}.gallery figure{margin:0}.gallery img{width:100%;border-radius:4px}.gallery figcaption{margin-top:12px}.preview-copy{display:grid;gap:16px;line-height:1.5}#forms,#portfolio{scroll-margin-top:24px}
+</style>

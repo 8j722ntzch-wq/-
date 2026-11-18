@@ -4,15 +4,15 @@ import ServiceOption from '../ui/ServiceOption.astro';
 import Checkbox from '../ui/Checkbox.astro';
 import Icon from '../ui/Icon.astro';
 import '../../styles/button.css';
-interface Props { id?:string; home?:boolean; policyDialog?:string; }
-const {id='form-'+crypto.randomUUID(),home=false,policyDialog}=Astro.props;
+interface Props { id?:string; home?:boolean; policyDialog?:string;defaultService?:string; }
+const {id='form-'+crypto.randomUUID(),home=false,policyDialog,defaultService}=Astro.props;
 const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Нанесение страз'];
 ---
-<consultation-form class:list={{'consultation-form--home':home}}><form id={id} aria-describedby={id+'-note'}>
+<consultation-form data-default-service={defaultService} class:list={{'consultation-form--home':home}}><form id={id} aria-describedby={id+'-note'}>
  <input type="hidden" name="context" value=""/>
  <p class="form-context" hidden></p>
  <div class="form-fields"><TextField name="name" label="Ваше имя" required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" required labelVisible={false}/></div>
- <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service}/>)}</div></fieldset>
+ <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service} checked={service===defaultService}/>)}</div></fieldset>
  <Checkbox name="consent" required><span class="consent-copy">Я согласен с {home&&<><a href="#preview-notice" data-open-dialog={policyDialog}>политикой конфиденциальности</a> и </>}<a href="#preview-notice" data-open-dialog={policyDialog}>политикой обработки персональных данных</a></span></Checkbox>
  <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home}]} disabled><span class="button__label">Оставить заявку</span>{!home&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
  <p id={id+'-note'} class="form-note">Предпросмотр: данные никуда не отправляются.</p>
@@ -29,7 +29,8 @@ class ConsultationForm extends HTMLElement{
   const result=form.querySelector<HTMLParagraphElement>('.form-result')!;
   this.closest('dialog')?.addEventListener('prepare-form',event=>{
    const {service,context}=(event as CustomEvent<{service?:string;context?:string}>).detail;
-   if(service)form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input=>{input.checked=input.value===service;});
+   const selectedService=service||this.dataset.defaultService;
+   if(selectedService)form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input=>{input.checked=input.value===selectedService;});
    form.querySelector<HTMLInputElement>('[name=context]')!.value=context??'';
    const description=form.querySelector<HTMLParagraphElement>('.form-context')!;
    description.textContent=context?'Ваша задача: '+context:'';

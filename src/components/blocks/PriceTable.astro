@@ -1,12 +1,18 @@
 ---
-interface Props { caption:string;headers:(string|{label:string;span:number})[];rows:string[][];group?:string;open?:boolean; }
-const {caption,headers,rows,group,open=false}=Astro.props;
+import Icon from '../ui/Icon.astro';
+interface Props { caption:string;headers:(string|{label:string;span:number})[];rows:string[][];group?:string;open?:boolean; servicePage?:boolean;superheading?:string; }
+const {caption,headers,rows,group,open=false,servicePage=false,superheading}=Astro.props;
 const Wrapper=group?'details':'div';
 ---
-<Wrapper class="price-group" open={group?open:undefined}>
- {group&&<summary><span>{group}</span><span class="price-toggle"><span class="when-closed">Открыть</span><span class="when-open">Закрыть</span><i aria-hidden="true">↓</i></span></summary>}
- <div class="table-scroll" role="region" aria-label={caption} tabindex="0"><table><caption class="sr-only">{caption}</caption><thead><tr>{headers.map(h=><th scope={typeof h==='string'?'col':'colgroup'} colspan={typeof h==='string'?undefined:h.span}>{typeof h==='string'?h:h.label}</th>)}</tr></thead><tbody>{rows.map(row=><tr>{row.map((cell,i)=>i===0?<th scope="row">{cell}</th>:<td>{cell}</td>)}</tr>)}</tbody></table></div>
+<Wrapper class:list={['price-group',{'price-group--service':servicePage}]} open={group?open:undefined}>
+ {group&&<summary><span>{group}</span><span class="price-toggle"><span class="when-closed">Открыть</span><span class="when-open">Закрыть</span><i aria-hidden="true">{servicePage?<Icon name="arrow" size={14}/>:"↓"}</i></span></summary>}
+ <div class="table-scroll" role="region" aria-label={caption} tabindex="0"><table><caption class="sr-only">{caption}</caption>{servicePage&&<colgroup><col style="width:416px"/>{Array.from({length:headers.length-1},(_,i)=> <col style={i===headers.length-2?undefined:'width:112px'}/>)}</colgroup>}<thead>{superheading&&<tr><td></td><th colspan={headers.length-1} scope="colgroup">{superheading}</th></tr>}<tr>{headers.map(h=><th scope={typeof h==='string'?'col':'colgroup'} colspan={typeof h==='string'?undefined:h.span}>{typeof h==='string'?h:h.label}</th>)}</tr></thead><tbody>{rows.map(row=><tr>{row.map((cell,i)=>i===0?<th scope="row">{cell}</th>:<td colspan={row.length===2&&headers.length>2?headers.length-1:undefined}>{cell}</td>)}</tr>)}</tbody></table></div>
 </Wrapper>
+
 <style>
 .price-group{min-width:0}.price-group summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:44px;font-weight:700;cursor:pointer}.price-group summary::-webkit-details-marker{display:none}.price-group summary:hover>span:first-child{text-decoration:underline}.price-toggle{display:flex;align-items:center;gap:6px;font-weight:500;font-size:14px}.price-toggle i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green);font-style:normal}.when-open{display:none}[open] .when-open{display:inline}[open] .when-closed{display:none}[open] .price-toggle i{transform:rotate(180deg)}.table-scroll{overflow-x:auto;max-width:100%;scrollbar-color:var(--color-gray-4) transparent;scrollbar-width:thin}table{border-collapse:collapse;width:100%;text-align:left}th,td{padding:6px;vertical-align:middle;min-width:112px;font-size:16px;line-height:1.25}th:first-child{width:33.33%;min-width:260px;padding-left:0}th{font-weight:700}tbody tr:nth-child(odd){background:var(--color-white)}thead th{padding-block:8px}details[open] .table-scroll{margin-top:0}@media(max-width:40rem){th,td{font-size:14px}th:first-child{min-width:220px}.price-toggle{font-size:12px}.table-scroll:focus-visible{outline-offset:-3px}}
+</style>
+
+<style>
+.price-group--service .price-toggle :global(.icon){transform:rotate(90deg)}details.price-group--service thead tr:last-child{background:transparent}details.price-group--service tbody tr:nth-child(odd){background:var(--color-white)}details.price-group--service tbody tr:nth-child(even){background:transparent}.price-group--service table{table-layout:fixed}.price-group--service th,.price-group--service td{padding:6px 12px 6px 0;min-width:0;white-space:pre-line}.price-group--service thead tr:last-child{background:var(--color-white)}.price-group--service tbody tr:nth-child(odd){background:transparent}.price-group--service tbody tr:nth-child(even){background:var(--color-white)}.price-group.price-group--service summary{min-height:32px}.price-group--service[open] .table-scroll{margin-top:12px;margin-bottom:16px}
 </style>

@@ -3,8 +3,8 @@ import Icon from '../ui/Icon.astro';
 import Button from '../ui/Button.astro';
 import ActionLink from '../ui/ActionLink.astro';
 import { services } from '../../data/home';
-interface Props { email?:string;phone?:string;hours?:string[];socials?:{label:string;icon:string;href:string}[];maps?:{label:string;icon:'yandex'|'google';href:string}[];dialogId?:string;home?:boolean;policyDialog?:string; }
-const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=false,policyDialog}=Astro.props;
+interface Props { email?:string;phone?:string;hours?:string[];socials?:{label:string;icon:string;href:string}[];maps?:{label:string;icon:'yandex'|'google';href:string}[];dialogId?:string;home?:boolean;policyDialog?:string;siteNavigation?:boolean; }
+const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=false,policyDialog,siteNavigation=false}=Astro.props;
 ---
 <footer id="footer" class:list={['footer',{'footer--home':home}]}>
  <div class="footer-inner">
@@ -17,9 +17,9 @@ const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=fals
     </div>}
     <Button size="m" openDialog={dialogId}>Оставить заявку</Button>
    </div>
-   <div class="footer-column"><h3>Услуги:</h3><div class="footer-links">{services.map(service=>home?<button class="footer-service" type="button" data-open-dialog={dialogId} data-service={service.title} data-context={service.title} aria-haspopup="dialog" aria-controls={dialogId}>{service.title}</button>:<a href="#services">{service.title}</a>)}</div></div>
+   <div class="footer-column"><h3>Услуги:</h3><div class="footer-links">{services.map(service=>(home||siteNavigation)?<a href={service.href}>{service.title}</a>:<a href="#services">{service.title}</a>)}</div></div>
    <div class="footer-column">
-    <h3>Навигация:</h3><div class="footer-links"><a href="#advantages">О нас</a><a href="#audiences">Бизнесу</a><a href="#portfolio">Портфолио</a><a href="#forms">Контакты</a></div>
+    <h3>Навигация:</h3><div class="footer-links"><a href={(siteNavigation?'/':'')+'#advantages'}>О нас</a><a href={(siteNavigation?'/':'')+'#audiences'}>Бизнесу</a><a href="#portfolio">Портфолио</a><a href="#forms">Контакты</a></div>
     {(maps.length>0||home)&&<div class="maps"><h3>Мы на картах:</h3><div class="map-links">{maps.map(m=><a href={m.href}><img src={`/assets/figma/${m.icon}.svg`} width="18" height="18" alt=""/>{m.label}</a>)}{home&&!maps.length&&[{icon:'yandex',label:'Yandex Maps'},{icon:'google',label:'Google Maps'}].map(m=><span><img src={`/assets/figma/${m.icon}.svg`} width="18" height="18" alt=""/>{m.label}</span>)}</div></div>}
     {hours.length>0&&<div class="hours"><h3>Режим работы:</h3>{hours.map(h=><p class="footer-hours">{h}</p>)}</div>}
    </div>

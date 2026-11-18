@@ -58,7 +58,7 @@ test('homepage resources, navigation and form references are complete', async ({
 test('every homepage CTA opens a form with the correct context and service', async ({ page }) => {
   await openHome(page);
   const triggers = page.locator('[data-open-dialog="home-consultation"]');
-  await expect(triggers).toHaveCount(15);
+  await expect(triggers).toHaveCount(5);
   const dialog = page.locator('#home-consultation');
   for (const trigger of await triggers.all()) {
     const service = await trigger.getAttribute('data-service');
@@ -100,7 +100,7 @@ test('inline form validates name, phone and consent without transmitting data', 
   await form.getByRole('checkbox', { name: 'Печать на одежде', exact: true }).check();
   await submit.click();
   await expect(form.getByRole('status')).toContainText('заявка не отправлена');
-  await page.locator('#services article').first().getByRole('button').click();
+  await page.locator('header').getByRole('button', { name: 'Оставить заявку' }).click();
   await expect(page.locator('#home-consultation').getByRole('textbox', { name: 'Ваше имя', exact: true })).toHaveValue('');
   await page.keyboard.press('Escape');
   await expect(name).toHaveValue('Тест');

@@ -1,10 +1,10 @@
 // Text from Figma 24:31. Commercial content remains a preview until approved.
 export const services = [
-  { title: 'Ремонт и подгонка', description: 'Укоротить брюки, изменить посадку, заменить молнию или восстановить вещь', illustration: 'repair' },
-  { title: 'Машинная вышивка', description: 'Логотип, надпись или изображения нитями на вашей вещи', illustration: 'embroidery' },
-  { title: 'Печать на одежде', description: 'Принт, надпись или номер на форме. Нанесение на вашу одежду', illustration: 'printing' },
-  { title: 'Шевроны и нашивки', description: 'Отдельный знак с именем, логотипом или эмблемой', illustration: 'patches' },
-  { title: 'Нанесение страз', description: 'Декоративный акцент, надпись или рисунок', illustration: 'rhinestones' },
+  { title: 'Ремонт и подгонка', href: '/services/repair/', description: 'Укоротить брюки, изменить посадку, заменить молнию или восстановить вещь', illustration: 'repair' },
+  { title: 'Машинная вышивка', href: '/services/embroidery/', description: 'Логотип, надпись или изображения нитями на вашей вещи', illustration: 'embroidery' },
+  { title: 'Печать на одежде', href: '/services/printing/', description: 'Принт, надпись или номер на форме. Нанесение на вашу одежду', illustration: 'printing' },
+  { title: 'Шевроны и нашивки', href: '/services/patches/', description: 'Отдельный знак с именем, логотипом или эмблемой', illustration: 'patches' },
+  { title: 'Нанесение страз', href: '/services/rhinestones/', description: 'Декоративный акцент, надпись или рисунок', illustration: 'rhinestones' },
 ];
 
 export const audiences = [
