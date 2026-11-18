@@ -38,4 +38,18 @@ const links=[
 .portfolio-index__content{display:grid;gap:24px}
 #forms{scroll-margin-top:24px}
 .preview-copy{display:grid;gap:16px;line-height:1.5}
+/* Portfolio_All (Mobile) — Figma 223:21351: inner 340px, x25,
+   heading y161, tabs y237, first card y299, application after 80px. */
+@media(max-width:58rem){
+ .portfolio-index{gap:80px;padding:40px 0 80px}
+ .portfolio-index__content{width:calc(100% - 50px);gap:24px}
+ .portfolio-index__content :global(.heading__title--hero){font-size:24px;line-height:1.25}
+ #forms{width:calc(100% - 50px)}
+ #forms :global(.application){min-height:574px;padding:20px;gap:40px}
+ #forms :global(.application-copy h2){font-size:24px;line-height:1.25}
+ #forms :global(.application-copy>p:last-of-type){font-size:14px;line-height:1.25}
+ #forms :global(consultation-form form){gap:12px}
+ #forms :global(.consent-copy){font-size:12px;line-height:1.25}
+ #forms :global(.button--solid){min-height:38px;font-size:12px}
+}
 </style>

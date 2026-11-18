@@ -81,5 +81,17 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
 .portfolio-pages__arrow:disabled{background:none;color:var(--color-gray-3);border:1.5px solid var(--color-gray-3)}
 .portfolio-pages__arrow--previous :global(.icon){transform:rotate(90deg)}
 .portfolio-pages__arrow--next :global(.icon){transform:rotate(-90deg)}
-@media(max-width:55rem){.portfolio-catalog__grid{grid-template-columns:1fr}.portfolio-tabs{margin-bottom:24px}}
+/* Portfolio_All (Mobile) Figma 223:21351: 340px viewport, one column,
+   single-row scrollable tabs and 24px before pagination. */
+@media(max-width:58rem){
+ .portfolio-catalog{width:100%;min-width:0}
+ .portfolio-tabs{width:100%;max-width:100%;height:38px;min-height:38px;display:flex;flex-wrap:nowrap;align-items:stretch;gap:4px;margin-bottom:24px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity}
+ .portfolio-tabs::-webkit-scrollbar{display:none}
+ .portfolio-tab{flex:0 0 auto;min-height:38px;padding:9px 10px;font:700 12px/1.2 var(--font-body);white-space:nowrap;scroll-snap-align:start}
+ .portfolio-catalog__grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .portfolio-catalog__item{width:100%;max-width:340px}
+ .portfolio-pages{margin-top:24px;gap:24px}
+ .portfolio-pages__numbers{gap:12px}
+ .portfolio-pages__arrow{height:36px;width:36px}
+}
 </style>
