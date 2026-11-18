@@ -10,3 +10,6 @@
  .kit-menu-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .kit-menu-gallery>:last-child{grid-column:1/-1}
 }
+
+/* Mobile component gallery: make the 340px block_Услуга preview match its Figma slot at 390px. */
+@media(max-width:58rem){.audience-section{padding-inline:9px}}

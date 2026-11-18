@@ -320,5 +320,68 @@
     "width": 24,
     "height": 24,
     "src": "/assets/figma/burger-close.svg"
+  },
+  {
+    "name": "tshirt-a3-mobile",
+    "id": "216:16627",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/tshirt-a3-mobile.svg"
+  },
+  {
+    "name": "polo-mobile",
+    "id": "216:16654",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/polo-mobile.svg"
+  },
+  {
+    "name": "jersey-mobile",
+    "id": "216:16689",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/jersey-mobile.svg"
+  },
+  {
+    "name": "work-jacket-mobile",
+    "id": "216:16722",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/work-jacket-mobile.svg"
+  },
+  {
+    "name": "vest-mobile",
+    "id": "216:16781",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/vest-mobile.svg"
+  },
+  {
+    "name": "cap-mobile",
+    "id": "216:16817",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/cap-mobile.svg"
+  },
+  {
+    "name": "audience-self-mobile",
+    "id": "216:16171",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/audience-self-mobile.svg"
+  },
+  {
+    "name": "audience-team-mobile",
+    "id": "216:16218",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/audience-team-mobile.svg"
+  },
+  {
+    "name": "audience-business-mobile",
+    "id": "216:16272",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/audience-business-mobile.svg"
   }
 ]

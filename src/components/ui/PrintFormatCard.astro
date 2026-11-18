@@ -1,8 +1,32 @@
 ---
 import assets from '../../data/figma-assets.json';
-interface Props { illustration:'tshirt-a3'|'polo'|'jersey'|'work-jacket'|'vest'|'cap'; title:string; description:string; }
+interface Props{
+ illustration:'tshirt-a3'|'polo'|'jersey'|'work-jacket'|'vest'|'cap';
+ title:string;description:string;
+}
 const {illustration,title,description}=Astro.props;
-const asset=assets.find(a=>a.name===illustration)!;
+const desktop=assets.find(a=>a.name===illustration);
+const mobile=assets.find(a=>a.name===illustration+'-mobile');
+if(!desktop||!mobile)throw new Error('Missing Figma illustration_Formats variants: '+illustration);
 ---
-<article class="print-format"><p class="type-superscript">Форматы нанесения</p><h3 class="type-h4">{title}</h3><img src={asset.src} width={asset.width} height={asset.height} alt={description} loading="lazy"/></article>
-<style>.print-format{background:var(--color-white);border-radius:4px;padding:20px;display:flex;flex-direction:column;min-height:344px}.print-format h3{margin-top:8px;color:var(--color-blue-dark)}.print-format img{width:260px;height:232px;object-fit:contain;align-self:center;margin-top:auto;max-width:100%}</style>
+<article class="print-format" data-illustration-group="illustration_Formats">
+  <p class="type-superscript">Форматы нанесения</p>
+  <h3 class="type-h4">{title}</h3>
+  <picture>
+    <source media="(max-width: 58rem)" srcset={mobile.src}/>
+    <img src={desktop.src} width={desktop.width} height={desktop.height} alt={description} loading="lazy"/>
+  </picture>
+</article>
+<style>
+/* element_Print Format 183:8013; illustration_Formats 168:6290 */
+.print-format{box-sizing:border-box;width:300px;max-width:100%;height:344px;min-height:344px;background:var(--color-white);border-radius:4px;padding:20px;display:flex;flex-direction:column}
+.print-format .type-superscript{font:700 12px/1.2 var(--font-body)}
+.print-format h3{margin-top:8px;font:700 24px/1.25 var(--font-heading);color:var(--color-blue-dark)}
+.print-format picture{display:block;flex:none;width:260px;height:232px;max-width:100%;align-self:center;margin-top:auto}
+.print-format img{display:block;width:100%;height:100%;object-fit:contain}
+@media(max-width:58rem){
+ .print-format{width:260px;height:304px;min-height:304px}
+ .print-format h3{font-size:20px;line-height:1.3}
+ .print-format picture{width:220px;height:196px}
+}
+</style>

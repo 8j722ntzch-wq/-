@@ -1,42 +1,38 @@
 ---
 interface Props {
-  name: string;
-  label: string;
-  id?: string;
-  type?: 'text' | 'tel';
-  value?: string;
-  placeholder?: string;
-  required?: boolean;
-  disabled?: boolean;
-  error?: string;
-  hint?: string;
-  autocomplete?: 'name' | 'given-name' | 'tel' | 'off';
-  maxLength?: number;
-  labelVisible?: boolean;
+  name:string;label:string;id?:string;type?:'text'|'tel';value?:string;placeholder?:string;
+  required?:boolean;disabled?:boolean;error?:string;hint?:string;
+  autocomplete?:'name'|'given-name'|'tel'|'off';maxLength?:number;labelVisible?:boolean;
 }
-const { name, label, id = `field-${crypto.randomUUID()}`, type = 'text', value = '', placeholder = label, required = false, disabled = false, error, hint, autocomplete = type === 'tel' ? 'tel' : 'name', maxLength = type === 'tel' ? 40 : 80, labelVisible = true } = Astro.props;
-const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
+const {
+  name,label,id='field-'+crypto.randomUUID(),type='text',value='',placeholder=label,
+  required=false,disabled=false,error,hint,
+  autocomplete=type==='tel'?'tel':'name',
+  maxLength=type==='tel'?40:80,labelVisible=true,
+}=Astro.props;
+const describedBy=[hint&&id+'-hint',error&&id+'-error'].filter(Boolean).join(' ')||undefined;
 ---
 <div class="field">
-  <label for={id} class:list={['field__label', { 'sr-only': !labelVisible }]}>{label}{required && <span aria-hidden="true"> *</span>}</label>
-  <input id={id} type={type} name={name} value={value} placeholder={placeholder} required={required} disabled={disabled} maxlength={maxLength} autocomplete={autocomplete} inputmode={type === 'tel' ? 'tel' : 'text'} aria-invalid={error ? 'true' : undefined} aria-describedby={describedBy} />
-  {hint && <p id={`${id}-hint`} class="field__hint">{hint}</p>}
-  {error && <p id={`${id}-error`} class="field__error">{error}</p>}
+  <label for={id} class:list={['field__label',{'sr-only':!labelVisible}]}>{label}{required&&<span aria-hidden="true"> *</span>}</label>
+  <input id={id} type={type} name={name} value={value} placeholder={placeholder} required={required} disabled={disabled} maxlength={maxLength} autocomplete={autocomplete} inputmode={type==='tel'?'tel':'text'} aria-invalid={error?'true':undefined} aria-describedby={describedBy}/>
+  {hint&&<p id={id+'-hint'} class="field__hint">{hint}</p>}
+  {error&&<p id={id+'-error'} class="field__error">{error}</p>}
 </div>
 <style>
-  .field { display: grid; gap: var(--space-2); min-width: 0; }
-  .field__label { font-size: .875rem; }
-  input { display: block; width: 100%; min-width: 0; min-height: 60px; padding: 18.5px 22.5px; border: var(--border-control) solid transparent; border-radius: var(--radius-control); background: var(--color-white); color: var(--color-black); }
-  input::placeholder { color: var(--color-gray-5); opacity: 1; }
-  input:focus { border-color: var(--color-green); }
-  input:focus-visible { outline: 3px solid var(--color-black); box-shadow: 0 0 0 7px var(--color-white); }
-  input:not(:placeholder-shown) { border-color: var(--color-green); font-weight: 700; }
-  input[aria-invalid='true'] { border-color: var(--color-error); color: var(--color-error); }
-  input:disabled { border-color: var(--color-gray-3); background: transparent; color: var(--color-gray-3); }
-  input:disabled::placeholder { color: var(--color-gray-3); }
-  .field__hint, .field__error { font-size: .875rem; line-height: 1.4; overflow-wrap: anywhere; }
-  .field__error { color: #b52a1e; }
-  @media (hover: hover) and (pointer: fine) { input:hover:not(:disabled):not([aria-invalid='true']) { border-color: var(--color-green); } }
-  /* Mobile control height from Figma. Keep 16px input type to avoid iOS zoom. */
-  @media (max-width: 47.99rem) { input { min-height: 50px; padding: 13.5px 18.5px; } }
+.field{display:grid;gap:var(--space-2);min-width:0}
+.field__label{font-size:14px}
+input{display:block;width:100%;min-width:0;height:60px;min-height:60px;padding:18.5px 22.5px;border:var(--border-control) solid transparent;border-radius:var(--radius-control);background:var(--color-white);color:var(--color-black);font-size:16px;line-height:1.25;caret-color:var(--color-black)}
+input::placeholder{color:var(--color-gray-5);opacity:1}
+input:focus,input:focus-visible{border-color:var(--color-green);outline:none;box-shadow:none}
+/* No added black outline or white glass halo: Active in Figma has a single 1.5px green stroke. */
+input:not(:placeholder-shown){border-color:var(--color-green);font-weight:700}
+input[aria-invalid='true']{border-color:var(--color-error);color:var(--color-error)}
+input:disabled{border-color:var(--color-gray-3);background:transparent;color:var(--color-gray-3)}
+input:disabled::placeholder{color:var(--color-gray-3)}
+.field__hint,.field__error{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.field__error{color:#b52a1e}
+@media(hover:hover) and (pointer:fine){input:hover:not(:disabled):not([aria-invalid='true']){border-color:var(--color-green)}}
+@media(max-width:58rem){
+  input{height:50px;min-height:50px;padding:13.5px 18.5px;font-size:14px}
+}
 </style>

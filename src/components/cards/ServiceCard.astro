@@ -7,7 +7,7 @@ interface Props { title:string;description:string;illustration:string;href?:stri
 const {title,description,illustration,href='#forms',size='m',tag,dialogId,actionLabel='Узнать больше'}=Astro.props;
 const asset=assets.find(a=>a.name===illustration)!;
 ---
-<article class:list={['service-card',`service-card--${size}`]}>
+<article data-illustration-group="illustration_Services" class:list={['service-card',`service-card--${size}`]}>
  <div class="service-content">{tag&&<PricingTag label={tag}/>}<h3 class="type-h4">{title}</h3><p>{description}</p></div>
  <img src={asset.src} width={asset.width} height={asset.height} alt="" loading="lazy"/>
  <div class="service-action">{dialogId?<Button variant="linear" size="m" fullWidth={size==='m'} icon openDialog={dialogId} service={title} context={title}>{actionLabel}</Button>:<ActionLink href={href} variant="linear" size="m" fullWidth icon>{actionLabel}</ActionLink>}</div>
