@@ -25,11 +25,16 @@ test('all local Astro text styles are normalized from -2% to 0%', async ({ page 
     expect(style.letterSpacing.value, style.name + ' must be 0%').toBe(0);
   }
   await page.goto('/__ui/');
+  const assertZeroTracking = async (selector: string) => {
+    const tracking = await page.locator(selector).first().evaluate(el => getComputedStyle(el).letterSpacing);
+    // CSS "normal" means the browser's default tracking, equivalent to 0% here.
+    expect(['0px', 'normal'], selector + ' must have no extra letter spacing').toContain(tracking);
+  };
   for (const cls of ['type-h2', 'type-h6', 'type-h7', 'type-h8']) {
-    await expect(page.locator('.' + cls).first()).toHaveCSS('letter-spacing', '0px');
+    await assertZeroTracking('.' + cls);
   }
-  await expect(page.locator('.heading__title--section').first()).toHaveCSS('letter-spacing', '0px');
-  await expect(page.locator('.option span').first()).toHaveCSS('letter-spacing', '0px');
+  await assertZeroTracking('.heading__title--section');
+  await assertZeroTracking('.option span');
 });
 
 test('portfolio card hover from the photograph underlines only project name and quantity', async ({ page }) => {
