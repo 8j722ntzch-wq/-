@@ -115,11 +115,11 @@ async function main() {
   const privateChatId = privateMessage.chat.id;
   const groupChatId = groupIds[0];
   const responseText =
-    '✅ Бот «Мастерская» проверен.\\n' +
-    'Группа: Мастерская | Заявки\\n' +
-    'GitHub Secret (Name): TELEGRAM_CHAT_ID\\n' +
-    'GitHub Secret (Value): ' + groupChatId + '\\n\\n' +
-    'Скопируйте число в Repository secrets на GitHub.\\n' +
+    '✅ Бот «Мастерская» проверен.\n' +
+    'Группа: Мастерская | Заявки\n' +
+    'GitHub Secret (Name): TELEGRAM_CHAT_ID\n' +
+    'GitHub Secret (Value): ' + groupChatId + '\n\n' +
+    'Скопируйте число в Repository secrets на GitHub.\n' +
     'Не публикуйте идентификатор группы в логах или в репозитории.';
   try {
     await telegram('sendMessage', { chat_id: privateChatId, text: responseText });
