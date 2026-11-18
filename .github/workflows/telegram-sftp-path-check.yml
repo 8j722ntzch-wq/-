@@ -1,0 +1,69 @@
+name: Telegram server path preflight (read only)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/telegram-sftp-path-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  read-only-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Install OpenSSH and sshpass
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass
+      - name: Inspect site directory without writing or disclosing secrets
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for name in SFTP_HOST SFTP_USERNAME SSHPASS SFTP_KNOWN_HOSTS; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing required SFTP secret"
+              exit 1
+            fi
+          done
+          port="${SFTP_PORT:-22}"
+          if ! [[ "$port" =~ ^[0-9]{1,5}$ ]] || (( 10#$port < 1 || 10#$port > 65535 )); then
+            echo "::error::Invalid SFTP port"
+            exit 1
+          fi
+          umask 077
+          temp="$(mktemp -d)"
+          trap 'rm -rf -- "$temp"' EXIT
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$temp/known_hosts"
+          printf '%s\n' 'pwd' 'ls -ld www' 'ls -ld www/baltmotors.by' 'bye' > "$temp/check.sftp"
+          lookup="$SFTP_HOST"
+          if [[ "$port" != "22" ]]; then lookup="[$SFTP_HOST]:$port"; fi
+          if ! ssh-keygen -F "$lookup" -f "$temp/known_hosts" >/dev/null; then
+            echo "::error::SFTP host key not pinned"
+            exit 1
+          fi
+          if ! sshpass -e sftp -P "$port" \
+            -oBatchMode=no \
+            -oStrictHostKeyChecking=yes \
+            -oUserKnownHostsFile="$temp/known_hosts" \
+            -oGlobalKnownHostsFile=/dev/null \
+            -oConnectTimeout=15 \
+            -oConnectionAttempts=1 \
+            -oNumberOfPasswordPrompts=1 \
+            -oPreferredAuthentications=password,keyboard-interactive \
+            -oPubkeyAuthentication=no \
+            -b "$temp/check.sftp" "$SFTP_USERNAME@$SFTP_HOST" \
+            >"$temp/result" 2>&1; then
+            echo "::error::SFTP site directory is not readable. Nothing changed on the server."
+            exit 1
+          fi
+          echo "SFTP_SITE_DIRECTORY_READABLE"
+          echo "No files were created, modified, or deleted on the host." >> "$GITHUB_STEP_SUMMARY"
