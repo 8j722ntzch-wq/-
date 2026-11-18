@@ -20,7 +20,10 @@ const links=[
   <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
   <main id="content" class="not-found">
     <div class="container not-found__inner">
-      <img class="not-found__graphic" src="/assets/figma/error-404.svg" width="356" height="160" alt="404 — страница не найдена"/>
+      <picture class="not-found__visual">
+        <source media="(max-width: 58rem)" srcset="/assets/figma/error-404-mobile.svg"/>
+        <img class="not-found__graphic" src="/assets/figma/error-404.svg" width="356" height="160" alt="404 — страница не найдена"/>
+      </picture>
       <div class="not-found__content">
         <div class="not-found__copy">
           <h1>Страница не найдена</h1>
@@ -37,10 +40,22 @@ const links=[
 /* 1470px Figma canvas: 30px promo + 64px header + 481px main + 640px footer. */
 .not-found{min-height:481px}
 .not-found__inner{padding:40px 0 80px 6px}
+.not-found__visual{display:block;width:356px;max-width:100%;line-height:0}
 .not-found__graphic{display:block;width:356px;height:160px;max-width:100%;object-fit:contain}
 .not-found__content{display:grid;justify-items:start;gap:24px;max-width:600px;margin-top:24px}
 .not-found__copy{display:grid;gap:8px;width:100%}
 .not-found h1{font:700 36px/1.25 var(--font-heading);color:var(--color-black)}
 .not-found p{font:500 16px/1.25 var(--font-body);color:var(--color-gray-4)}
-@media(max-width:55rem){.not-found__inner{padding:40px 0 64px}.not-found h1{font-size:28px}}
+/* 404 (Mobile), Figma 221:16923: promo 57, header 64, main 501, Footer 1041. */
+@media(max-width:58rem){
+ .not-found{min-height:501px}
+ .not-found__inner{width:calc(100% - 50px);padding:40px 0 80px}
+ .not-found__visual{width:340px}
+ .not-found__graphic{width:340px;height:153px}
+ .not-found__content{width:100%;max-width:340px;gap:24px;margin-top:32px}
+ .not-found__copy{gap:8px}
+ .not-found h1{font:600 32px/1.3 var(--font-heading)}
+ .not-found p{font:500 14px/18px var(--font-body)}
+ .not-found__content :global(.button--split){width:100%;--control-height:50px;--control-padding:20px;font-size:14px}
+}
 </style>

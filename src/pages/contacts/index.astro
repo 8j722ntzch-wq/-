@@ -4,7 +4,7 @@ import PromoBar from '../../components/blocks/PromoBar.astro';
 import Header from '../../components/blocks/Header.astro';
 import Footer from '../../components/blocks/Footer.astro';
 import SectionHeading from '../../components/ui/SectionHeading.astro';
-import Icon from '../../components/ui/Icon.astro';
+import SocialButton from '../../components/ui/SocialButton.astro';
 import YandexCityMap from '../../components/blocks/YandexCityMap.astro';
 import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
 
@@ -20,7 +20,7 @@ const socialChannels=[
   {name:'Instagram',icon:'instagram'},
   {name:'Telegram',icon:'telegram'},
   {name:'YouTube',icon:'youtube'},
-];
+] as const;
 ---
 <SiteLayout title="Контакты — Мастерская" description="Контакты мастерской в Витебске. Информация о режиме работы и карта города; точный адрес будет добавлен позднее.">
   <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="/#forms"/>
@@ -36,9 +36,7 @@ const socialChannels=[
           </div>
           <div class="contacts-socials" aria-label="Социальные сети">
             {socialChannels.map(channel=>
-              <span class="contacts-socials__item" title={'Ссылка '+channel.name+' появится после подтверждения аккаунта'} aria-label={channel.name+': ссылка пока не указана'}>
-                <Icon name={channel.icon} size={24}/>
-              </span>
+              <span class="contacts-socials__item"><SocialButton name={channel.icon} label={channel.name}/></span>
             )}
           </div>
         </div>
@@ -71,7 +69,7 @@ const socialChannels=[
 .contacts-details{grid-column:span 9;display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-width:0}
 .contacts-details__lines{display:grid;gap:4px;font:700 32px/1.3 var(--font-body);overflow-wrap:anywhere}
 .contacts-socials{display:flex;align-items:center;gap:12px}
-.contacts-socials__item{display:grid;place-items:center;width:48px;height:48px;border:1.5px solid var(--color-gray-3);border-radius:4px;color:var(--color-black)}
+.contacts-socials__item{display:block;flex:none}.contacts-socials__item :global(.social-button){border-color:var(--color-gray-3)}
 .contacts-meta{grid-column:span 3;display:grid;align-content:start;gap:12px}
 .contacts-meta__group{display:grid;justify-items:start;gap:4px;font:500 14px/1.25 var(--font-body)}
 .contacts-meta__group h2{margin-bottom:8px;color:var(--color-gray-5);font:600 14px/1.3 var(--font-heading);letter-spacing:-.02em}
@@ -80,10 +78,17 @@ const socialChannels=[
 .contacts-meta__map-link:hover{text-decoration:underline}
 .contacts-meta__map-link img,.contacts-meta__map-pending img{flex:none}
 .contacts-map{scroll-margin-top:0}
-@media(max-width:55rem){
- .contacts-intro{min-height:0;padding-top:32px;padding-bottom:40px}
- .contacts-grid{grid-template-columns:1fr;gap:32px}
- .contacts-details,.contacts-meta{grid-column:auto}
- .contacts-details__lines{font-size:clamp(18px,5vw,28px)}
+/* Contacts (Mobile), Figma 221:17419: content x25, intro y121–653, map 671px. */
+@media(max-width:58rem){
+ .contacts-intro{width:calc(100% - 50px);min-height:532px;padding-top:40px;padding-bottom:80px}
+ .contacts-intro :global(.heading__title--hero){font-size:24px;line-height:1.25}
+ .contacts-grid{display:flex;flex-direction:column;gap:40px;margin-top:24px}
+ .contacts-details{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+ .contacts-details__lines{display:grid;gap:4px;font:700 28px/1.3 var(--font-body);letter-spacing:0}
+ .contacts-socials{display:flex;gap:12px}
+ .contacts-socials__item :global(.social-button){width:40px;height:40px}
+ .contacts-meta{display:grid;gap:24px}
+ .contacts-meta__group{display:grid;justify-items:start;gap:4px;font-size:14px}
+ .contacts-meta__group h2{font-size:14px;line-height:1.3;margin-bottom:8px}
 }
 </style>
