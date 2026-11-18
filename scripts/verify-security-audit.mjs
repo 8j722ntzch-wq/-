@@ -56,8 +56,11 @@ const unexpected = found.filter(([name, record]) =>
 );
 
 const sources = found.flatMap(([name, record]) =>
-  (record.via ?? []).filter(item => item && typeof item === 'object')
-    .map(item => ({name, url: item.url, title: item.title}))
+  (record.via ?? []).flatMap(item =>
+    item && typeof item === 'object'
+      ? [{name, url: item.url, title: item.title}]
+      : []
+  )
 );
 
 if (found.length > 0 && (
