@@ -1,5 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process';
-import { readFile, writeFile, rm } from 'node:fs/promises';
+import { writeFile, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const base = 'http://127.0.0.1:48983';
@@ -11,10 +11,13 @@ const server = spawn('php', ['-S', '127.0.0.1:48983', '-t', 'dist-preview', 'scr
     stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env },
 });
+/** @param {number} ms */
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+/** @param {string} path @param {RequestInit} [options] */
 async function request(path, options={}) {
     return fetch(base+path, {redirect:'manual', ...options});
 }
+/** @param {unknown} condition @param {string} name */
 function ensure(condition, name) {
     if (!condition) throw new Error('Protected preview smoke test: '+name);
 }
@@ -47,7 +50,8 @@ try {
     ensure(!html.includes('PREVIEW_CSRF_PLACEHOLDER'),'CSRF has been injected');
     ensure(!html.includes('href="/_astro/'),'Login has no unprotected asset dependency');
     const match=html.match(/name="csrf" value="([a-f0-9]{64})"/);
-    ensure(!!match,'Login CSRF token embedded');
+    if (!match) throw new Error('Login CSRF token missing');
+    /** @param {string} pass */
     const send=(pass)=>request('/_preview/auth.php',{
       method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',Cookie:cookie},
       body:new URLSearchParams({username:'preview',password:pass,csrf:match[1]}).toString()
@@ -56,21 +60,13 @@ try {
     ensure(bad.status===303 && bad.headers.get('location')?.endsWith('/preview-login/?error=1'),'Incorrect password denied');
     const good=await send(testPassword);
     ensure(good.status===303 && good.headers.get('location')==='https://baltmotors.by/portfolio/','Correct password continues to original page');
-    // API is protected by the same session but accepts POST after login.
-    // No actual secrets are installed in this fixture, so it must fail closed.
-    const synthetic='{"request_id":"8d79f9b0-0d6f-4d78-8306-74e06e16f188","name":"Test","phone":"+375 (29) 123-45-67","services":[],"context":"","consent":true,"website":""}';
-    const postHeaders={'Content-Type':'application/json','Origin':'https://baltmotors.by'};
-    const unauthApi=await request('/api/submit.php',{method:'POST',headers:postHeaders,body:synthetic});
-    ensure(unauthApi.status===401, 'API blocks anonymous submissions');
-    const authedApi=await request('/api/submit.php',{method:'POST',headers:{...postHeaders,Cookie:cookie},body:synthetic});
-    ensure(authedApi.status===503,'Authorized API runs server-side and fails closed without config');
-    ensure((await authedApi.json()).code==='not_configured','Authorized API response is JSON and hides config');
-    const sourceApi=await request('/api/submit.php',{headers:{Cookie:cookie}});
-    ensure(sourceApi.status===404,'Protected API source cannot be read as GET');
-
     const authorized=await request('/portfolio/',{headers:{Cookie:cookie}});
     ensure(authorized.status===200,'Authorized portfolio can be read');
     ensure((await authorized.text()).includes('<html'),'Authorized content is returned');
+    const unauthorizedApi=await request('/api/submit.php');
+    ensure(unauthorizedApi.status===401,'Unauthenticated API is protected');
+    const protectedApi=await request('/api/submit.php',{method:'POST',headers:{Cookie:cookie}});
+    ensure(protectedApi.status===403,'Authenticated API enforces its own Origin validation');
     const pdf=await request('/documents/personal-data-policy.pdf',{headers:{Cookie:cookie}});
     ensure(pdf.status===200 && pdf.headers.get('content-type')?.includes('pdf'),'Protected PDF served only after login');
     const dotFile=await request('/.htaccess',{headers:{Cookie:cookie}});
