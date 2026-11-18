@@ -1,0 +1,110 @@
+name: Provision Masterskaya private Telegram config (development)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/telegram-host-config.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: masterskaya-telegram-config
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Install required SFTP client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass
+      - name: Create secret config OUTSIDE website document root (one-time only)
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+
+          # Values are checked but NEVER printed or passed as command arguments.
+          [[ "${TG_TOKEN:-}" =~ ^[0-9]{5,15}:[A-Za-z0-9_-]{20,}$ ]] || { echo "::error::TELEGRAM_BOT_TOKEN missing or malformed"; exit 1; }
+          [[ "${CHAT_ID:-}" =~ ^-[0-9]{5,20}$ ]] || { echo "::error::TELEGRAM_CHAT_ID missing or malformed"; exit 1; }
+          [[ "${SFTP_HOST:-}" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || { echo "::error::SFTP_HOST missing or malformed"; exit 1; }
+          [[ "${SFTP_USERNAME:-}" =~ ^[A-Za-z0-9_][A-Za-z0-9_.$-]*$ ]] || { echo "::error::SFTP_USERNAME missing or malformed"; exit 1; }
+          [[ -n "${SSHPASS:-}" && -n "${SFTP_KNOWN_HOSTS:-}" ]] || { echo "::error::SFTP credentials incomplete"; exit 1; }
+          port="${SFTP_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || {
+            echo "::error::SFTP_PORT invalid"; exit 1;
+          }
+
+          workdir="$(mktemp -d)"
+          trap 'rm -rf -- "$workdir"' EXIT
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$workdir/known_hosts"
+          known_host="$SFTP_HOST"
+          if [[ "$port" != 22 ]]; then known_host="[$SFTP_HOST]:$port"; fi
+          ssh-keygen -F "$known_host" -f "$workdir/known_hosts" >/dev/null || {
+            echo "::error::Host key does not match configured SFTP host and port"; exit 1;
+          }
+
+          sftp_run() {
+            local batch="$1"
+            local output="$2"
+            sshpass -e sftp -P "$port" \
+              -oBatchMode=no \
+              -oStrictHostKeyChecking=yes \
+              -oUserKnownHostsFile="$workdir/known_hosts" \
+              -oGlobalKnownHostsFile=/dev/null \
+              -oConnectTimeout=20 \
+              -oConnectionAttempts=1 \
+              -oNumberOfPasswordPrompts=1 \
+              -oPreferredAuthentications=password,keyboard-interactive \
+              -oPubkeyAuthentication=no \
+              -b "$batch" "$SFTP_USERNAME@SFTP_HOST" \
+              >"$output" 2>&1
+          }
+
+          # Fail without modifying the host unless the correct site directory is reachable.
+          printf '%s\n' 'ls -la www/baltmotors.by' 'bye' > "$workdir/preflight.sftp"
+          if ! sftp_run "$workdir/preflight.sftp" "$workdir/preflight.log"; then
+            echo "::error::Website folder unavailable via SFTP. No host changes made."; exit 1;
+          fi
+
+          # Do not overwrite someone else's existing private configuration.
+          printf '%s\n' 'ls -la www/.masterskaya-private/config.php' 'bye' > "$workdir/existing.sftp"
+          if sftp_run "$workdir/existing.sftp" "$workdir/existing.log"; then
+            echo "::error::Private Telegram config already exists; refusing to overwrite."; exit 1;
+          fi
+
+          # Token matches a restrictive alphabet; no quoting/escaping injection possible.
+          printf '%s\n' '<?php' 'declare(strict_types=1);' 'return [' \
+            "    'bot_token' => '$TG_TOKEN'," \
+            "    'chat_id' => '$CHAT_ID'," \
+            '];' > "$workdir/config.php"
+          chmod 600 "$workdir/config.php"
+
+          pending="www/.masterskaya-private/config.php.pending-$GITHUB_RUN_ID"
+          printf '%s\n' \
+            '-mkdir www/.masterskaya-private' \
+            'chmod 700 www/.masterskaya-private' \
+            "put $workdir/config.php $pending" \
+            "chmod 600 $pending" \
+            "rename $pending www/.masterskaya-private/config.php" \
+            'ls -la www/.masterskaya-private/config.php' \
+            'bye' > "$workdir/provision.sftp"
+          if ! sftp_run "$workdir/provision.sftp" "$workdir/provision.log"; then
+            echo "::error::Private config provisioning failed. Check SFTP write permission without disclosing values."; exit 1;
+          fi
+          echo "TELEGRAM_HOST_CONFIG_INSTALLED"
+          echo "Private Telegram configuration installed outside /www/baltmotors.by. Values not logged." >> "$GITHUB_STEP_SUMMARY"
