@@ -1,0 +1,46 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PromoBar from '../components/blocks/PromoBar.astro';
+import Header from '../components/blocks/Header.astro';
+import Footer from '../components/blocks/Footer.astro';
+import ActionLink from '../components/ui/ActionLink.astro';
+import ConsultationDialog from '../components/dialogs/ConsultationDialog.astro';
+
+const dialogId='not-found-consultation';
+const links=[
+  {label:'Услуги',href:'/#services'},
+  {label:'О нас',href:'/#advantages'},
+  {label:'Бизнесу',href:'/#audiences'},
+  {label:'Портфолио',href:'/portfolio/'},
+  {label:'Контакты',href:'/contacts/'},
+];
+---
+<SiteLayout title="Страница не найдена — Мастерская" description="Ошибка 404: запрошенная страница не найдена. Вернитесь на главную страницу мастерской.">
+  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="/#forms"/>
+  <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
+  <main id="content" class="not-found">
+    <div class="container not-found__inner">
+      <img class="not-found__graphic" src="/assets/figma/error-404.svg" width="356" height="160" alt="404 — страница не найдена"/>
+      <div class="not-found__content">
+        <div class="not-found__copy">
+          <h1>Страница не найдена</h1>
+          <p>Похоже, что такой страницы не существует. Пожалуйста, вернитесь на главную, чтобы найти то, что вас интересует.</p>
+        </div>
+        <ActionLink href="/" variant="solid" size="l" icon>Вернуться на главную</ActionLink>
+      </div>
+    </div>
+  </main>
+  <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation/>
+  <ConsultationDialog id={dialogId}/>
+</SiteLayout>
+<style>
+/* 1470px Figma canvas: 30px promo + 64px header + 481px main + 640px footer. */
+.not-found{min-height:481px}
+.not-found__inner{padding:40px 0 80px 6px}
+.not-found__graphic{display:block;width:356px;height:160px;max-width:100%;object-fit:contain}
+.not-found__content{display:grid;justify-items:start;gap:24px;max-width:600px;margin-top:24px}
+.not-found__copy{display:grid;gap:8px;width:100%}
+.not-found h1{font:700 36px/1.25 var(--font-heading);color:var(--color-black)}
+.not-found p{font:500 16px/1.25 var(--font-body);color:var(--color-gray-4)}
+@media(max-width:55rem){.not-found__inner{padding:40px 0 64px}.not-found h1{font-size:28px}}
+</style>
