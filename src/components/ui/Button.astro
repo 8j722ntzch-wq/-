@@ -13,9 +13,11 @@ interface Props {
   expanded?: boolean;
   icon?: boolean;
   openDialog?: string;
+  service?: string;
+  context?: string;
 }
-const { type = 'button', variant = 'solid', size = 'l', disabled = false, busy = false, fullWidth = false, id, controls, expanded, icon=false, openDialog } = Astro.props;
+const { type = 'button', variant = 'solid', size = 'l', disabled = false, busy = false, fullWidth = false, id, controls, expanded, icon=false, openDialog, service, context } = Astro.props;
 ---
-<button id={id} type={type} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth, 'button--split': icon }]} disabled={disabled || busy} aria-busy={busy || undefined} aria-controls={controls||openDialog} aria-haspopup={openDialog?'dialog':undefined} aria-expanded={expanded} data-open-dialog={openDialog}>
+<button id={id} type={type} class:list={['button', `button--${variant}`, `button--${size}`, { 'button--full': fullWidth, 'button--split': icon }]} disabled={disabled || busy} aria-busy={busy || undefined} aria-controls={controls||openDialog} aria-haspopup={openDialog?'dialog':undefined} aria-expanded={expanded} data-open-dialog={openDialog} data-service={service} data-context={context}>
   <span class="button__label"><slot /></span>{icon&&<span class="button__icon"><Icon name="arrow" size={size==='s'?14:size==='m'?16:20}/></span>}
 </button>

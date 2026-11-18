@@ -215,5 +215,54 @@
     "width": 612,
     "height": 344,
     "src": "/assets/figma/portfolio-hello-kitty.jpg"
+  },
+  {
+    "name": "hero-grid",
+    "id": "66:3685",
+    "width": 473.0,
+    "height": 549.0,
+    "src": "/assets/figma/hero-grid.svg"
+  },
+  {
+    "name": "stitch-white",
+    "id": "66:3721",
+    "width": 156.0,
+    "height": 3.0,
+    "src": "/assets/figma/stitch-white.svg"
+  },
+  {
+    "name": "stitch-green",
+    "id": "66:3731",
+    "width": 156.0,
+    "height": 3.0,
+    "src": "/assets/figma/stitch-green.svg"
+  },
+  {
+    "name": "ruler-white",
+    "id": "66:3633",
+    "width": 553.0,
+    "height": 10.0,
+    "src": "/assets/figma/ruler-white.svg"
+  },
+  {
+    "name": "ruler-black",
+    "id": "88:2848",
+    "width": 553.0,
+    "height": 10.0,
+    "src": "/assets/figma/ruler-black.svg"
+  },
+  {
+    "name": "application-grid",
+    "id": "88:3064",
+    "width": 365.0,
+    "height": 309.0,
+    "src": "/assets/figma/application-grid.svg"
+  },
+  {
+    "name": "home-hero",
+    "id": "61:2376",
+    "width": 1863,
+    "height": 844,
+    "src": "/assets/figma/home-hero.webp"
   }
 ]

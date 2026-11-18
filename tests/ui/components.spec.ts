@@ -46,7 +46,7 @@ test('IDs, field labels and descriptions remain valid across instances', async (
   const issues = await page.evaluate(() => {
     const ids = [...document.querySelectorAll('[id]')].map(el => el.id);
     const problems = ids.filter((id, index) => ids.indexOf(id) !== index);
-    for (const input of document.querySelectorAll('input')) {
+    for (const input of document.querySelectorAll<HTMLInputElement>('input:not([type=hidden])')) {
       if (!input.labels?.length) problems.push(`Missing label: ${input.name}`);
       for (const id of (input.getAttribute('aria-describedby') || '').split(' ').filter(Boolean)) {
         if (!document.getElementById(id)) problems.push(`Missing description: ${id}`);

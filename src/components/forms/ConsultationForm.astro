@@ -4,15 +4,17 @@ import ServiceOption from '../ui/ServiceOption.astro';
 import Checkbox from '../ui/Checkbox.astro';
 import Icon from '../ui/Icon.astro';
 import '../../styles/button.css';
-interface Props { id?:string; }
-const {id='form-'+crypto.randomUUID()}=Astro.props;
-const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Термостразы'];
+interface Props { id?:string; home?:boolean; policyDialog?:string; }
+const {id='form-'+crypto.randomUUID(),home=false,policyDialog}=Astro.props;
+const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Нанесение страз'];
 ---
-<consultation-form><form id={id} aria-describedby={id+'-note'}>
+<consultation-form class:list={{'consultation-form--home':home}}><form id={id} aria-describedby={id+'-note'}>
+ <input type="hidden" name="context" value=""/>
+ <p class="form-context" hidden></p>
  <div class="form-fields"><TextField name="name" label="Ваше имя" required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" required labelVisible={false}/></div>
  <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service}/>)}</div></fieldset>
- <Checkbox name="consent" required><span class="consent-copy">Я согласен с <a href="#preview-notice">политикой обработки персональных данных</a></span></Checkbox>
- <button type="submit" class="button button--solid button--l button--full button--split" disabled><span class="button__label">Оставить заявку</span><span class="button__icon"><Icon name="arrow" size={20}/></span></button>
+ <Checkbox name="consent" required><span class="consent-copy">Я согласен с {home&&<><a href="#preview-notice" data-open-dialog={policyDialog}>политикой конфиденциальности</a> и </>}<a href="#preview-notice" data-open-dialog={policyDialog}>политикой обработки персональных данных</a></span></Checkbox>
+ <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home}]} disabled><span class="button__label">Оставить заявку</span>{!home&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
  <p id={id+'-note'} class="form-note">Предпросмотр: данные никуда не отправляются.</p>
  <p class="form-result" role="status" aria-live="polite" hidden></p>
  <noscript><p>Для проверки формы включите JavaScript. Отправка не подключена.</p></noscript>
@@ -25,6 +27,15 @@ class ConsultationForm extends HTMLElement{
   const phone=form.querySelector<HTMLInputElement>('[name=phone]')!;
   const name=form.querySelector<HTMLInputElement>('[name=name]')!;
   const result=form.querySelector<HTMLParagraphElement>('.form-result')!;
+  this.closest('dialog')?.addEventListener('prepare-form',event=>{
+   const {service,context}=(event as CustomEvent<{service?:string;context?:string}>).detail;
+   if(service)form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input=>{input.checked=input.value===service;});
+   form.querySelector<HTMLInputElement>('[name=context]')!.value=context??'';
+   const description=form.querySelector<HTMLParagraphElement>('.form-context')!;
+   description.textContent=context?'Ваша задача: '+context:'';
+   description.hidden=!context;
+   result.hidden=true;
+  });
   submit.disabled=false;
   const validatePhone=()=>{const digits=phone.value.replace(/\D/g,'');phone.setCustomValidity(phone.value&&(!/^[+\d\s()-]+$/.test(phone.value)||digits.length<7||digits.length>15)?'Укажите телефон: от 7 до 15 цифр. Можно использовать +, пробелы и скобки.':'');};
   phone.addEventListener('input',validatePhone);
@@ -42,4 +53,9 @@ if(!customElements.get('consultation-form'))customElements.define('consultation-
 </script>
 <style>
 consultation-form{display:block;min-width:0}form{display:grid;gap:16px}.form-fields{display:grid;gap:4px}legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.service-options{display:flex;gap:4px;flex-wrap:wrap}.consent-copy{text-transform:uppercase;font-size:16px}.consent-copy a{text-decoration:underline}.form-note{font-size:12px;color:var(--color-gray-3)}.form-result{font-size:14px;color:var(--color-green);line-height:1.5}.button--split:hover{color:var(--color-green)}.button--split:active{color:var(--color-black)}@media(max-width:40rem){.consent-copy{font-size:13px}}
+</style>
+<style>
+.form-context{color:var(--color-green);font-size:14px;line-height:1.4}
+.consultation-form--home .form-note{font-size:11px;position:absolute;right:36px;bottom:10px;color:var(--color-gray-3)}
+.consultation-form--home .form-result{padding-bottom:24px}
 </style>

@@ -11,7 +11,7 @@ const triggers=new WeakMap<HTMLDialogElement,HTMLElement>();
 document.addEventListener('click',event=>{
  const target=event.target as Element;
  const opener=target.closest<HTMLElement>('[data-open-dialog]');
- if(opener){const dialog=document.getElementById(opener.dataset.openDialog!) as HTMLDialogElement|null;if(dialog?.tagName==='DIALOG'&&!dialog.open){triggers.set(dialog,opener);dialog.showModal();}return;}
+ if(opener){const dialog=document.getElementById(opener.dataset.openDialog!) as HTMLDialogElement|null;if(dialog?.tagName==='DIALOG'&&!dialog.open){event.preventDefault();triggers.set(dialog,opener);dialog.dispatchEvent(new CustomEvent('prepare-form',{detail:{service:opener.dataset.service,context:opener.dataset.context}}));dialog.showModal();}return;}
  const closer=target.closest('[data-close-dialog]');
  if(closer)closer.closest('dialog')?.close();
 });
