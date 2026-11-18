@@ -34,10 +34,11 @@ jobs:
       - run: npm run build:kit
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:ui
-      - name: Record dependency audit
+      - name: Audit dependencies and fail on new advisories
         if: always()
-        continue-on-error: true
-        run: npm audit --json > npm-audit.json
+        run: |
+          npm audit --json > npm-audit.json || true
+          node scripts/verify-security-audit.mjs npm-audit.json
       - name: Save checks and review artifacts (no deployment)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

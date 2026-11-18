@@ -30,7 +30,7 @@ test('button_Basic text sizes and all nine current icon SVG files match Figma',a
   }
 });
 
-test('frame_Discount Desktop is centered and 32px high, desktop mega-menu supports hover and keyboard',async({page})=>{
+test('frame_Discount Desktop is centered and 32px high, desktop mega-menu supports hover and keyboard',async({page},testInfo)=>{
   await page.setViewportSize({width:1470,height:900});
   await page.goto('/');
   const promo=page.locator('.promo');
@@ -44,6 +44,7 @@ test('frame_Discount Desktop is centered and 32px high, desktop mega-menu suppor
   await expect(trigger).toHaveAttribute('aria-expanded','true');
   const mega=header.locator('[data-desktop-mega]');
   await expect(mega).toBeVisible();
+  if(testInfo.project.name==='chromium')await testInfo.attach('desktop-services-expanded', {body:await page.screenshot(),contentType:'image/png'});
   const cards=mega.locator('.service-menu-item');
   await expect(cards).toHaveCount(5);
   const first=cards.first();
@@ -63,7 +64,7 @@ test('frame_Discount Desktop is centered and 32px high, desktop mega-menu suppor
   await expect(mega).not.toBeVisible();
 });
 
-test('Header/Menu Mobile has both main and services states with Figma dimensions',async({page})=>{
+test('Header/Menu Mobile has both main and services states with Figma dimensions',async({page},testInfo)=>{
   await page.setViewportSize({width:390,height:880});
   await page.goto('/');
   expect((await page.locator('.promo').boundingBox())?.height).toBe(57);
@@ -78,6 +79,7 @@ test('Header/Menu Mobile has both main and services states with Figma dimensions
   await expect(toggle).toHaveAttribute('aria-expanded','true');
   await expect(panel).toBeVisible();
   await expect(header.locator('[data-mobile-nav]')).toBeVisible();
+  if(testInfo.project.name==='chromium')await testInfo.attach('mobile-main-menu', {body:await page.screenshot(),contentType:'image/png'});
   const servicesButton=header.locator('[data-mobile-services]');
   await expect(servicesButton).toHaveCSS('font-size','28px');
   await servicesButton.click();
@@ -85,6 +87,7 @@ test('Header/Menu Mobile has both main and services states with Figma dimensions
   await expect(header.locator('[data-mobile-nav]')).not.toBeVisible();
   const grid=header.locator('.mobile-panel__services-grid');
   await expect(grid.locator('.service-menu-item')).toHaveCount(5);
+  if(testInfo.project.name==='chromium')await testInfo.attach('mobile-services-menu', {body:await page.screenshot(),contentType:'image/png'});
   const item=grid.locator('.service-menu-item').first();
   const bbox=await item.boundingBox();
   expect(bbox?.width).toBeCloseTo(166,0);
@@ -115,7 +118,7 @@ test('mobile Header CTA closes menu and opens the shared form without sending a 
   await expect(page.locator('html')).not.toHaveClass(/site-menu-active/);
 });
 
-test('block_Footer and button_Socials Mobile variants are 40px and preserve legal links',async({page})=>{
+test('block_Footer and button_Socials Mobile variants are 40px and preserve legal links',async({page},testInfo)=>{
   await page.setViewportSize({width:390,height:880});
   await page.goto('/');
   const footer=page.locator('footer');
@@ -136,6 +139,7 @@ test('block_Footer and button_Socials Mobile variants are 40px and preserve lega
   await expect(footer.locator('.footer-contact .button')).toHaveCSS('min-height','38px');
   await expect(footer.locator('a[href="/policy/#personal-data"]')).toBeVisible();
   await expect(footer.locator('a[href="/contacts/"]')).toBeVisible();
+  if(testInfo.project.name==='chromium')await testInfo.attach('mobile-footer', {body:await footer.screenshot(),contentType:'image/png'});
 });
 
 test('expanded mobile service card is a real route, not a fake menu item',async({page})=>{
