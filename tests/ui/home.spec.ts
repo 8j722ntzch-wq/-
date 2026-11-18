@@ -50,59 +50,11 @@ test('homepage resources, navigation and form references are complete', async ({
     const href = await link.getAttribute('href');
     if (href?.startsWith('#')) {
       await link.click();
-      await expect(page).toHaveURL(new RegExp(`${href}import { expect, test, type Page } from '@playwright/test';
-
-async function openHome(page: Page) {
-  expect((await page.goto('/'))?.status()).toBe(200);
-  await page.evaluate(async () => { await document.fonts.ready; });
-}
-
-// Desktop only: the mobile design has not been supplied by the designer.
-for (const width of [1366, 1470, 1920]) {
-  test(`homepage desktop layout at ${width}px`, async ({ page }, testInfo) => {
-    await page.setViewportSize({ width, height: 1000 });
-    await openHome(page);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    const hero = await page.locator('.hero').boundingBox();
-    expect(hero?.width).toBe(1236);
-    expect(hero?.height).toBe(560);
-    await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page.locator('#services article')).toHaveCount(5);
-    await expect(page.locator('#stages li')).toHaveCount(6);
-    // Load below-the-fold images before attaching a full-page desktop review image.
-    for (const image of await page.locator('main img').all()) {
-      await image.scrollIntoViewIfNeeded();
-      await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
-    }
-    await page.getByRole('link', { name: 'Вернуться наверх' }).click();
-    if (width === 1470) await testInfo.attach('homepage-desktop', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
-  });
-}
-
-test('homepage resources, navigation and form references are complete', async ({ page }) => {
-  const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
-  page.on('requestfailed', request => errors.push(request.url()));
-  page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
-  await openHome(page);
-  await expect(page.locator('meta[name=robots]')).toHaveAttribute('content', /noindex/);
-  const issues = await page.evaluate(() => {
-    const ids = [...document.querySelectorAll('[id]')].map(el => el.id);
-    const problems = ids.filter((id, index) => ids.indexOf(id) !== index);
-    for (const link of document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')) {
-      if (!document.getElementById(link.hash.slice(1))) problems.push(`Missing anchor: ${link.hash}`);
-    }
-    for (const input of document.querySelectorAll<HTMLInputElement>('input:not([type=hidden])')) {
-      if (!input.labels?.length) problems.push(`Missing label: ${input.name}`);
-    }
-    return problems;
-  });
-  expect(issues).toEqual([]);
-));
+      await expect(page).toHaveURL(new RegExp(href + '$'));
       await expect(page.locator(href)).toBeInViewport();
     } else {
       await expect(link).toHaveAttribute('href', '/contacts/');
-      // Cross-route navigation is exercised in contacts.spec.ts.
+      // The Contacts route is tested independently in contacts.spec.ts.
     }
   }
   expect(errors).toEqual([]);
