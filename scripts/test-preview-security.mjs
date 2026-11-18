@@ -63,18 +63,20 @@ try {
     ensure(bad.status===303 && bad.headers.get('location')?.endsWith('/preview-login/?error=1'),'Incorrect password denied');
     const good=await send(testPassword);
     ensure(good.status===303 && good.headers.get('location')==='https://baltmotors.by/portfolio/','Correct password continues to original page');
-    const authorized=await request('/portfolio/',{headers:{Cookie:cookie}});
+    // Login correctly rotates the session ID; the browser adopts the new cookie.
+    const authenticatedCookie=good.headers.get('set-cookie')?.split(';')[0] || cookie;
+    const authorized=await request('/portfolio/',{headers:{Cookie:authenticatedCookie}});
     ensure(authorized.status===200,'Authorized portfolio can be read');
     ensure((await authorized.text()).includes('<html'),'Authorized content is returned');
     const unauthorizedApi=await request('/api/submit.php');
     ensure(unauthorizedApi.status===401,'Unauthenticated API is protected');
-    const protectedApi=await request('/api/submit.php',{method:'POST',headers:{Cookie:cookie}});
+    const protectedApi=await request('/api/submit.php',{method:'POST',headers:{Cookie:authenticatedCookie}});
     ensure(protectedApi.status===403,'Authenticated API enforces its own Origin validation');
-    const pdf=await request('/documents/personal-data-policy.pdf',{headers:{Cookie:cookie}});
+    const pdf=await request('/documents/personal-data-policy.pdf',{headers:{Cookie:authenticatedCookie}});
     ensure(pdf.status===200 && pdf.headers.get('content-type')?.includes('pdf'),'Protected PDF served only after login');
-    const dotFile=await request('/.htaccess',{headers:{Cookie:cookie}});
+    const dotFile=await request('/.htaccess',{headers:{Cookie:authenticatedCookie}});
     ensure(dotFile.status===404,'Dot files stay hidden even after auth');
-    const source=await request('/_preview/bootstrap.php',{headers:{Cookie:cookie}});
+    const source=await request('/_preview/bootstrap.php',{headers:{Cookie:authenticatedCookie}});
     ensure(source.status===404,'Internal PHP source cannot be fetched');
     console.log('PREVIEW_AUTH_OK: default-deny, CSRF, login, PDF, static content and noindex headers.');
 } finally {
