@@ -1,12 +1,12 @@
-/* Exact local Figma text styles; source IDs in src/data/figma-styles.json. */
+/* Figma-derived text styles. Project override: former -2% letter spacing is now 0% in every style. */
 .type-h1 { font: 700 2.25rem/1.25 var(--font-heading); letter-spacing: 0em; }
-.type-h2 { font: 600 2rem/1.30 var(--font-heading); letter-spacing: -0.02em; }
+.type-h2 { font: 600 2rem/1.30 var(--font-heading); letter-spacing: 0em; }
 .type-h3 { font: 600 1.75rem/normal var(--font-heading); letter-spacing: 0em; }
 .type-h4 { font: 700 1.5rem/1.25 var(--font-heading); letter-spacing: 0em; }
 .type-h5 { font: 700 1.25rem/1.30 var(--font-heading); letter-spacing: 0em; }
-.type-h6 { font: 600 1rem/1.25 var(--font-heading); letter-spacing: -0.02em; }
-.type-h7 { font: 600 0.875rem/1.25 var(--font-heading); letter-spacing: -0.02em; }
-.type-h8 { font: 600 0.75rem/1.20 var(--font-heading); letter-spacing: -0.02em; }
+.type-h6 { font: 600 1rem/1.25 var(--font-heading); letter-spacing: 0em; }
+.type-h7 { font: 600 0.875rem/1.25 var(--font-heading); letter-spacing: 0em; }
+.type-h8 { font: 600 0.75rem/1.20 var(--font-heading); letter-spacing: 0em; }
 .type-p1 { font: 500 1rem/1.25 var(--font-body); letter-spacing: 0em; }
 .type-p2 { font: 500 0.875rem/1.25 var(--font-body); letter-spacing: 0em; }
 .type-superscript { font: 700 0.75rem/1.20 var(--font-body); letter-spacing: 0em; text-transform: uppercase; }

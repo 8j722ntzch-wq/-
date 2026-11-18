@@ -212,7 +212,7 @@
       },
       "letterSpacing": {
         "unit": "PERCENT",
-        "value": -2
+        "value": 0
       },
       "textCase": "ORIGINAL",
       "textDecoration": "NONE"
@@ -303,7 +303,7 @@
       },
       "letterSpacing": {
         "unit": "PERCENT",
-        "value": -2
+        "value": 0
       },
       "textCase": "ORIGINAL",
       "textDecoration": "NONE"
@@ -326,7 +326,7 @@
       },
       "letterSpacing": {
         "unit": "PERCENT",
-        "value": -2
+        "value": 0
       },
       "textCase": "ORIGINAL",
       "textDecoration": "NONE"
@@ -349,7 +349,7 @@
       },
       "letterSpacing": {
         "unit": "PERCENT",
-        "value": -2
+        "value": 0
       },
       "textCase": "ORIGINAL",
       "textDecoration": "NONE"
