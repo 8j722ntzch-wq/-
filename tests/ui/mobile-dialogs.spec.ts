@@ -30,6 +30,7 @@ test('Mobile consultation popup matches the Figma copy and 340×550 layout',asyn
  await expect(d.getByText('Опишите вещь и желаемый результат')).toBeVisible();
  closeTo((await relativeRect(page,'#consultation .modal-heading','#consultation')).y,20,1);
  closeTo((await relativeRect(page,'#consultation .modal-description','#consultation')).y,92,2);
+ closeTo((await relativeRect(page,'#consultation .modal-description','#consultation')).width,252,1);
  closeTo((await relativeRect(page,'#consultation .form-fields','#consultation')).y,152,2);
  closeTo((await relativeRect(page,'#consultation .form-fields','#consultation')).height,104,1);
  closeTo((await relativeRect(page,'#consultation .service-options','#consultation')).y,272,2);
@@ -89,6 +90,7 @@ test('Mobile thank-you popup matches Figma 340×266 and returns to the homepage'
  await expect(d.getByText('Наш менеджер свяжется с вами в ближайшее время')).toBeVisible();
  await expect(d.getByText('Ваша заявка находится в обработке')).toBeVisible();
  closeTo((await relativeRect(page,'#success .modal-description','#success')).y,88,2);
+ closeTo((await relativeRect(page,'#success .modal-description','#success')).width,252,1);
  closeTo((await relativeRect(page,'#success .success-progress','#success')).y,140,2);
  const indicator=await relativeRect(page,'#success .loading','#success');
  closeTo(indicator.width,300,1);closeTo(indicator.height,8,1);
