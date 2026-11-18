@@ -3,6 +3,8 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { color-scheme: light; scrollbar-gutter: stable; }
+/* Mobile UI-kit uses exact 390px Figma geometry; avoid a reserved 15px scrollbar lane. */
+@media (max-width: 58rem) { html { scrollbar-gutter: auto; } }
 body { margin: 0; color: var(--text); background: var(--surface); font: 500 var(--text-body)/var(--line-body) var(--font-body); }
 button, input, textarea, select { font: inherit; }
 button, a, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
