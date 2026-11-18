@@ -10,7 +10,7 @@ async function prepareForm(page: import('@playwright/test').Page) {
   await form.locator('[name=name]').fill('Александр');
   await form.locator('[name=phone]').fill('+375 (29) 123-45-67');
   await form.locator('[name=consent]').check();
-  await form.locator('[name=services][value="Машинная вышивка"]').check();
+  await form.locator('.service-options .option').filter({hasText:'Машинная вышивка'}).click();
   return form;
 }
 
