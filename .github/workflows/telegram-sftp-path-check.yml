@@ -43,7 +43,7 @@ jobs:
           temp="$(mktemp -d)"
           trap 'rm -rf -- "$temp"' EXIT
           printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$temp/known_hosts"
-          printf '%s\n' 'pwd' 'ls -ld www' 'ls -ld www/baltmotors.by' 'bye' > "$temp/check.sftp"
+          printf '%s\n' 'pwd' 'ls -la www' 'ls -la www/baltmotors.by' 'bye' > "$temp/check.sftp"
           lookup="$SFTP_HOST"
           if [[ "$port" != "22" ]]; then lookup="[$SFTP_HOST]:$port"; fi
           if ! ssh-keygen -F "$lookup" -f "$temp/known_hosts" >/dev/null; then
