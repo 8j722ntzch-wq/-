@@ -76,6 +76,25 @@ async function main() {
   }
   status('WEBHOOK_NOT_CONFIGURED');
 
+  // Once the recipient is stored as a GitHub Secret, validate it without
+  // printing its value, making it an Actions output, or sending a message.
+  const configuredChatId = process.env.TELEGRAM_CHAT_ID;
+  if (configuredChatId) {
+    if (!/^-\d{5,20}$/.test(configuredChatId)) return fail('CHAT_ID_FORMAT_INVALID');
+    let group;
+    try {
+      group = await telegram('getChat', { chat_id: configuredChatId });
+    } catch {
+      return fail('RECIPIENT_SECRET_CHECK_FAILED');
+    }
+    if (
+      !['group', 'supergroup'].includes(group?.type) ||
+      group?.title !== expectedGroupTitle ||
+      String(group?.id) !== configuredChatId
+    ) return fail('CHAT_ID_POINTS_TO_WRONG_GROUP');
+    return status('RECIPIENT_SECRET_VERIFIED');
+  }
+
   let updates;
   try {
     updates = await telegram('getUpdates', { limit: 100, timeout: 0, allowed_updates: ['message'] });
