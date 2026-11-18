@@ -9,6 +9,7 @@ test('block_Accordion Hover 2 responds from border and expanded answer, not only
   const samples=page.locator('#faq [data-ui-accordion] details');
   await expect(samples).toHaveCount(2);
   const closed=samples.first(), opened=samples.last();
+  expect((await opened.boundingBox())?.height).toBeCloseTo(102,0);
   await expect(closed).not.toHaveAttribute('open','');
   await expect(opened).toHaveAttribute('open','');
   await closed.scrollIntoViewIfNeeded();
@@ -69,6 +70,10 @@ test('Figma Mobile variants and original SVG sources render at 390px',async({pag
   const summary=await closed.locator('summary').boundingBox();
   expect(summary?.height).toBeCloseTo(64,0);
   await expect(closed.locator('.accordion__question')).toHaveCSS('font-size','20px');
+  expect((await closed.boundingBox())?.width).toBeCloseTo(340,0);
+  expect((await closed.boundingBox())?.height).toBeCloseTo(66,0);
+  const openedBounds=await page.locator('#faq [data-ui-accordion] details').last().boundingBox();
+  expect(Math.abs((openedBounds?.height??0)-132)).toBeLessThanOrEqual(1);
   const phone=page.locator('#controls input[name="example-phone"]');
   const name=page.locator('#controls input[name="example-name"]');
   for(const input of [phone,name]){
