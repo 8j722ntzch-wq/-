@@ -1,0 +1,41 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Header from '../../components/blocks/Header.astro';
+import PromoBar from '../../components/blocks/PromoBar.astro';
+import Footer from '../../components/blocks/Footer.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+import PortfolioCatalog from '../../components/blocks/PortfolioCatalog.astro';
+import ApplicationSection from '../../components/blocks/ApplicationSection.astro';
+import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import Modal from '../../components/dialogs/Modal.astro';
+const dialogId='portfolio-consultation';
+const links=[
+  {label:'Услуги',href:'/#services'},
+  {label:'О нас',href:'/#advantages'},
+  {label:'Бизнесу',href:'/#audiences'},
+  {label:'Портфолио',href:'/portfolio/'},
+  {label:'Контакты',href:'#footer'},
+];
+---
+<SiteLayout title="Наши работы — Мастерская" description="Примеры машинной вышивки, нанесения страз, печати и ремонта одежды. Портфолио мастерской.">
+  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="#forms"/>
+  <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
+  <main id="content" class="portfolio-index">
+    <section id="portfolio" class="container portfolio-index__content" aria-labelledby="portfolio-title">
+      <SectionHeading as="h1" id="portfolio-title" eyebrow="Портфолио">Наши работы</SectionHeading>
+      <PortfolioCatalog/>
+    </section>
+    <div id="forms" class="container"><ApplicationSection title={'Расскажите, что\nнужно сделать'} description="Опишите вещь и желаемый результат" eyebrow="08 / Давайте обсудим" home policyDialog="preview-notice"/></div>
+  </main>
+  <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation policyDialog="preview-notice"/>
+  <ConsultationDialog id={dialogId} policyDialog="preview-notice"/>
+  <Modal id="preview-notice" title="Предпросмотр сайта" description="Отправка заявок пока не подключена.">
+    <div class="preview-copy"><p>Введённые имя, телефон и выбранные услуги остаются в браузере и никуда не передаются.</p><p>Контакты, цены, проекты и условия предложений ещё предстоит подтвердить перед публикацией сайта.</p></div>
+  </Modal>
+</SiteLayout>
+<style>
+.portfolio-index{display:grid;gap:48px;padding:40px 0 80px}
+.portfolio-index__content{display:grid;gap:24px}
+#forms{scroll-margin-top:24px}
+.preview-copy{display:grid;gap:16px;line-height:1.5}
+</style>

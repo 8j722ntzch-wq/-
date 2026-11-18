@@ -47,6 +47,11 @@
   --space-6: 1.5rem;
   --space-9: 2.25rem;
   --space-section: 5rem;
+  /* Portfolio project-story gap contract; verified in browser tests. */
+  --portfolio-h2-content-gap: 12px;
+  --portfolio-h3-body-gap: 8px;
+  --portfolio-text-block-gap: 20px;
+  --portfolio-body-gap: 8px;
   --radius-control: .25rem;
   --radius-pill: 500px;
   --border-control: 1.5px;

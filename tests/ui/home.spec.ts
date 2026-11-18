@@ -58,7 +58,7 @@ test('homepage resources, navigation and form references are complete', async ({
 test('every homepage CTA opens a form with the correct context and service', async ({ page }) => {
   await openHome(page);
   const triggers = page.locator('[data-open-dialog="home-consultation"]');
-  await expect(triggers).toHaveCount(5);
+  await expect(triggers).toHaveCount(3);
   const dialog = page.locator('#home-consultation');
   for (const trigger of await triggers.all()) {
     const service = await trigger.getAttribute('data-service');
@@ -146,7 +146,7 @@ test('all six work stages are reachable with arrows and keyboard', async ({ page
   await expect(track).toBeFocused();
 });
 
-test('FAQ expands with keyboard and the portfolio gallery opens and closes', async ({ page }) => {
+test('FAQ expands with keyboard and portfolio link opens the full catalog', async ({ page }) => {
   await openHome(page);
   const summary = page.locator('#faq summary').first();
   await summary.focus();
@@ -155,10 +155,7 @@ test('FAQ expands with keyboard and the portfolio gallery opens and closes', asy
   await expect(page.locator('#faq details').first()).toContainText('от одного изделия');
   await page.keyboard.press('Space');
   await expect(page.locator('#faq details').first()).not.toHaveAttribute('open', '');
-  const trigger = page.getByRole('button', { name: 'Смотреть все работы' });
-  await trigger.click();
-  await expect(page.locator('#portfolio-gallery')).toBeVisible();
-  await expect(page.locator('#portfolio-gallery figure')).toHaveCount(2);
-  await page.locator('#portfolio-gallery').getByRole('button', { name: 'Закрыть окно' }).click();
-  await expect(trigger).toBeFocused();
+  await page.getByRole('link', { name: 'Смотреть все работы' }).click();
+  await expect(page).toHaveURL(/\/portfolio\/$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Наши работы' })).toBeVisible();
 });

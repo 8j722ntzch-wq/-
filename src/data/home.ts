@@ -20,8 +20,8 @@ export const advantages = [
 ];
 
 export const projects = [
-  { title: 'Ruckit. Watch what you came for.', image: '/assets/figma/portfolio-ruckit.jpg', imageAlt: 'Чёрное худи с красной вышивкой Watch what you came for и логотипом Ruckit', audience: 'Бизнесу', price: '~100 BYN/1 ед.', quantity: '15 штук', tag: 'Машинная вышивка', tone: 'blue' as const },
-  { title: 'Джинсы Hello Kitty', image: '/assets/figma/portfolio-hello-kitty.jpg', imageAlt: 'Голубые джинсы с рисунком Hello Kitty из страз', audience: 'Для себя', price: '~100 BYN/1 ед. (со своим изделием)', quantity: '1 штука', tag: 'Нанесение страз', tone: 'pink' as const },
+  { title: 'Ruckit. Watch what you came for.', image: '/assets/figma/portfolio-ruckit.jpg', imageAlt: 'Чёрное худи с красной вышивкой Watch what you came for и логотипом Ruckit', audience: 'Бизнесу', price: '~100 BYN/1 ед.', quantity: '15 штук', tag: 'Машинная вышивка', href: '/portfolio/ruckit/', tone: 'blue' as const },
+  { title: 'Джинсы Hello Kitty', image: '/assets/figma/portfolio-hello-kitty.jpg', imageAlt: 'Голубые джинсы с рисунком Hello Kitty из страз', audience: 'Для себя', price: '~100 BYN/1 ед. (со своим изделием)', quantity: '1 штука', tag: 'Нанесение страз', href: '/portfolio/hello-kitty/', tone: 'pink' as const },
 ];
 
 export const stages = [

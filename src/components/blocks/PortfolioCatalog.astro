@@ -1,0 +1,85 @@
+---
+import PortfolioCard from '../cards/PortfolioCard.astro';
+import Icon from '../ui/Icon.astro';
+import { portfolioCategories, previewPortfolio } from '../../data/portfolio';
+---
+<portfolio-catalog class="portfolio-catalog">
+  <div class="portfolio-tabs" role="group" aria-label="Фильтр работ по услуге">
+    {portfolioCategories.map((category,index)=><button type="button" class="portfolio-tab" data-filter={category} aria-pressed={index===0?'true':'false'}>{category}</button>)}
+  </div>
+  <div class="portfolio-catalog__grid">
+    {previewPortfolio.map(project=><div class="portfolio-catalog__item" data-category={project.tag} data-preview-position={project.previewPosition}><PortfolioCard {...project} home /></div>)}
+  </div>
+  <p class="portfolio-catalog__empty" role="status" hidden>В этой категории пока нет опубликованных примеров работ.</p>
+  <nav class="portfolio-pages" aria-label="Страницы портфолио">
+    <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--previous" aria-label="Предыдущая страница" data-page-change="-1" disabled><Icon name="arrow-latex"/></button>
+    <span class="portfolio-pages__numbers"></span>
+    <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--next" aria-label="Следующая страница" data-page-change="1" disabled><Icon name="arrow-latex"/></button>
+  </nav>
+</portfolio-catalog>
+<script>
+class PortfolioCatalog extends HTMLElement {
+  connectedCallback(){
+    const tabs=Array.from(this.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const items=Array.from(this.querySelectorAll<HTMLElement>('.portfolio-catalog__item'));
+    const empty=this.querySelector<HTMLElement>('.portfolio-catalog__empty')!;
+    const pages=this.querySelector<HTMLElement>('.portfolio-pages')!;
+    const numbers=this.querySelector<HTMLElement>('.portfolio-pages__numbers')!;
+    const previous=this.querySelector<HTMLButtonElement>('[data-page-change="-1"]')!;
+    const next=this.querySelector<HTMLButtonElement>('[data-page-change="1"]')!;
+    const pageSize=6;
+    let category='Все',currentPage=1;
+    const render=()=>{
+      const filtered=items.filter(item=>category==='Все'||item.dataset.category===category);
+      const count=Math.max(1,Math.ceil(filtered.length/pageSize));
+      currentPage=Math.min(currentPage,count);
+      const visible=new Set(filtered.slice((currentPage-1)*pageSize,currentPage*pageSize));
+      items.forEach(item=>{item.hidden=!visible.has(item);});
+      tabs.forEach(tab=>tab.setAttribute('aria-pressed',String(tab.dataset.filter===category)));
+      empty.hidden=filtered.length>0;
+      pages.hidden=filtered.length===0;
+      previous.disabled=currentPage===1;
+      next.disabled=currentPage===count;
+      numbers.replaceChildren();
+      for(let index=1;index<=count;index++){
+        const button=document.createElement('button');
+        button.type='button';button.className='portfolio-pages__number';
+        button.textContent=String(index);button.dataset.page=String(index);
+        button.setAttribute('aria-label','Страница '+index);
+        if(index===currentPage)button.setAttribute('aria-current','page');
+        numbers.append(button);
+      }
+    };
+    this.addEventListener('click',event=>{
+      const target=event.target as Element|null;
+      const tab=target?.closest<HTMLButtonElement>('[data-filter]');
+      const number=target?.closest<HTMLButtonElement>('[data-page]');
+      const arrow=target?.closest<HTMLButtonElement>('[data-page-change]');
+      if(tab){category=tab.dataset.filter||'Все';currentPage=1;render();}
+      else if(number){currentPage=Number(number.dataset.page);render();}
+      else if(arrow&&!arrow.disabled){currentPage+=Number(arrow.dataset.pageChange);render();}
+    });
+    render();
+  }
+}
+if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-catalog',PortfolioCatalog);
+</script>
+<style>
+.portfolio-catalog{display:block;min-width:0}
+.portfolio-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:32px}
+.portfolio-tab{border:1.5px solid var(--color-black);border-radius:4px;padding:12px;color:var(--color-black);background:transparent;font:700 14px/1.3 var(--font-body);letter-spacing:-.02em}
+.portfolio-tab[aria-pressed=true]{border-color:var(--color-green);background:var(--color-green)}
+.portfolio-tab:hover:not([aria-pressed=true]){background:var(--color-white)}
+.portfolio-catalog__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.portfolio-catalog__item{min-width:0}
+.portfolio-catalog__empty{padding:36px;border:1.5px solid var(--color-gray-3);border-radius:4px;font:500 16px/1.25 var(--font-body)}
+.portfolio-pages{display:flex;justify-content:center;align-items:center;gap:24px;margin-top:48px}
+.portfolio-pages__numbers{display:flex;gap:12px;align-items:center}
+.portfolio-pages__number{padding:4px 0;border:0;background:none;font:500 14px/1.3 var(--font-body);min-width:12px}
+.portfolio-pages__number[aria-current=page]{text-decoration:underline}
+.portfolio-pages__arrow{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white)}
+.portfolio-pages__arrow:disabled{background:none;color:var(--color-gray-3);border:1.5px solid var(--color-gray-3)}
+.portfolio-pages__arrow--previous :global(.icon){transform:rotate(90deg)}
+.portfolio-pages__arrow--next :global(.icon){transform:rotate(-90deg)}
+@media(max-width:55rem){.portfolio-catalog__grid{grid-template-columns:1fr}.portfolio-tabs{margin-bottom:24px}}
+</style>

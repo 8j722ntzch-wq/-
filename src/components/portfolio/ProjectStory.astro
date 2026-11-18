@@ -1,0 +1,38 @@
+---
+interface Props {
+  heading?:string; subheading?:string; bullets?:string[]; paragraphs?:string[];
+}
+const {
+  heading='Заголовок H2',
+  subheading='Заголовок H3',
+  bullets=['оттенки;','форма;','размеры;','орнамент, узор или рисунок внутри.'],
+  paragraphs=[
+    'По внешнему виду нашивки могут быть абсолютно разными.',
+    'На нашивках можно просто вышить рисунок или сформировать 3d-фигуру. Объемность имеет весь рисунок или только некоторые его элементы.',
+    'В процессе изготовления шевронов используются любые материалы, которые выберет клиент. Как правило, наши покупатели заказывают вышивку на основе из шелка, флока, бархата, нейлона, кожи и заменителя.',
+    'Специалисты рекомендуют выбирать в качестве основания для нашивок плотные ткани. Самые оптимальные варианты — габардин и фетр. При этом желательно, чтобы материал был проклеен с одной стороны неплотным отрывным стабилизатором.',
+  ],
+}=Astro.props;
+---
+<!-- Text from Figma is preliminary. The four vertical gaps are contract tokens checked by Playwright. -->
+<section class="project-story container" aria-label="Описание проекта">
+  <div class="project-story__heading-block">
+    <h2>{heading}</h2>
+    <div class="project-story__subheading">
+      <h3>{subheading}</h3>
+      <div class="project-story__body"><ul>{bullets.map(bullet=><li>{bullet}</li>)}</ul></div>
+    </div>
+  </div>
+  <div class="project-story__text-block">{paragraphs.map(paragraph=><p>{paragraph}</p>)}</div>
+</section>
+<style>
+.project-story{display:grid;row-gap:var(--portfolio-text-block-gap);min-width:0}
+.project-story__heading-block{display:grid;row-gap:var(--portfolio-h2-content-gap)}
+.project-story__subheading{display:grid;row-gap:var(--portfolio-h3-body-gap)}
+.project-story__text-block{display:grid;row-gap:var(--portfolio-body-gap)}
+.project-story h2{font:700 24px/1.25 var(--font-heading)}
+.project-story h3{font:700 20px/1.3 var(--font-heading)}
+.project-story__body,.project-story__text-block{font:500 16px/1.25 var(--font-body)}
+.project-story ul{list-style:disc;margin:0;padding-left:24px}
+.project-story li{margin:0}
+</style>
