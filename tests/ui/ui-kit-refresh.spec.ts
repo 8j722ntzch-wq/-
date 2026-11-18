@@ -79,6 +79,9 @@ test('Header/Menu Mobile has both main and services states with Figma dimensions
   await expect(toggle).toHaveAttribute('aria-expanded','true');
   await expect(panel).toBeVisible();
   await expect(header.locator('[data-mobile-nav]')).toBeVisible();
+  const headerTop=(await header.boundingBox())!.y;
+  const ctaTop=(await header.locator('.mobile-panel__bottom .button').boundingBox())!.y;
+  expect(ctaTop-headerTop).toBeCloseTo(708,0);
   if(testInfo.project.name==='chromium')await testInfo.attach('mobile-main-menu', {body:await page.screenshot(),contentType:'image/png'});
   const servicesButton=header.locator('[data-mobile-services]');
   await expect(servicesButton).toHaveCSS('font-size','28px');
