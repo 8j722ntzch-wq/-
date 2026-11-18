@@ -7,52 +7,132 @@ import '../../styles/button.css';
 interface Props { id?:string; home?:boolean; dialog?:boolean; servicePage?:boolean; policyDialog?:string;defaultService?:string; }
 const {id='form-'+crypto.randomUUID(),home=false,dialog=false,servicePage=false,policyDialog,defaultService}=Astro.props;
 const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Нанесение страз'];
+// Public boolean build flag only. Tokens and group IDs NEVER reach the browser.
+const deliveryEnabled = import.meta.env.PUBLIC_FORM_DELIVERY_ENABLED === 'true';
 ---
-<consultation-form data-default-service={defaultService} class:list={{'consultation-form--home':home,'consultation-form--dialog':dialog,'consultation-form--service':servicePage}}><form id={id} aria-describedby={id+'-note'}>
+<consultation-form data-delivery={deliveryEnabled?'enabled':'preview'} data-default-service={defaultService} class:list={{'consultation-form--home':home,'consultation-form--dialog':dialog,'consultation-form--service':servicePage}}><form id={id} aria-describedby={id+'-note'}>
  <input type="hidden" name="context" value=""/>
+ <div class="bot-trap" aria-hidden="true"><label>Оставьте поле пустым <input type="text" name="website" tabindex="-1" autocomplete="off"/></label></div>
  <p class="form-context" hidden></p>
  <div class="form-fields"><TextField name="name" label="Ваше имя" placeholder={(dialog||servicePage)?'Ваше имя*':'Ваше имя'} required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" placeholder={(dialog||servicePage)?'Ваш номер телефона*':'Ваш номер телефона'} required labelVisible={false}/></div>
  <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service} checked={service===defaultService}/>)}</div></fieldset>
  <Checkbox name="consent" required><span class="consent-copy">{(dialog||servicePage)?<>Согласен (-а) с <a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">Политикой конфиденциальности</a> и <a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">Политикой обработки персональных данных</a></>:<>Я согласен с {home&&<><a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a> и </>}<a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></>}</span></Checkbox>
  <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home&&!dialog}]} disabled><span class="button__label">Оставить заявку</span>{!home&&!dialog&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
- <p id={id+'-note'} class:list={['form-note',{'sr-only':dialog||servicePage}]}>Предпросмотр: данные никуда не отправляются.</p>
+ <p id={id+'-note'} class:list={['form-note',{'sr-only':dialog||servicePage}]} hidden={deliveryEnabled}>Предпросмотр: данные никуда не отправляются.</p>
  <p class="form-result" role="status" aria-live="polite" hidden></p>
- <noscript><p>Для проверки формы включите JavaScript. Отправка не подключена.</p></noscript>
+ <noscript><p>Для отправки заявки включите JavaScript.</p></noscript>
 </form></consultation-form>
 <script>
-class ConsultationForm extends HTMLElement{
- connectedCallback(){
-  const form=this.querySelector('form')!;
-  const submit=form.querySelector<HTMLButtonElement>('[type=submit]')!;
-  const phone=form.querySelector<HTMLInputElement>('[name=phone]')!;
-  const name=form.querySelector<HTMLInputElement>('[name=name]')!;
-  const result=form.querySelector<HTMLParagraphElement>('.form-result')!;
-  this.closest('dialog')?.addEventListener('prepare-form',event=>{
-   const {service,context}=(event as CustomEvent<{service?:string;context?:string}>).detail;
-   const selectedService=service||this.dataset.defaultService;
-   if(selectedService)form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input=>{input.checked=input.value===selectedService;});
-   form.querySelector<HTMLInputElement>('[name=context]')!.value=context??'';
-   const description=form.querySelector<HTMLParagraphElement>('.form-context')!;
-   description.textContent=context?'Ваша задача: '+context:'';
-   description.hidden=!context;
-   result.hidden=true;
+class ConsultationForm extends HTMLElement {
+ connectedCallback() {
+  const form = this.querySelector('form')!;
+  const submit = form.querySelector<HTMLButtonElement>('[type=submit]')!;
+  const phone = form.querySelector<HTMLInputElement>('[name=phone]')!;
+  const name = form.querySelector<HTMLInputElement>('[name=name]')!;
+  const result = form.querySelector<HTMLParagraphElement>('.form-result')!;
+  const consent = form.querySelector<HTMLInputElement>('[name=consent]')!;
+  const context = form.querySelector<HTMLInputElement>('[name=context]')!;
+  const website = form.querySelector<HTMLInputElement>('[name=website]')!;
+  let requestId = crypto.randomUUID();
+  let sending = false;
+  const showResult = (message: string, isError = false) => {
+   result.textContent = message;
+   result.dataset.state = isError ? 'error' : 'info';
+   result.hidden = false;
+  };
+
+  this.closest('dialog')?.addEventListener('prepare-form', event => {
+   const {service, context: formContext} = (event as CustomEvent<{service?:string;context?:string}>).detail;
+   const selectedService = service || this.dataset.defaultService;
+   if (selectedService) form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input => {
+    input.checked = input.value === selectedService;
+   });
+   context.value = formContext ?? '';
+   const description = form.querySelector<HTMLParagraphElement>('.form-context')!;
+   description.textContent = formContext ? 'Ваша задача: ' + formContext : '';
+   description.hidden = !formContext;
+   result.hidden = true;
   });
-  submit.disabled=false;
-  const validatePhone=()=>{const digits=phone.value.replace(/\D/g,'');phone.setCustomValidity(phone.value&&(!/^[+\d\s()-]+$/.test(phone.value)||digits.length<7||digits.length>15)?'Укажите телефон: от 7 до 15 цифр. Можно использовать +, пробелы и скобки.':'');};
-  phone.addEventListener('input',validatePhone);
-  name.addEventListener('input',()=>name.setCustomValidity(name.value&&!name.value.trim()?'Введите имя.':''));
-  form.addEventListener('input',()=>{result.hidden=true;});
-  form.addEventListener('submit',event=>{
-   event.preventDefault();validatePhone();
-   if(!form.reportValidity())return;
-   result.textContent='Поля заполнены корректно. Это предпросмотр — заявка не отправлена.';
-   result.hidden=false;
+
+  submit.disabled = false;
+  const validatePhone = () => {
+   const digits = phone.value.replace(/\D/g, '');
+   phone.setCustomValidity(phone.value && (!/^[+\d\s()-]+$/.test(phone.value) || digits.length < 7 || digits.length > 15)
+    ? 'Укажите телефон: от 7 до 15 цифр. Можно использовать +, пробелы и скобки.' : '');
+  };
+  phone.addEventListener('input', validatePhone);
+  name.addEventListener('input', () => name.setCustomValidity(name.value && !name.value.trim() ? 'Введите имя.' : ''));
+  form.addEventListener('input', () => { result.hidden = true; });
+
+  form.addEventListener('submit', async event => {
+   event.preventDefault();
+   if (sending) return;
+   validatePhone();
+   name.setCustomValidity(name.value && !name.value.trim() ? 'Введите имя.' : '');
+   if (!form.reportValidity()) return;
+   if (this.dataset.delivery !== 'enabled') {
+    showResult('Поля заполнены корректно. Это предпросмотр — заявка не отправлена.');
+    return;
+   }
+   const services = Array.from(form.querySelectorAll<HTMLInputElement>('[name=services]:checked')).map(el => el.value);
+   const payload = {
+    request_id: requestId,
+    name: name.value.trim(),
+    phone: phone.value.trim(),
+    services,
+    consent: consent.checked,
+    context: context.value,
+    website: website.value,
+   };
+   sending = true;
+   submit.disabled = true;
+   submit.setAttribute('aria-busy', 'true');
+   showResult('Отправляем заявку...');
+   const controller = new AbortController();
+   const timer = window.setTimeout(() => controller.abort(), 11000);
+   try {
+    const response = await fetch('/api/submit.php', {
+     method: 'POST',
+     credentials: 'same-origin',
+     headers: {'Content-Type': 'application/json'},
+     body: JSON.stringify(payload),
+     signal: controller.signal,
+    });
+    const outcome = (await response.json().catch(() => null)) as {ok?:boolean;code?:string}|null;
+    if (response.ok && outcome?.ok === true &&
+       (outcome.code === 'delivered' || outcome.code === 'already_delivered')) {
+     form.reset();
+     requestId = crypto.randomUUID();
+     result.hidden = true;
+     const parentDialog = this.closest('dialog');
+     if (parentDialog?.open) parentDialog.close();
+     const success = document.getElementById('success') as HTMLDialogElement|null;
+     if (success && !success.open) success.showModal();
+     else showResult('Спасибо! Ваша заявка получена.');
+     return;
+    }
+    if (response.status === 429) showResult('Слишком много запросов. Пожалуйста, попробуйте позже.', true);
+    else if (response.status === 422) showResult('Проверьте заполнение полей и согласие на обработку данных.', true);
+    else if (response.status === 409 || outcome?.code === 'delivery_unconfirmed')
+     showResult('Не удалось подтвердить доставку. Заявка могла поступить в Telegram. Не отправляйте её повторно; при необходимости свяжитесь с нами напрямую.', true);
+    else showResult('Не удалось отправить заявку. Данные сохранены — попробуйте позже.', true);
+   } catch {
+    // A timeout might happen after Telegram has delivered the message. Never auto-retry.
+    showResult('Не удалось подтвердить доставку. Заявка могла поступить в Telegram. Не отправляйте её повторно; при необходимости свяжитесь с нами напрямую.', true);
+   } finally {
+    window.clearTimeout(timer);
+    sending = false;
+    submit.disabled = false;
+    submit.removeAttribute('aria-busy');
+   }
   });
  }
 }
-if(!customElements.get('consultation-form'))customElements.define('consultation-form',ConsultationForm);
+if (!customElements.get('consultation-form')) customElements.define('consultation-form', ConsultationForm);
 </script>
 <style>
+.bot-trap{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.form-result[data-state='error']{color:var(--color-error,#b52a1e)}
 consultation-form{display:block;min-width:0}form{display:grid;gap:16px}.form-fields{display:grid;gap:4px}legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.service-options{display:flex;gap:4px;flex-wrap:wrap}.consent-copy{text-transform:uppercase;font-size:16px}.consent-copy a{text-decoration:underline}.form-note{font-size:12px;color:var(--color-gray-3)}.form-result{font-size:14px;color:var(--color-green);line-height:1.5}.button--split:hover{color:var(--color-green)}.button--split:active{color:var(--color-black)}@media(max-width:40rem){.consent-copy{font-size:13px}}
 </style>
 <style>
