@@ -10,7 +10,7 @@ test('contacts desktop layout, city map and no fictitious marker',async({page})=
   await expect(page.locator('.contacts-details__lines')).toContainText('+375 (29) 777-77-77');
   await expect(page.locator('.contacts-socials__item')).toHaveCount(3);
   await expect(page.locator('.contacts-meta__group')).toHaveCount(2);
-  await expect(page.getByRole('link',{name:'Yandex Maps'})).toHaveAttribute('href','#map');
+  await expect(page.locator('.contacts-meta').getByRole('link',{name:'Yandex Maps'})).toHaveAttribute('href','#map');
   const map=page.locator('yandex-city-map');
   await expect(map).toBeVisible();
   await expect(map).toHaveAttribute('data-mode',/^(widget|api|api-ready|widget-fallback)$/);
