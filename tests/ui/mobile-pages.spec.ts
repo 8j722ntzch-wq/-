@@ -126,6 +126,7 @@ test('404 Mobile: correct HTTP status and exact 340×153 original vector + 340×
   await expect(h1).toHaveCSS('font-weight','600');
   near((await h1.boundingBox())?.x,25,1);
   near((await h1.boundingBox())?.y,346,2);
+  near((await h1.boundingBox())?.height,42,1);
   await expect(page.locator('.not-found p')).toHaveCSS('font-size','14px');
   const action=page.getByRole('link',{name:'Вернуться на главную'});
   const actionBounds=await action.boundingBox();
