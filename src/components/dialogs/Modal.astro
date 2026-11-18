@@ -1,9 +1,9 @@
 ---
 import Icon from '../ui/Icon.astro';
-interface Props { id:string;title:string;description?:string; }
-const {id,title,description}=Astro.props;
+interface Props { id:string;title:string;description?:string;variant?:'consultation'|'success'; }
+const {id,title,description,variant}=Astro.props;
 ---
-<dialog id={id} class="modal" data-modal aria-labelledby={id+'-title'} aria-describedby={description?id+'-description':undefined}>
+<dialog id={id} class:list={['modal',variant&&`modal--${variant}`]} data-modal aria-labelledby={id+'-title'} aria-describedby={description?id+'-description':undefined}>
  <div class="modal-inner"><div class="modal-heading"><h2 id={id+'-title'} class="type-h1">{title}</h2><button type="button" class="modal-close" data-close-dialog aria-label="Закрыть окно"><Icon name="close"/></button></div>{description&&<p id={id+'-description'} class="modal-description">{description}</p>}<div class="modal-content"><slot/></div></div>
 </dialog>
 <script>
@@ -33,5 +33,14 @@ document.querySelectorAll<HTMLDialogElement>('dialog[data-modal]').forEach(dialo
 });
 </script>
 <style>
-.modal{width:min(704px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white);overflow:auto;overscroll-behavior:contain}.modal::backdrop{background:#0d0d0db3;backdrop-filter:blur(3px)}.modal-inner{padding:36px}.modal-heading{display:flex;align-items:start;justify-content:space-between;gap:16px}.modal-heading h2{text-transform:uppercase;overflow-wrap:anywhere}.modal-close{display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid transparent;border-radius:4px;background:var(--color-green);color:var(--color-black);padding:0}.modal-close:hover{border-color:var(--color-green);color:var(--color-green);background:transparent}.modal-description{margin-top:12px;color:var(--color-gray-3)}.modal-content{margin-top:24px}@media(max-width:40rem){.modal-inner{padding:24px 20px}.modal-heading h2{font-size:24px}.modal-close{width:44px;height:44px}.modal-heading{gap:8px}.modal-description{font-size:14px}}
+.modal{width:min(704px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white);overflow:auto;overscroll-behavior:contain}.modal::backdrop{background:#0d0d0db3;backdrop-filter:blur(3px)}.modal-inner{padding:36px}.modal-heading{display:flex;align-items:start;justify-content:space-between;gap:16px}.modal-heading h2{text-transform:uppercase;overflow-wrap:anywhere}.modal-close{display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid transparent;border-radius:4px;background:var(--color-green);color:var(--color-black);padding:0}.modal-close:hover{border-color:var(--color-green);color:var(--color-green);background:transparent} .modal-description{margin-top:12px;color:var(--color-gray-3)}.modal--consultation .modal-description{color:var(--color-gray-2)}.modal-content{margin-top:24px}@media(max-width:40rem){
+ .modal{width:min(340px,calc(100% - 40px));border-radius:0}
+ .modal-inner{padding:20px}
+ .modal-heading{gap:12px}
+ .modal-heading h2{font-size:24px;line-height:30px}
+ .modal-close{width:36px;height:36px}
+ .modal-description{font-size:14px;line-height:18px}
+ .modal--success .modal-description{margin-top:8px}
+ .modal--success .modal-content{margin-top:16px}
+}
 </style>

@@ -4,18 +4,18 @@ import ServiceOption from '../ui/ServiceOption.astro';
 import Checkbox from '../ui/Checkbox.astro';
 import Icon from '../ui/Icon.astro';
 import '../../styles/button.css';
-interface Props { id?:string; home?:boolean; policyDialog?:string;defaultService?:string; }
-const {id='form-'+crypto.randomUUID(),home=false,policyDialog,defaultService}=Astro.props;
+interface Props { id?:string; home?:boolean; dialog?:boolean; policyDialog?:string;defaultService?:string; }
+const {id='form-'+crypto.randomUUID(),home=false,dialog=false,policyDialog,defaultService}=Astro.props;
 const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Нанесение страз'];
 ---
-<consultation-form data-default-service={defaultService} class:list={{'consultation-form--home':home}}><form id={id} aria-describedby={id+'-note'}>
+<consultation-form data-default-service={defaultService} class:list={{'consultation-form--home':home,'consultation-form--dialog':dialog}}><form id={id} aria-describedby={id+'-note'}>
  <input type="hidden" name="context" value=""/>
  <p class="form-context" hidden></p>
- <div class="form-fields"><TextField name="name" label="Ваше имя" required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" required labelVisible={false}/></div>
+ <div class="form-fields"><TextField name="name" label="Ваше имя" placeholder={dialog?'Ваше имя*':'Ваше имя'} required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" placeholder={dialog?'Ваш номер телефона*':'Ваш номер телефона'} required labelVisible={false}/></div>
  <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service} checked={service===defaultService}/>)}</div></fieldset>
- <Checkbox name="consent" required><span class="consent-copy">Я согласен с {home&&<><a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a> и </>}<a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></span></Checkbox>
- <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home}]} disabled><span class="button__label">Оставить заявку</span>{!home&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
- <p id={id+'-note'} class="form-note">Предпросмотр: данные никуда не отправляются.</p>
+ <Checkbox name="consent" required><span class="consent-copy">{dialog?<>Согласен (-а) с <a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">Политикой конфиденциальности</a> и <a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">Политикой обработки персональных данных</a></>:<>Я согласен с {home&&<><a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a> и </>}<a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></>}</span></Checkbox>
+ <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home&&!dialog}]} disabled><span class="button__label">Оставить заявку</span>{!home&&!dialog&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
+ <p id={id+'-note'} class:list={['form-note',{'sr-only':dialog}]}>Предпросмотр: данные никуда не отправляются.</p>
  <p class="form-result" role="status" aria-live="polite" hidden></p>
  <noscript><p>Для проверки формы включите JavaScript. Отправка не подключена.</p></noscript>
 </form></consultation-form>
@@ -59,4 +59,15 @@ consultation-form{display:block;min-width:0}form{display:grid;gap:16px}.form-fie
 .form-context{color:var(--color-green);font-size:14px;line-height:1.4}
 .consultation-form--home .form-note{font-size:11px;position:absolute;right:36px;bottom:10px;color:var(--color-gray-3)}
 .consultation-form--home .form-result{padding-bottom:24px}
+</style>
+
+<style>
+/* The consultation popup is an exact Mobile 340×550 component in Figma.
+ * Keep compact service pills and its solid submit button limited to the dialog;
+ * embedded application forms retain their existing layout and wording. */
+@media(max-width:40rem){
+ .consultation-form--dialog .service-options :global(.option span){height:38px;min-height:38px;padding:0 10.5px;font-size:12px;line-height:14px}
+ .consultation-form--dialog .consent-copy{font-size:14px;line-height:18px;letter-spacing:-.02em}
+ .consultation-form--dialog .button[type=submit]{height:50px;min-height:50px;padding:14px 20px;font-size:14px;line-height:20px}
+}
 </style>

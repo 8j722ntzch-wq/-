@@ -193,7 +193,7 @@ test('preview form validates input and never claims delivery', async ({ page }) 
   await expect(name).toBeFocused();
   await name.fill('Тест');
   await phone.fill('123');
-  await dialog.getByRole('checkbox', { name: /Я согласен с политикой/i }).check();
+  await dialog.getByRole('checkbox', { name: /Согласен \(-а\) с Политикой/i }).check();
   await submit.click();
   expect(await phone.evaluate((el: HTMLInputElement) => el.validity.valid)).toBeFalsy();
   await expect(dialog.getByRole('status')).not.toBeVisible();
@@ -214,6 +214,6 @@ test('price groups toggle independently and confirmation demo is explicit', asyn
   const dialog = page.locator('#success');
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText('заявка не отправлялась');
-  await dialog.getByRole('button', { name: 'Вернуться на сайт' }).click();
-  await expect(dialog).not.toBeVisible();
+  await dialog.getByRole('link', { name: 'Вернуться на главную' }).click();
+  await expect(page).toHaveURL(/\/$/);
 });

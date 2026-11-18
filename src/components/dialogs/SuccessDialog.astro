@@ -6,5 +6,23 @@ import '../../styles/button.css';
 interface Props { id?:string; preview?:boolean; }
 const {id='success',preview=false}=Astro.props;
 ---
-<Modal id={id} title="Спасибо за вашу заявку!" description={preview?'Демонстрация окна подтверждения. В этом предпросмотре заявка не отправлялась.':'Свяжемся с вами, чтобы обсудить детали.'}><div class="success-content"><p class="type-h6">{preview?'Пример состояния обработки':'Заявка получена'}</p><Loading label={preview?'Демонстрация индикатора':'Заявка получена'} value={50}/><button type="button" data-close-dialog class="button button--solid button--l button--split button--full"><span class="button__label">Вернуться на сайт</span><span class="button__icon"><Icon name="arrow" size={20}/></span></button></div></Modal>
-<style>.success-content{display:grid;gap:16px}.success-content :global(.button:hover){color:var(--color-green)}.success-content :global(.button:active){color:var(--color-black)}</style>
+<Modal id={id} variant="success" title="Спасибо за Вашу заявку!" description="Наш менеджер свяжется с вами в ближайшее время">
+ <div class="success-content">
+  <div class="success-progress">
+   <p class="type-h6">Ваша заявка находится в обработке</p>
+   <Loading label="Ваша заявка находится в обработке" value={50}/>
+  </div>
+  <a href="/" class="button button--solid button--l button--split button--full"><span class="button__label">Вернуться на главную</span><span class="button__icon"><Icon name="arrow" size={20}/></span></a>
+ </div>
+ {preview&&<p class="sr-only">Демонстрационный пример: заявка не отправлялась.</p>}
+</Modal>
+<style>
+.success-content{display:grid;gap:24px}
+.success-progress{display:grid;gap:12px}
+.success-content :global(.button:hover){color:var(--color-green)}
+.success-content :global(.button:active){color:var(--color-black)}
+@media(max-width:40rem){
+ .success-content{gap:16px}
+ .success-content :global(.button--split){--control-height:50px;--control-padding:20px;font-size:14px;line-height:18px}
+}
+</style>

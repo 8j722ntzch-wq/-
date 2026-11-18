@@ -4,4 +4,6 @@ import ConsultationForm from '../forms/ConsultationForm.astro';
 interface Props { id?:string;policyDialog?:string;defaultService?:string; }
 const {id='consultation',policyDialog,defaultService}=Astro.props;
 ---
-<Modal id={id} title="Оставьте заявку" description="Расскажите, что нужно сделать. Поможем подобрать подходящий вариант."><ConsultationForm policyDialog={policyDialog} defaultService={defaultService}/></Modal>
+<Modal id={id} variant="consultation" title="Расскажите, что нужно сделать" description="Опишите вещь и желаемый результат">
+ <ConsultationForm dialog policyDialog={policyDialog} defaultService={defaultService}/>
+</Modal>
