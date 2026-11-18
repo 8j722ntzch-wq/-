@@ -24,7 +24,9 @@ test('button_Checkbox: white Default stroke, green Hover/Pressed and original di
   expect(computedBorder).toBeGreaterThanOrEqual(1);
   expect(computedBorder).toBeLessThanOrEqual(1.5);
   await expect(box).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
-  await box.hover();
+  // The native checkbox input intentionally covers the decorative span.
+  // Hover the real interactive control, not the pointer-events:none artwork.
+  await input.hover();
   await expect(box).toHaveCSS('border-top-color','rgb(197, 238, 105)');
   await input.check();
   await expect(input).toBeChecked();
