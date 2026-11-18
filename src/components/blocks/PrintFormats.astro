@@ -21,7 +21,7 @@ class PrintFormats extends HTMLElement{
   const track=this.querySelector<HTMLElement>('.format-track')!;
   const [previous,next]=Array.from(this.querySelectorAll('button'));
   const update=()=>{previous.disabled=track.scrollLeft<=1;next.disabled=track.scrollLeft+track.clientWidth>=track.scrollWidth-2;};
-  const move=(direction:number)=>track.scrollBy({left:direction*312,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  const move=(direction:number)=>{const first=track.firstElementChild as HTMLElement|null;const gap=parseFloat(getComputedStyle(track).columnGap)||12;const step=(first?.getBoundingClientRect().width||300)+gap;track.scrollBy({left:direction*step,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});};
   previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
   track.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}});
   track.addEventListener('scroll',update,{passive:true});this.observer=new ResizeObserver(update);this.observer.observe(track);update();

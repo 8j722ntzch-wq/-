@@ -4,18 +4,18 @@ import ServiceOption from '../ui/ServiceOption.astro';
 import Checkbox from '../ui/Checkbox.astro';
 import Icon from '../ui/Icon.astro';
 import '../../styles/button.css';
-interface Props { id?:string; home?:boolean; dialog?:boolean; policyDialog?:string;defaultService?:string; }
-const {id='form-'+crypto.randomUUID(),home=false,dialog=false,policyDialog,defaultService}=Astro.props;
+interface Props { id?:string; home?:boolean; dialog?:boolean; servicePage?:boolean; policyDialog?:string;defaultService?:string; }
+const {id='form-'+crypto.randomUUID(),home=false,dialog=false,servicePage=false,policyDialog,defaultService}=Astro.props;
 const services=['Ремонт и подгонка','Машинная вышивка','Печать на одежде','Шевроны и нашивки','Нанесение страз'];
 ---
-<consultation-form data-default-service={defaultService} class:list={{'consultation-form--home':home,'consultation-form--dialog':dialog}}><form id={id} aria-describedby={id+'-note'}>
+<consultation-form data-default-service={defaultService} class:list={{'consultation-form--home':home,'consultation-form--dialog':dialog,'consultation-form--service':servicePage}}><form id={id} aria-describedby={id+'-note'}>
  <input type="hidden" name="context" value=""/>
  <p class="form-context" hidden></p>
- <div class="form-fields"><TextField name="name" label="Ваше имя" placeholder={dialog?'Ваше имя*':'Ваше имя'} required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" placeholder={dialog?'Ваш номер телефона*':'Ваш номер телефона'} required labelVisible={false}/></div>
+ <div class="form-fields"><TextField name="name" label="Ваше имя" placeholder={(dialog||servicePage)?'Ваше имя*':'Ваше имя'} required labelVisible={false}/><TextField name="phone" type="tel" label="Ваш номер телефона" placeholder={(dialog||servicePage)?'Ваш номер телефона*':'Ваш номер телефона'} required labelVisible={false}/></div>
  <fieldset><legend>Выберите услугу</legend><div class="service-options">{services.map(service=><ServiceOption name="services" value={service} label={service} checked={service===defaultService}/>)}</div></fieldset>
- <Checkbox name="consent" required><span class="consent-copy">{dialog?<>Согласен (-а) с <a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">Политикой конфиденциальности</a> и <a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">Политикой обработки персональных данных</a></>:<>Я согласен с {home&&<><a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a> и </>}<a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></>}</span></Checkbox>
+ <Checkbox name="consent" required><span class="consent-copy">{(dialog||servicePage)?<>Согласен (-а) с <a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">Политикой конфиденциальности</a> и <a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">Политикой обработки персональных данных</a></>:<>Я согласен с {home&&<><a href="/policy/#privacy" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a> и </>}<a href="/policy/#personal-data" target="_blank" rel="noopener noreferrer">политикой обработки персональных данных</a></>}</span></Checkbox>
  <button type="submit" class:list={['button button--solid button--l button--full',{'button--split':!home&&!dialog}]} disabled><span class="button__label">Оставить заявку</span>{!home&&!dialog&&<span class="button__icon"><Icon name="arrow" size={20}/></span>}</button>
- <p id={id+'-note'} class:list={['form-note',{'sr-only':dialog}]}>Предпросмотр: данные никуда не отправляются.</p>
+ <p id={id+'-note'} class:list={['form-note',{'sr-only':dialog||servicePage}]}>Предпросмотр: данные никуда не отправляются.</p>
  <p class="form-result" role="status" aria-live="polite" hidden></p>
  <noscript><p>Для проверки формы включите JavaScript. Отправка не подключена.</p></noscript>
 </form></consultation-form>
