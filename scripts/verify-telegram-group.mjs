@@ -16,15 +16,21 @@ const expectedGroupTitle = 'Мастерская | Заявки';
 const groupCommand = '/bind_msk_261119@masterskayavit_bot';
 const privateCommand = '/verify_msk_261119';
 
+/** @param {string} code */
 function status(code) {
   console.log(code);
 }
 
+/** @param {string} code */
 function fail(code) {
   console.error(code);
   process.exitCode = 1;
 }
 
+/**
+ * @param {string} method
+ * @param {Record<string, unknown>} [payload]
+ */
 async function telegram(method, payload = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12000);
