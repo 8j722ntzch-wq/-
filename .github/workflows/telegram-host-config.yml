@@ -42,7 +42,7 @@ jobs:
           [[ "${TG_TOKEN:-}" =~ ^[0-9]{5,15}:[A-Za-z0-9_-]{20,}$ ]] || { echo "::error::TELEGRAM_BOT_TOKEN missing or malformed"; exit 1; }
           [[ "${CHAT_ID:-}" =~ ^-[0-9]{5,20}$ ]] || { echo "::error::TELEGRAM_CHAT_ID missing or malformed"; exit 1; }
           [[ "${SFTP_HOST:-}" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || { echo "::error::SFTP_HOST missing or malformed"; exit 1; }
-          [[ "${SFTP_USERNAME:-}" =~ ^[A-Za-z0-9_][A-Za-z0-9_.$-]*$ ]] || { echo "::error::SFTP_USERNAME missing or malformed"; exit 1; }
+          [[ "${SFTP_USERNAME:-}" =~ ^[A-Za-z0-9_][A-Za-z0-9_.@-]*$ ]] || { echo "::error::SFTP_USERNAME missing or malformed"; exit 1; }
           [[ -n "${SSHPASS:-}" && -n "${SFTP_KNOWN_HOSTS:-}" ]] || { echo "::error::SFTP credentials incomplete"; exit 1; }
           port="${SFTP_PORT:-22}"
           [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || {
@@ -71,7 +71,7 @@ jobs:
               -oNumberOfPasswordPrompts=1 \
               -oPreferredAuthentications=password,keyboard-interactive \
               -oPubkeyAuthentication=no \
-              -b "$batch" "$SFTP_USERNAME@SFTP_HOST" \
+              -b "$batch" "$SFTP_USERNAME@$SFTP_HOST" \
               >"$output" 2>&1
           }
 
