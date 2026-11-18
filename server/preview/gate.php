@@ -8,12 +8,6 @@ preview_start_session();
 unset($config); // Never expose the hash to a template or logged output.
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-if ($method !== 'GET' && $method !== 'HEAD') {
-    http_response_code(405);
-    header('Allow: GET, HEAD');
-    exit;
-}
-
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $rawPath = parse_url($requestUri, PHP_URL_PATH);
 if (!is_string($rawPath) || !str_starts_with($rawPath, '/')) {
@@ -25,6 +19,15 @@ if (str_contains($path, "\0") || str_contains($path, '\\') || str_contains($path
     || preg_match('~(^|/)\.\.?(/|$)~', $path)
     || preg_match('~(^|/)\.~', $path)) {
     http_response_code(404);
+    exit;
+}
+
+// Preserve the default-deny policy. The ONLY POST route besides the
+// internal login handler is the authenticated consultation API.
+if ($method !== 'GET' && $method !== 'HEAD' &&
+    !($method === 'POST' && $path === '/api/submit.php')) {
+    http_response_code(405);
+    header('Allow: GET, HEAD');
     exit;
 }
 
@@ -50,8 +53,31 @@ if ($path === '/preview-login' || $path === '/preview-login/') {
 }
 
 if (!preview_authorized()) {
+    if ($path === '/api/submit.php' && $method === 'POST') {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(401);
+        echo '{"ok":false,"code":"preview_auth_required"}';
+        exit;
+    }
     $_SESSION['preview_after_login'] = preview_safe_next($requestUri);
     preview_redirect('/preview-login/', 302);
+}
+
+// Only this fixed, reviewed PHP endpoint may execute after session auth.
+// Never route user-supplied paths to arbitrary PHP scripts.
+if ($path === '/api/submit.php' && $method === 'POST') {
+    $root = realpath(dirname(__DIR__));
+    $api = is_string($root) ? realpath($root . '/api/submit.php') : false;
+    if (!is_string($root) || !is_string($api)
+        || !str_starts_with($api, $root . DIRECTORY_SEPARATOR)
+        || !is_file($api)) {
+        http_response_code(503);
+        header('Content-Type: application/json; charset=utf-8');
+        echo '{"ok":false,"code":"api_unavailable"}';
+        exit;
+    }
+    require $api;
+    exit;
 }
 
 if (str_starts_with($path, '/_preview/') || preg_match('~\.(?:php|phtml|phar|cgi|pl|sh|htaccess|htpasswd)$~i', $path)) {
