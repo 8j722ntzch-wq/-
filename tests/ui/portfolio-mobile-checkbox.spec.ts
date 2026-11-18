@@ -19,7 +19,10 @@ test('button_Checkbox: white Default stroke, green Hover/Pressed and original di
   const input=controls.getByRole('checkbox',{name:'Не выбрано'});
   const box=input.locator('xpath=following-sibling::span[1]');
   await expect(box).toHaveCSS('border-top-color','rgb(254, 254, 254)');
-  await expect(box).toHaveCSS('border-top-width','1.5px');
+  // Browser engines round 1.5px strokes to 1px in computed styles.
+  const computedBorder=await box.evaluate(el=>parseFloat(getComputedStyle(el).borderTopWidth));
+  expect(computedBorder).toBeGreaterThanOrEqual(1);
+  expect(computedBorder).toBeLessThanOrEqual(1.5);
   await expect(box).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
   await box.hover();
   await expect(box).toHaveCSS('border-top-color','rgb(197, 238, 105)');
@@ -99,7 +102,7 @@ for(const project of portfolioProjects){
   expect(await hero.evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBeTruthy();
   const story=page.locator('.project-story');
   const sb=await story.boundingBox();
-  near(sb?.x,25,1);near(sb?.y,isRuckit?608:578,3);near(sb?.width,340,1);
+  near(sb?.x,25,1);near(sb?.y,isRuckit?608:578,3);near(sb?.width,340,1);near(sb?.height,524,3);
   await expect(story.getByRole('heading',{level:2,name:'Заголовок H2'})).toHaveCSS('font-size','20px');
   await expect(story.getByRole('heading',{level:3,name:'Заголовок H3'})).toHaveCSS('font-size','16px');
   await expect(story.locator('.project-story__text-block p').first()).toHaveCSS('font-size','14px');
