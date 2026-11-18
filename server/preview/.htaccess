@@ -1,0 +1,17 @@
+# Protected staging mode for baltmotors.by. The rewrite must run on the actual
+# public web server for ALL requests, including static files and PDFs.
+# NEVER publish this directory before verifying that unauthenticated requests
+# for /, /portfolio/, /_astro/* and /documents/* are blocked.
+RewriteEngine On
+RewriteCond %{THE_REQUEST} \s/+_preview/gate\.php(?:[?\s]) [NC]
+RewriteRule ^_preview/gate\.php$ - [F,L]
+RewriteRule ^_preview/(?:gate|auth)\.php$ - [L]
+RewriteRule ^ _preview/gate.php [L,QSA]
+
+<IfModule mod_headers.c>
+Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "no-referrer"
+Header always set X-Frame-Options "DENY"
+Header always set Cache-Control "private, no-store, max-age=0"
+</IfModule>

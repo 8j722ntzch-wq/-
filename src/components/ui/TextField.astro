@@ -1,14 +1,14 @@
 ---
 interface Props {
-  name:string;label:string;id?:string;type?:'text'|'tel';value?:string;placeholder?:string;
+  name:string;label:string;id?:string;type?:'text'|'tel'|'password';value?:string;placeholder?:string;
   required?:boolean;disabled?:boolean;error?:string;hint?:string;
-  autocomplete?:'name'|'given-name'|'tel'|'off';maxLength?:number;labelVisible?:boolean;
+  autocomplete?:'name'|'given-name'|'tel'|'off'|'username'|'current-password';maxLength?:number;labelVisible?:boolean;
 }
 const {
   name,label,id='field-'+crypto.randomUUID(),type='text',value='',placeholder=label,
   required=false,disabled=false,error,hint,
-  autocomplete=type==='tel'?'tel':'name',
-  maxLength=type==='tel'?40:80,labelVisible=true,
+  autocomplete=type==='tel'?'tel':type==='password'?'current-password':'name',
+  maxLength=type==='tel'?40:type==='password'?128:80,labelVisible=true,
 }=Astro.props;
 const describedBy=[hint&&id+'-hint',error&&id+'-error'].filter(Boolean).join(' ')||undefined;
 ---

@@ -1,0 +1,77 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import TextField from '../../components/ui/TextField.astro';
+import Button from '../../components/ui/Button.astro';
+---
+<SiteLayout title="Закрытый предпросмотр — Мастерская" description="Вход в закрытую демонстрационную версию сайта Мастерская.">
+  <main id="content" class="preview-login">
+    <section class="preview-login__panel" aria-labelledby="preview-login-title">
+      <div class="preview-login__intro">
+        <div class="preview-login__brand">
+          <span class="preview-login__mark" aria-hidden="true"></span>
+          <span>Мастерская</span>
+        </div>
+        <p class="preview-login__eyebrow">01 / ЗАКРЫТЫЙ ПРЕДПРОСМОТР</p>
+        <h1 id="preview-login-title">Сайт на примерке</h1>
+        <p class="preview-login__description">Это демонстрационная версия мастерской. Для просмотра введите логин и пароль, которые вам предоставили.</p>
+        <div class="preview-login__deco" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="preview-login__form-container">
+        <p class="preview-login__eyebrow">02 / АВТОРИЗАЦИЯ</p>
+        <h2>Войти на сайт</h2>
+        <p class="preview-login__hint">Доступ только для просмотра проекта.</p>
+        <form method="post" action="https://baltmotors.by/_preview/auth.php" class="preview-login__form" autocomplete="on">
+          <input type="hidden" name="csrf" value="PREVIEW_CSRF_PLACEHOLDER"/>
+          <TextField name="username" label="Логин" type="text" placeholder="Введите логин" autocomplete="username" maxLength={64} required/>
+          <TextField name="password" label="Пароль" type="password" placeholder="Введите пароль" autocomplete="current-password" maxLength={128} required/>
+          <p class="preview-login__error" id="preview-login-error" role="alert">Не удалось войти. Проверьте логин и пароль.</p>
+          <Button type="submit" size="m" fullWidth>Войти на сайт</Button>
+        </form>
+        <p class="preview-login__footnote">Предпросмотр не предназначен для публичного доступа или индексации.</p>
+      </div>
+    </section>
+  </main>
+</SiteLayout>
+<style>
+.preview-login{min-height:100dvh;display:grid;place-items:center;padding:48px 24px;background:var(--color-milk)}
+.preview-login__panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:min(100%,1000px);min-height:560px;border-radius:4px;overflow:hidden;box-shadow:var(--shadow)}
+.preview-login__intro{position:relative;isolation:isolate;overflow:hidden;padding:40px;display:flex;flex-direction:column;align-items:flex-start;background:linear-gradient(135deg,var(--color-blue) 45%,var(--color-blue-dark));color:var(--color-white)}
+.preview-login__brand{display:flex;align-items:center;gap:16px;font:700 24px/1.25 var(--font-heading)}
+.preview-login__mark{display:block;flex:none;width:24px;height:24px;background:var(--color-green);transform:rotate(45deg);margin:5px}
+.preview-login__eyebrow{font:700 12px/1.2 var(--font-body);text-transform:uppercase;letter-spacing:0}
+.preview-login__intro>.preview-login__eyebrow{margin-top:auto}
+.preview-login__intro h1{margin-top:12px;max-width:420px;font:700 clamp(28px,3.5vw,42px)/1.18 var(--font-heading);text-transform:uppercase}
+.preview-login__description{margin-top:20px;max-width:400px;font:500 16px/1.45 var(--font-body)}
+.preview-login__deco{display:flex;gap:10px;width:100%;margin-top:48px}
+.preview-login__deco span{flex:1;height:4px;border:1px solid var(--color-white);border-radius:3px}
+.preview-login__deco span:first-child{background:var(--color-green);border-color:var(--color-green)}
+.preview-login__form-container{min-width:0;padding:40px;display:flex;flex-direction:column;justify-content:center;background:var(--color-black);color:var(--color-white)}
+.preview-login__form-container h2{margin-top:12px;font:700 clamp(24px,3vw,32px)/1.25 var(--font-heading)}
+.preview-login__hint{margin-top:12px;font:500 14px/1.4 var(--font-body);color:var(--color-gray-3)}
+.preview-login__form{display:grid;gap:16px;margin-top:32px}
+.preview-login__form :global(.field__label){color:var(--color-white);font-size:14px}
+.preview-login__form :global(.field input){height:60px;min-height:60px;font-size:16px}
+.preview-login__form :global(.button){margin-top:8px;font-size:16px}
+.preview-login__error{display:none;font:500 14px/1.4 var(--font-body);color:var(--color-error)}
+:global(html[data-preview-login-error="1"]) .preview-login__error{display:block}
+.preview-login__footnote{margin-top:28px;font:500 12px/1.6 var(--font-body);color:var(--color-gray-3)}
+@media(max-width:58rem){
+  .preview-login{min-height:100dvh;display:block;padding:25px}
+  .preview-login__panel{grid-template-columns:minmax(0,1fr);width:min(100%,480px);min-height:calc(100dvh - 50px);margin-inline:auto}
+  .preview-login__intro{padding:24px;min-height:260px}
+  .preview-login__brand{font-size:20px}
+  .preview-login__brand .preview-login__mark{width:20px;height:20px}
+  .preview-login__intro>.preview-login__eyebrow{margin-top:36px}
+  .preview-login__intro h1{font-size:28px;line-height:1.2}
+  .preview-login__description{font-size:14px;line-height:1.4;margin-top:12px}
+  .preview-login__deco{margin-top:24px}
+  .preview-login__form-container{padding:24px}
+  .preview-login__form-container h2{font-size:24px}
+  .preview-login__form{margin-top:24px;gap:12px}
+  .preview-login__form :global(.field input){height:50px;min-height:50px;font-size:16px}
+  .preview-login__form :global(.button){min-height:50px;font-size:14px;margin-top:8px}
+  .preview-login__footnote{margin-top:24px}
+}
+</style>
