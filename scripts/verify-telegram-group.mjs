@@ -78,7 +78,7 @@ async function main() {
 
   // Once the recipient is stored as a GitHub Secret, validate it without
   // printing its value, making it an Actions output, or sending a message.
-  const configuredChatId = process.env.TELEGRAM_CHAT_ID;
+  const configuredChatId = (process.env.TELEGRAM_CHAT_ID || '').trim();
   if (configuredChatId) {
     if (!/^-\d{5,20}$/.test(configuredChatId)) return fail('CHAT_ID_FORMAT_INVALID');
     let group;
