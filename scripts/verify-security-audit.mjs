@@ -25,6 +25,16 @@ const knownDerived = new Set([
   'vite',
 ]);
 
+/** @type {{
+  error?: unknown,
+  vulnerabilities: Record<string, {
+    severity: string,
+    via: Array<string | {url: string, title?: string}>
+  }>,
+  metadata: {
+    vulnerabilities: { critical: number, high: number, moderate: number, low: number, total: number }
+  }
+}} */
 let audit;
 try {
   audit = JSON.parse(readFileSync(auditPath, 'utf8'));
