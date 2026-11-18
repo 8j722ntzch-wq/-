@@ -1,0 +1,89 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import PromoBar from '../../components/blocks/PromoBar.astro';
+import Header from '../../components/blocks/Header.astro';
+import Footer from '../../components/blocks/Footer.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+import Icon from '../../components/ui/Icon.astro';
+import YandexCityMap from '../../components/blocks/YandexCityMap.astro';
+import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+
+const dialogId='contacts-consultation';
+const links=[
+  {label:'Услуги',href:'/#services'},
+  {label:'О нас',href:'/#advantages'},
+  {label:'Бизнесу',href:'/#audiences'},
+  {label:'Портфолио',href:'/portfolio/'},
+  {label:'Контакты',href:'/contacts/'},
+];
+const socialChannels=[
+  {name:'Instagram',icon:'instagram'},
+  {name:'Telegram',icon:'telegram'},
+  {name:'YouTube',icon:'youtube'},
+];
+---
+<SiteLayout title="Контакты — Мастерская" description="Контакты мастерской в Витебске. Информация о режиме работы и карта города; точный адрес будет добавлен позднее.">
+  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="/#forms"/>
+  <Header phone="+375 (29) 777-77-77" links={links} logoHref="/" dialogId={dialogId}/>
+  <main id="content" class="contacts-page">
+    <section class="contacts-intro container" aria-labelledby="contacts-title">
+      <SectionHeading as="h1" id="contacts-title" eyebrow="Контакты">Наши контакты</SectionHeading>
+      <div class="contacts-grid">
+        <div class="contacts-details">
+          <div class="contacts-details__lines">
+            <p>info@masterskaya.by</p>
+            <p>+375 (29) 777-77-77</p>
+          </div>
+          <div class="contacts-socials" aria-label="Социальные сети">
+            {socialChannels.map(channel=>
+              <span class="contacts-socials__item" title={'Ссылка '+channel.name+' появится после подтверждения аккаунта'} aria-label={channel.name+': ссылка пока не указана'}>
+                <Icon name={channel.icon} size={24}/>
+              </span>
+            )}
+          </div>
+        </div>
+        <div class="contacts-meta">
+          <div class="contacts-meta__group">
+            <h2>Мы на картах:</h2>
+            <a href="#map" class="contacts-meta__map-link"><img src="/assets/figma/yandex.svg" width="18" height="18" alt=""/>Yandex Maps</a>
+            <span class="contacts-meta__map-pending" title="Ссылка на организацию будет добавлена после подтверждения адреса"><img src="/assets/figma/google.svg" width="18" height="18" alt=""/>Google Maps</span>
+          </div>
+          <div class="contacts-meta__group">
+            <h2>Режим работы:</h2>
+            <p><strong>Пн — Пт:</strong> 9:00 – 18:00</p>
+            <p><strong>Сб — Вс:</strong> 10:00 – 20:00</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="map" class="contacts-map" aria-labelledby="contacts-map-title">
+      <h2 id="contacts-map-title" class="sr-only">Карта Витебска</h2>
+      <YandexCityMap/>
+    </section>
+  </main>
+  <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation/>
+  <ConsultationDialog id={dialogId}/>
+</SiteLayout>
+<style>
+.contacts-page{display:block}
+.contacts-intro{min-height:375px;padding-top:40px}
+.contacts-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px;margin-top:24px}
+.contacts-details{grid-column:span 9;display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-width:0}
+.contacts-details__lines{display:grid;gap:4px;font:700 32px/1.3 var(--font-body);overflow-wrap:anywhere}
+.contacts-socials{display:flex;align-items:center;gap:12px}
+.contacts-socials__item{display:grid;place-items:center;width:48px;height:48px;border:1.5px solid var(--color-gray-3);border-radius:4px;color:var(--color-black)}
+.contacts-meta{grid-column:span 3;display:grid;align-content:start;gap:12px}
+.contacts-meta__group{display:grid;justify-items:start;gap:4px;font:500 14px/1.25 var(--font-body)}
+.contacts-meta__group h2{margin-bottom:8px;color:var(--color-gray-5);font:600 14px/1.3 var(--font-heading);letter-spacing:-.02em}
+.contacts-meta__group strong{font-weight:600;font-family:var(--font-heading)}
+.contacts-meta__map-link,.contacts-meta__map-pending{display:flex;align-items:center;gap:6px;text-decoration:none}
+.contacts-meta__map-link:hover{text-decoration:underline}
+.contacts-meta__map-link img,.contacts-meta__map-pending img{flex:none}
+.contacts-map{scroll-margin-top:0}
+@media(max-width:55rem){
+ .contacts-intro{min-height:0;padding-top:32px;padding-bottom:40px}
+ .contacts-grid{grid-template-columns:1fr;gap:32px}
+ .contacts-details,.contacts-meta{grid-column:auto}
+ .contacts-details__lines{font-size:clamp(18px,5vw,28px)}
+}
+</style>

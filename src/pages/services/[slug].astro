@@ -17,7 +17,7 @@ import {projects} from '../../data/home';
 export function getStaticPaths(){return pages.map(page=>({params:{slug:page.slug},props:{page}}));}
 const {page}=Astro.props;
 const dialogId='service-consultation';
-const links=[{label:'Услуги',href:'/#services'},{label:'О нас',href:'/#advantages'},{label:'Бизнесу',href:'/#audiences'},{label:'Портфолио',href:'#portfolio'},{label:'Контакты',href:'#footer'}];
+const links=[{label:'Услуги',href:'/#services'},{label:'О нас',href:'/#advantages'},{label:'Бизнесу',href:'/#audiences'},{label:'Портфолио',href:'#portfolio'},{label:'Контакты',href:'/contacts/'}];
 ---
 <SiteLayout title={`${page.title} — Мастерская`} description={`${page.title}: прейскурант, условия и примеры работ.`}>
  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="#forms"/>

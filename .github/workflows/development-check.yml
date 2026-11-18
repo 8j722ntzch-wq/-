@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # Public browser API key (HTTP Referer restricted). Blank until configured.
+  PUBLIC_YANDEX_MAPS_API_KEY: ${{ vars.YANDEX_MAPS_API_KEY }}
+
 concurrency:
   group: component-checks-${{ github.ref }}
   cancel-in-progress: true
