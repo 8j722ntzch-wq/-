@@ -121,7 +121,9 @@ test('block_Footer and button_Socials Mobile variants are 40px and preserve lega
   const footer=page.locator('footer');
   const container=footer.locator('.footer-inner');
   const bounds=await container.boundingBox();
-  expect(bounds?.width).toBeCloseTo(340,0);
+  const footerWidth=(await footer.boundingBox())!.width;
+  // Preserve 25px left/right in the usable viewport; scrollbar-gutter: stable reserves space.
+  expect(bounds?.width).toBeCloseTo(footerWidth-50,0);
   const icons=footer.locator('.socials .social-button');
   await expect(icons).toHaveCount(3);
   for(const social of await icons.all()){

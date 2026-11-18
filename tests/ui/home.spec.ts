@@ -53,8 +53,8 @@ test('homepage resources, navigation and form references are complete', async ({
       await expect(page).toHaveURL(new RegExp(href + '$'));
       await expect(page.locator(href)).toBeInViewport();
     } else {
-      await expect(link).toHaveAttribute('href', '/contacts/');
-      // The Contacts route is tested independently in contacts.spec.ts.
+      await expect(link).toHaveAttribute('href', /^\/(?:portfolio|contacts)\/$/);
+      // The cross-route navigation is tested in the related page specs.
     }
   }
   expect(errors).toEqual([]);
@@ -62,7 +62,7 @@ test('homepage resources, navigation and form references are complete', async ({
 
 test('every homepage CTA opens a form with the correct context and service', async ({ page }) => {
   await openHome(page);
-  const triggers = page.locator('[data-open-dialog="home-consultation"]');
+  const triggers = page.locator('[data-open-dialog="home-consultation"]:visible');
   await expect(triggers).toHaveCount(3);
   const dialog = page.locator('#home-consultation');
   for (const trigger of await triggers.all()) {

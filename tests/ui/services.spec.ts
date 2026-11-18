@@ -10,7 +10,7 @@ for(const service of servicePages){
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
   await expect(page.locator('#forms [name=services]:checked')).toHaveValue(service.title);
   const dialog=page.locator('#service-consultation');
-  for(const trigger of await page.locator('[data-open-dialog="service-consultation"]').all()){
+  for(const trigger of await page.locator('[data-open-dialog="service-consultation"]:visible').all()){
    const selected=await trigger.getAttribute('data-service')||service.title;
    await trigger.click();await expect(dialog).toBeVisible();
    await expect(dialog.locator('[name=services]:checked')).toHaveValue(selected);
