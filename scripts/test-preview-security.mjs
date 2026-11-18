@@ -43,6 +43,7 @@ try {
     ensure(login.status===200,'Login is public');
     const cookie=login.headers.get('set-cookie')?.split(';')[0];
     ensure(cookie?.startsWith('__Host-MSKPreview='),'Secure session cookie issued');
+    if (!cookie) throw new Error('Secure preview session cookie is missing');
     const html=await login.text();
     ensure(html.includes('data-preview-login-styles'),'Figma-styled login CSS is self-contained');
     ensure(html.includes('type="password"'),'Password input is real password field');
