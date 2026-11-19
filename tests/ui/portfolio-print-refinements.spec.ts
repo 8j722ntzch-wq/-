@@ -68,8 +68,10 @@ test('Mobile portfolio tabs scroll horizontally to the window edge without clipp
       if(['hidden','clip','auto','scroll'].includes(getComputedStyle(p).overflowX))return false;
     }
     return true;
-   }).slice(0,18).map(el=>({class:el.className?.toString().slice(0,75),right:Math.round(el.getBoundingClientRect().right),width:Math.round(el.getBoundingClientRect().width)})));
+   }).slice(0,18).map(el=>({tag:el.tagName,class:el.className?.toString().slice(0,75),html:el.outerHTML.slice(0,140),right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left),width:Math.round(el.getBoundingClientRect().width),parent:el.parentElement?.className})));
    console.log('PORTFOLIO 320 OVERFLOW',JSON.stringify(offenders));
+   const all=await page.evaluate(()=>[...document.querySelectorAll<HTMLElement>('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.right>innerWidth+1}).slice(0,18).map(el=>({tag:el.tagName,cls:el.className?.toString().slice(0,45),right:Math.round(el.getBoundingClientRect().right),parent:el.parentElement?.className})));
+   console.log('PORTFOLIO 320 ALL',JSON.stringify(all));
   }
  expect(before.pageOverflow).toBeLessThanOrEqual(1);
  await tabs.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
@@ -155,7 +157,7 @@ test('Mobile print carousel controls are directly below track and right-aligned 
     if(['hidden','clip','auto','scroll'].includes(getComputedStyle(p).overflowX))return false;
    }
    return true;
-  }).slice(0,25).map(el=>({class:el.className?.toString().slice(0,75),right:Math.round(el.getBoundingClientRect().right),width:Math.round(el.getBoundingClientRect().width)})));
+  }).slice(0,25).map(el=>({tag:el.tagName,class:el.className?.toString().slice(0,75),html:el.outerHTML.slice(0,140),right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left),width:Math.round(el.getBoundingClientRect().width),parent:el.parentElement?.className})));
   console.log('PRINTING 390 OVERFLOW',JSON.stringify(offenders));
  }
  expect(printOverflow).toBeLessThanOrEqual(1);
