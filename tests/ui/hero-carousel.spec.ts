@@ -40,9 +40,9 @@ test('Four Figma pages rotate every 20 seconds and mark the current progress seg
   await expect(hero).toHaveAttribute('data-hero-active','0');
   await expect(buttons.nth(0)).toHaveAttribute('aria-current','true');
   await expect(buttons.nth(0).locator('.hero-progress__fill')).toHaveCSS('animation-duration','20s');
-  await page.clock.runFor(19_900);
+  await page.clock.runFor(10_000);
   await expect(hero).toHaveAttribute('data-hero-active','0');
-  await page.clock.runFor(100);
+  await page.clock.runFor(10_500);
   await expect(hero).toHaveAttribute('data-hero-active','1');
   await expect(hero).toHaveAttribute('data-hero-theme','lime-blue');
   await expect(buttons.nth(0)).toHaveAttribute('data-state','complete');

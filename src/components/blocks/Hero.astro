@@ -42,7 +42,7 @@ const first = pages[0];
   <img class="stitch stitch--white" src="/assets/figma/stitch-white.svg" width="156" height="3" alt="" />
   <img class="stitch stitch--green" src="/assets/figma/stitch-green.svg" width="156" height="3" alt="" />
   <nav class="hero-progress" aria-label="Переключение слайдов" hidden={pages.length <= 1}>
-    {pages.map((slide, index) =>
+    {pages.length > 1 && pages.map((slide, index) =>
       <button
         type="button" class="hero-progress__step"
         data-hero-page={index}
@@ -143,6 +143,16 @@ class HeroCarousel extends HTMLElement {
         fill.style.animation = 'none';
         void fill.offsetWidth;
         fill.style.animation = '';
+      }
+      // For larger collections, keep the active segment visible within the
+      // pagination strip without scrolling the entire page.
+      const bar = progress[active];
+      const strip = this.querySelector<HTMLElement>('.hero-progress');
+      if (bar && strip && strip.scrollWidth > strip.clientWidth) {
+        const left = bar.offsetLeft;
+        const right = left + bar.offsetWidth;
+        if (left < strip.scrollLeft) strip.scrollLeft = Math.max(0, left - 12);
+        else if (right > strip.scrollLeft + strip.clientWidth) strip.scrollLeft = right - strip.clientWidth;
       }
       start();
     };
