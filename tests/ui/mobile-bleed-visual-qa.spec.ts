@@ -16,7 +16,7 @@ test('DIAGNOSTIC mobile table and carousel viewport crop',async({page})=>{
   console.log('MOBILE_BLEED '+JSON.stringify({slug:item.slug,regions,format,doc:await page.evaluate(()=>document.documentElement.scrollWidth)}));
   if(item.slug==='printing'){
    const b=await fmt.boundingBox();
-   if(b)await emit(page,'print-formats',Math.max(0,Math.round(b.y+scrollY-25)),370);
+   if(b)await emit(page,'print-formats',Math.max(0,Math.round(b.y-25)),370);
   }
   if(item.slug==='embroidery')await emit(page,'embroider-table',255,290);
   if(item.slug==='rhinestones')await emit(page,'rhinestones-table',825,400);
