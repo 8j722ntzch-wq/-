@@ -3,6 +3,7 @@ import SocialButton from '../ui/SocialButton.astro';
 import Button from '../ui/Button.astro';
 import ActionLink from '../ui/ActionLink.astro';
 import { services } from '../../data/home';
+import CopyContact from '../ui/CopyContact.astro';
 interface Props { email?:string;phone?:string;hours?:string[];socials?:{label:string;icon:'instagram'|'telegram'|'youtube';href:string}[];maps?:{label:string;icon:'yandex'|'google';href:string}[];dialogId?:string;home?:boolean;policyDialog?:string;siteNavigation?:boolean; }
 const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=false,policyDialog,siteNavigation=false}=Astro.props;
 ---
@@ -10,7 +11,7 @@ const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=fals
  <div class="footer-inner">
   <div class="footer-top">
    <div class="footer-contact">
-    <div class="contact-lines">{email&&<p class="contact-line">{email}</p>}{phone&&<p class="contact-line">{phone}</p>}</div>
+    <div class="contact-lines">{email&&<p class="contact-line"><CopyContact value={email}/></p>}{phone&&<p class="contact-line"><CopyContact value={phone.replace(/[^+0-9]/g,'')} display={phone}/></p>}</div>
     {(socials.length>0||home)&&<div class="socials">
      {socials.map(s=><SocialButton name={s.icon} href={s.href} label={s.label}/>)}
      {home&&!socials.length&&(['instagram','telegram','youtube'] as const).map(icon=><SocialButton name={icon} label={icon}/>)}
@@ -26,7 +27,7 @@ const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=fals
   </div>
   <div class="wordmark">Мастерская</div>
   <div class="footer-bottom">
-   <div class="footer-legal"><div><a href="/policy/#privacy">Политика конфиденциальности</a><a href="/policy/#personal-data">Политика обработки персональных данных</a></div><p>Мастерская © {new Date().getFullYear()} Все права защищены</p></div>
+   <div class="footer-legal"><div><a href="/policy/#privacy">Политика конфиденциальности</a><a href="/documents/personal-data-policy.pdf" target="_blank" rel="noopener noreferrer">Политика обработки персональных данных</a></div><p>Мастерская © {new Date().getFullYear()} Все права защищены</p></div>
    <ActionLink href="#top" variant="linear" size="m" icon iconDirection="up">Вернуться наверх</ActionLink>
   </div>
  </div>

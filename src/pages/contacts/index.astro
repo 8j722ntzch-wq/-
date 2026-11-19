@@ -7,6 +7,7 @@ import SectionHeading from '../../components/ui/SectionHeading.astro';
 import SocialButton from '../../components/ui/SocialButton.astro';
 import YandexCityMap from '../../components/blocks/YandexCityMap.astro';
 import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import CopyContact from '../../components/ui/CopyContact.astro';
 
 const dialogId='contacts-consultation';
 const links=[
@@ -31,8 +32,8 @@ const socialChannels=[
       <div class="contacts-grid">
         <div class="contacts-details">
           <div class="contacts-details__lines">
-            <p>info@masterskaya.by</p>
-            <p>+375 (29) 777-77-77</p>
+            <p><CopyContact value="info@masterskaya.by"/></p>
+            <p><CopyContact value="+375297777777" display="+375 (29) 777-77-77"/></p>
           </div>
           <div class="contacts-socials" aria-label="Социальные сети">
             {socialChannels.map(channel=>

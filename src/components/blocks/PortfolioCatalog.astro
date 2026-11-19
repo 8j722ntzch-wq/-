@@ -1,6 +1,7 @@
 ---
 import PortfolioCard from '../cards/PortfolioCard.astro';
 import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
 import { portfolioCategories, previewPortfolio } from '../../data/portfolio';
 ---
 <portfolio-catalog class="portfolio-catalog">
@@ -13,7 +14,9 @@ import { portfolioCategories, previewPortfolio } from '../../data/portfolio';
   <p class="portfolio-catalog__empty" role="status" hidden>В этой категории пока нет опубликованных примеров работ.</p>
   <nav class="portfolio-pages" aria-label="Страницы портфолио">
     <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--previous" aria-label="Предыдущая страница" data-page-change="-1" disabled><Icon name="arrow-latex"/></button>
-    <span class="portfolio-pages__numbers"></span>
+    <span class="portfolio-pages__numbers">
+      {[1,2,3,4].map(number=><span class="portfolio-pages__number"><Button id={'portfolio-page-'+number} variant="text" size="s">{number}</Button></span>)}
+    </span>
     <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--next" aria-label="Следующая страница" data-page-change="1" disabled><Icon name="arrow-latex"/></button>
   </nav>
 </portfolio-catalog>
@@ -24,31 +27,36 @@ class PortfolioCatalog extends HTMLElement {
     const items=Array.from(this.querySelectorAll<HTMLElement>('.portfolio-catalog__item'));
     const empty=this.querySelector<HTMLElement>('.portfolio-catalog__empty')!;
     const pages=this.querySelector<HTMLElement>('.portfolio-pages')!;
-    const numbers=this.querySelector<HTMLElement>('.portfolio-pages__numbers')!;
+    const numberButtons=Array.from(this.querySelectorAll<HTMLButtonElement>('.portfolio-pages__numbers button'));
     const previous=this.querySelector<HTMLButtonElement>('[data-page-change="-1"]')!;
     const next=this.querySelector<HTMLButtonElement>('[data-page-change="1"]')!;
-    const pageSize=6;
+    // Four real pages from the available preview positions; no fabricated work.
+    const maxPages=4;
     let category='Все',currentPage=1;
     const render=()=>{
       const filtered=items.filter(item=>category==='Все'||item.dataset.category===category);
-      const count=Math.max(1,Math.ceil(filtered.length/pageSize));
+      const count=Math.min(maxPages,Math.max(1,filtered.length));
       currentPage=Math.min(currentPage,count);
-      const visible=new Set(filtered.slice((currentPage-1)*pageSize,currentPage*pageSize));
+      const perPage=Math.floor(filtered.length/count);
+      const extra=filtered.length%count;
+      const start=(currentPage-1)*perPage+Math.min(currentPage-1,extra);
+      const itemsOnPage=perPage+(currentPage<=extra?1:0);
+      const visible=new Set(filtered.slice(start,start+itemsOnPage));
       items.forEach(item=>{item.hidden=!visible.has(item);});
       tabs.forEach(tab=>tab.setAttribute('aria-pressed',String(tab.dataset.filter===category)));
       empty.hidden=filtered.length>0;
       pages.hidden=filtered.length===0;
       previous.disabled=currentPage===1;
       next.disabled=currentPage===count;
-      numbers.replaceChildren();
-      for(let index=1;index<=count;index++){
-        const button=document.createElement('button');
-        button.type='button';button.className='portfolio-pages__number';
-        button.textContent=String(index);button.dataset.page=String(index);
-        button.setAttribute('aria-label','Страница '+index);
-        if(index===currentPage)button.setAttribute('aria-current','page');
-        numbers.append(button);
-      }
+      numberButtons.forEach((button,index)=>{
+        const number=index+1;
+        button.disabled=number>count||filtered.length===0;
+        button.dataset.page=String(number);
+        button.setAttribute('aria-label','Страница '+number);
+        if(number===currentPage&&filtered.length)button.setAttribute('aria-current','page');
+        else button.removeAttribute('aria-current');
+        button.title=button.disabled?'Пока нет работ для этой страницы':'';
+      });
     };
     this.addEventListener('click',event=>{
       const target=event.target as Element|null;
@@ -71,12 +79,15 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
 .portfolio-tab[aria-pressed=true]{border-color:var(--color-green);background:var(--color-green)}
 .portfolio-tab:hover:not([aria-pressed=true]){background:var(--color-white)}
 .portfolio-catalog__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.portfolio-catalog__item{min-width:0}
+.portfolio-catalog__item{min-width:0;width:100%}
 .portfolio-catalog__empty{padding:36px;border:1.5px solid var(--color-gray-3);border-radius:4px;font:500 16px/1.25 var(--font-body)}
 .portfolio-pages{display:flex;justify-content:center;align-items:center;gap:24px;margin-top:48px}
 .portfolio-pages__numbers{display:flex;gap:12px;align-items:center}
-.portfolio-pages__number{padding:4px 0;border:0;background:none;font:500 14px/1.3 var(--font-body);min-width:12px}
-.portfolio-pages__number[aria-current=page]{text-decoration:underline}
+.portfolio-pages__number{display:inline-flex;align-items:center}
+.portfolio-pages__number :global(.button--text){min-width:20px;justify-content:center;border:0;background:transparent;padding:4px 0;font:500 14px/1.3 var(--font-body);color:var(--color-black)}
+.portfolio-pages__number :global(.button--text[aria-current=page]){font-weight:700;color:var(--color-blue);text-decoration:underline}
+.portfolio-pages__number :global(.button--text:hover:not(:disabled)){color:var(--color-blue);text-decoration:underline}
+.portfolio-pages__number :global(.button--text:disabled){color:var(--color-gray-3);cursor:default}
 .portfolio-pages__arrow{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white)}
 .portfolio-pages__arrow:disabled{background:none;color:var(--color-gray-3);border:1.5px solid var(--color-gray-3)}
 .portfolio-pages__arrow--previous :global(.icon){transform:rotate(90deg)}
@@ -88,10 +99,13 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
  .portfolio-tabs{width:100%;max-width:100%;height:38px;min-height:38px;display:flex;flex-wrap:nowrap;align-items:stretch;gap:4px;margin-bottom:24px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity}
  .portfolio-tabs::-webkit-scrollbar{display:none}
  .portfolio-tab{flex:0 0 auto;min-height:38px;padding:9px 10px;font:700 12px/1.2 var(--font-body);white-space:nowrap;scroll-snap-align:start}
- .portfolio-catalog__grid{grid-template-columns:minmax(0,1fr);gap:12px}
- .portfolio-catalog__item{width:100%;max-width:340px}
+ .portfolio-catalog__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .portfolio-catalog__item{width:100%;max-width:none}
  .portfolio-pages{margin-top:24px;gap:24px}
  .portfolio-pages__numbers{gap:12px}
  .portfolio-pages__arrow{height:36px;width:36px}
+}
+@media(max-width:40rem){
+ .portfolio-catalog__grid{grid-template-columns:minmax(0,1fr)}
 }
 </style>
