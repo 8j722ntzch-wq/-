@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: sticky-repair-qa-${{ github.ref }}
+  group: sticky-repair-qa-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
