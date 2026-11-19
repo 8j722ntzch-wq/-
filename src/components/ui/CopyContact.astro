@@ -1,0 +1,49 @@
+---
+interface Props { value:string; display?:string; }
+const {value,display=value}=Astro.props;
+---
+<copy-contact class="copy-contact">
+  <button type="button" class="copy-contact__button" data-copy-value={value} title={`Скопировать: ${display}`} aria-label={`Скопировать в буфер обмена: ${display}`}>{display}</button>
+  <span class="copy-contact__feedback" role="status" aria-live="polite"></span>
+</copy-contact>
+<script>
+class CopyContact extends HTMLElement {
+  connectedCallback(){
+    const button=this.querySelector<HTMLButtonElement>('.copy-contact__button');
+    const feedback=this.querySelector<HTMLElement>('.copy-contact__feedback');
+    if(!button||!feedback)return;
+    button.addEventListener('click',async()=>{
+      const value=button.dataset.copyValue||'';
+      try {
+        if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
+        else {
+          const field=document.createElement('textarea');
+          field.value=value;
+          field.setAttribute('readonly','');
+          field.style.position='fixed';
+          field.style.opacity='0';
+          document.body.appendChild(field);
+          field.select();
+          const copied=document.execCommand('copy');
+          field.remove();
+          if(!copied)throw new Error('Cannot copy');
+        }
+        feedback.textContent='Скопировано';
+        feedback.dataset.state='success';
+      }catch{
+        feedback.textContent='Не удалось скопировать';
+        feedback.dataset.state='error';
+      }
+    });
+  }
+}
+if(!customElements.get('copy-contact'))customElements.define('copy-contact',CopyContact);
+</script>
+<style>
+.copy-contact{position:relative;display:inline-flex;align-items:baseline;max-width:100%;flex-wrap:wrap;column-gap:10px}
+.copy-contact__button{padding:0;border:0;background:transparent;color:inherit;font:inherit;line-height:inherit;text-align:left;overflow-wrap:anywhere;cursor:copy}
+.copy-contact__button:hover{text-decoration:underline;text-underline-offset:.17em}
+.copy-contact__button:focus-visible{text-decoration:underline}
+.copy-contact__feedback{font:500 12px/1.4 var(--font-body);color:var(--color-green)}
+.copy-contact__feedback[data-state=error]{color:var(--color-error)}
+</style>
