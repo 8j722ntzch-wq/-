@@ -16,19 +16,19 @@ test('Portfolio only shows tabs with real items and supports category links, URL
 
  await page.goto('/portfolio/?category='+encodeURIComponent('Нанесение страз'));
  await expect(page.getByRole('button',{name:'Нанесение страз',exact:true})).toHaveAttribute('aria-pressed','true');
- await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
+ await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
  await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
  expect(new URL(page.url()).searchParams.get('category')).toBe('Машинная вышивка');
- await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
+ await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
  await page.goBack();
  await expect(page.getByRole('button',{name:'Нанесение страз',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.getByRole('button',{name:'Все',exact:true}).click();
  expect(new URL(page.url()).searchParams.has('category')).toBeFalsy();
- await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
+ await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
 
  await page.goto('/portfolio/?category='+encodeURIComponent('Ремонт и подгонка'));
  await expect(page.getByRole('button',{name:'Все',exact:true})).toHaveAttribute('aria-pressed','true');
- await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
+ await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
 });
 
 for(const [slug,category] of [['ruckit','Машинная вышивка'],['hello-kitty','Нанесение страз']] as const){
@@ -41,7 +41,7 @@ for(const [slug,category] of [['ruckit','Машинная вышивка'],['hel
   await link.click();
   await expect(page).toHaveURL(/\/portfolio\/\?category=/);
   await expect(page.getByRole('button',{name:category,exact:true})).toHaveAttribute('aria-pressed','true');
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
+  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
   await page.goto('/portfolio/'+slug+'/');
   await crumbs.getByRole('link',{name:/Портфолио/}).click();
   await expect(page).toHaveURL(/\/portfolio\/$/);
@@ -81,10 +81,11 @@ for(const route of ['/portfolio/','/portfolio/ruckit/','/services/printing/']){
   closeTo(rect!.width,300,1);
   closeTo(rect!.height,50,1);
   await button.hover();
-  await expect(button).toHaveCSS('background-color',green);
-  await expect(button).toHaveCSS('color',black);
+  await expect(button).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
+  await expect(button).toHaveCSS('color',green);
+  await expect(button).toHaveCSS('border-top-color',green);
   await button.focus();
-  await expect(button).toHaveCSS('background-color',green);
+  await expect(button).toHaveCSS('color',green);
  });
 }
 
@@ -110,7 +111,9 @@ test('Desktop print carousel arrows sit beside heading and match Figma enabled a
  await expect(next).toHaveCSS('background-color',black);
  await expect(next).toHaveCSS('color','rgb(254, 254, 254)');
  await next.hover();
- await expect(next).toHaveCSS('color',green);
+ await expect(next).toHaveCSS('color',black);
+ await expect(next).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
+ await expect(next).toHaveCSS('border-top-color',black);
  await next.click();
  await expect(prev).toBeEnabled();
  const track=page.locator('.format-track');
