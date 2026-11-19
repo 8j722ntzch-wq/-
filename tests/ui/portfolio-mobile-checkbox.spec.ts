@@ -67,7 +67,7 @@ test('Portfolio_All Mobile: title, horizontally scrollable filters and real text
     near((await action.boundingBox())?.height,38,1);
   }
   await expect(page.locator('.portfolio-pages')).toBeHidden();
-  await expect(page.getByRole('button',{name:'Следующая страница'})).toBeDisabled();
+  await expect(page.locator('.portfolio-pages__arrow--next')).toBeDisabled();
   await expect(page.locator('#forms form')).toBeAttached();
   await noHorizontalOverflow(page);
   if(testInfo.project.name==='chromium')await testInfo.attach('portfolio-all-mobile',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
