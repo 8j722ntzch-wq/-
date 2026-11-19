@@ -5,7 +5,7 @@ const black='rgb(13, 13, 13)';
 const gray='rgb(194, 191, 201)';
 
 function closeTo(actual:number,expected:number,tolerance=4){
- expect(Math.abs(actual-expected),\`Expected \${actual} within \${tolerance}px of \${expected}\`).toBeLessThanOrEqual(tolerance);
+ expect(Math.abs(actual-expected),`Expected ${actual} within ${tolerance}px of ${expected}`).toBeLessThanOrEqual(tolerance);
 }
 
 test('Portfolio only shows tabs with real items and supports category links, URL history and no empty placeholder',async({page})=>{
@@ -32,7 +32,7 @@ test('Portfolio only shows tabs with real items and supports category links, URL
 });
 
 for(const [slug,category] of [['ruckit','Машинная вышивка'],['hello-kitty','Нанесение страз']] as const){
- test(\`Breadcrumbs for \${slug} open full portfolio and selected category\`,async({page})=>{
+ test(`Breadcrumbs for ${slug} open full portfolio and selected category`,async({page})=>{
   await page.goto('/portfolio/'+slug+'/');
   const crumbs=page.getByRole('navigation',{name:'Хлебные крошки'});
   await expect(crumbs.getByRole('link',{name:/Портфолио/})).toHaveAttribute('href','/portfolio/');
@@ -65,13 +65,13 @@ test('Mobile portfolio tabs scroll horizontally to the window edge without clipp
  await expect.poll(()=>tabs.evaluate(el=>el.scrollLeft)).toBeGreaterThan(0);
  const last=await tabs.locator('.portfolio-tab').last().boundingBox();
  expect(last).not.toBeNull();
- expect(last!.right).toBeLessThanOrEqual(before.right-10);
+ expect((last!.x+last!.width)).toBeLessThanOrEqual(before.right-10);
  await tabs.locator('.portfolio-tab').last().click();
  await expect(tabs.locator('.portfolio-tab').last()).toHaveAttribute('aria-pressed','true');
 });
 
 for(const route of ['/portfolio/','/portfolio/ruckit/','/services/printing/']){
- test(\`Mobile application CTA on \${route} matches 300×50 Figma and remains lime on hover and press\`,async({page})=>{
+ test(`Mobile application CTA on ${route} matches 300×50 Figma and remains lime on hover and press`,async({page})=>{
   await page.setViewportSize({width:390,height:880});
   await page.goto(route);
   await page.evaluate(async()=>{await document.fonts.ready;});
@@ -100,7 +100,7 @@ test('Desktop print carousel arrows sit beside heading and match Figma enabled a
  expect(h&&c).toBeTruthy();
  closeTo(h!.width,1236,2);
  closeTo(c!.width,80,1);closeTo(c!.height,36,1);
- closeTo(c!.right,h!.right,2);closeTo(c!.bottom,h!.bottom,3);
+ closeTo(c!.x+c!.width,h!.x+h!.width,2);closeTo(c!.y+c!.height,h!.y+h!.height,3);
  const prev=controls.getByRole('button',{name:'Предыдущие форматы'});
  const next=controls.getByRole('button',{name:'Следующие форматы'});
  await expect(prev).toBeDisabled();
@@ -129,8 +129,8 @@ test('Mobile print carousel controls are directly below track and right-aligned 
  expect(heading&&track&&controls).toBeTruthy();
  closeTo(heading!.x,25,1);closeTo(heading!.y,161,5);
  closeTo(track!.x,25,1);closeTo(track!.width,340,1);closeTo(track!.height,304,1);
- closeTo(track!.y-heading!.bottom,24,3);
+ closeTo(track!.y-(heading!.y+heading!.height),24,3);
  closeTo(controls!.x,285,2);closeTo(controls!.width,80,1);closeTo(controls!.height,36,1);
- closeTo(controls!.y-track!.bottom,24,2);
+ closeTo(controls!.y-(track!.y+track!.height),24,2);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
 });
