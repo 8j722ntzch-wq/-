@@ -20,7 +20,7 @@ jobs:
       - run: npm run check
       - run: npm run build:kit
       - run: npx playwright install chromium firefox
-      - run: npx playwright test tests/ui/typography-calibration-qa.spec.ts --project=chromium --project=firefox --reporter=line
+      - run: npx playwright test tests/ui/services-mobile.spec.ts tests/ui/mobile-scroll-portfolio.spec.ts tests/ui/hero-carousel.spec.ts --project=chromium --project=firefox --reporter=list
       - name: Keep evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

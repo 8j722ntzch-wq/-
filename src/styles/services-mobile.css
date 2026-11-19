@@ -13,7 +13,12 @@
  .service-page .service-copy h3{font:700 16px/20px var(--font-heading)}
  .service-page .service-copy ul{padding-left:16px;line-height:18px}
  /* Stabilize Cyrillic wrapping at 390px without reducing the 14px text size. */
- .service-page--rhinestones .service-content .service-copy :is(p,li){letter-spacing:-.22px}
+ /* Text-fit is calibrated per text run in Chromium/Firefox rather than
+    shrinking the type or compressing all list items indiscriminately. */
+ .service-page--rhinestones .service-content .service-copy .copy-lines li:first-child{letter-spacing:-.35px}
+ .service-page--rhinestones .service-content .service-copy .copy-lines li:last-child{letter-spacing:-.12px}
+ .service-page--rhinestones .service-content .service-copy .copy-group>p:last-child{letter-spacing:-.12px}
+ .service-page--embroidery .service-content .price-group--service td[colspan]{letter-spacing:-.2px}
  .service-page--repair .service-copy .copy-group .copy-group{display:block}
  .service-page--repair .service-copy .copy-group .copy-group p{display:inline}
  .service-page--repair .service-copy .copy-group .copy-group p+p::before{content:' '}
