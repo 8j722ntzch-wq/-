@@ -28,3 +28,20 @@ test('DIAG Hero Figma appearance, text geometry and screenshot samples',async({p
     }
   }
 });
+
+test('DIAG Hero manual pause and explicit resume even while focused',async({page})=>{
+  await page.clock.install();
+  await page.goto('/');
+  const hero=page.locator('.hero');
+  const control=hero.locator('[data-hero-playback]');
+  await expect(control).toBeVisible();
+  await expect(control).toHaveAttribute('aria-pressed','false');
+  await control.click();
+  await expect(control).toHaveAttribute('aria-pressed','true');
+  await page.clock.runFor(24_000);
+  await expect(hero).toHaveAttribute('data-hero-active','0');
+  await control.click();
+  await expect(control).toHaveAttribute('aria-pressed','false');
+  await page.clock.runFor(20_500);
+  await expect(hero).toHaveAttribute('data-hero-active','1');
+});

@@ -41,6 +41,11 @@ const first = pages[0];
   </div>
   <img class="stitch stitch--white" src="/assets/figma/stitch-white.svg" width="156" height="3" alt="" />
   <img class="stitch stitch--green" src="/assets/figma/stitch-green.svg" width="156" height="3" alt="" />
+  <button type="button" class="hero-playback" data-hero-playback data-state="playing"
+          aria-label="Приостановить автоматическое переключение слайдов"
+          aria-pressed="false" title="Пауза" hidden={pages.length <= 1}>
+    <span class="hero-playback__glyph" aria-hidden="true"></span>
+  </button>
   <nav class="hero-progress" aria-label="Переключение слайдов" hidden={pages.length <= 1}>
     {pages.length > 1 && pages.map((slide, index) =>
       <button
@@ -73,6 +78,7 @@ class HeroCarousel extends HTMLElement {
     const after = copy.querySelector<HTMLElement>('[data-hero-after]')!;
     const description = copy.querySelector<HTMLElement>('[data-hero-description]')!;
     const cta = copy.querySelector<HTMLButtonElement>('[data-open-dialog]')!;
+    const playback = this.querySelector<HTMLButtonElement>('[data-hero-playback]');
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const listeners = new AbortController();
     let active = 0;
@@ -81,8 +87,19 @@ class HeroCarousel extends HTMLElement {
     let timer: number | undefined;
     let hovered = false;
     let focused = false;
+    let manuallyPaused = false;
+    let explicitlyResumed = false;
 
-    const unavailable = () => slides.length < 2 || hovered || focused || document.hidden || motion.matches;
+    const unavailable = () => slides.length < 2 || manuallyPaused || document.hidden || motion.matches || (!explicitlyResumed && (hovered || focused));
+    const updatePlayback = () => {
+      if (!playback) return;
+      playback.dataset.state = manuallyPaused ? 'paused' : 'playing';
+      playback.setAttribute('aria-pressed', String(manuallyPaused));
+      playback.setAttribute('aria-label', manuallyPaused
+        ? 'Возобновить автоматическое переключение слайдов'
+        : 'Приостановить автоматическое переключение слайдов');
+      playback.title = manuallyPaused ? 'Продолжить' : 'Пауза';
+    };
     const stop = () => {
       if (timer !== undefined) {
         window.clearTimeout(timer);
@@ -158,7 +175,22 @@ class HeroCarousel extends HTMLElement {
     };
 
     this.dataset.heroReady = 'true';
+    updatePlayback();
     start();
+    playback?.addEventListener('click', () => {
+      if (manuallyPaused) {
+        manuallyPaused = false;
+        // Explicit resume is allowed even while the pointer/focus is on the control.
+        explicitlyResumed = true;
+        updatePlayback();
+        start();
+      } else {
+        manuallyPaused = true;
+        explicitlyResumed = false;
+        stop();
+        updatePlayback();
+      }
+    }, {signal: listeners.signal});
     for (const button of progress) {
       button.addEventListener('click', () => show(Number(button.dataset.heroPage)), {signal: listeners.signal});
       button.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -242,6 +274,15 @@ if (!customElements.get('hero-carousel')) customElements.define('hero-carousel',
 .stitch{position:absolute;z-index:3;max-width:none;width:155.816px;height:2.816px;pointer-events:none}
 .stitch--white{left:36px;top:410px}
 .stitch--green{left:77px;top:401px}
+.hero-playback{position:absolute;z-index:5;right:24px;bottom:48px;display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid rgb(254 254 254 / 70%);border-radius:4px;background:rgb(13 13 13 / 75%);color:var(--color-white);cursor:pointer;backdrop-filter:blur(2px)}
+.hero-playback[hidden]{display:none}
+.hero-playback:hover,.hero-playback:focus-visible{border-color:var(--color-green);color:var(--color-green)}
+.hero-playback__glyph{position:relative;display:block;width:12px;height:12px}
+.hero-playback__glyph::before,.hero-playback__glyph::after{content:"";position:absolute;top:0;display:block;height:12px;width:3px;background:currentColor}
+.hero-playback__glyph::before{left:1px}
+.hero-playback__glyph::after{right:1px}
+.hero-playback[data-state="paused"] .hero-playback__glyph::before{left:1px;clip-path:polygon(0 0,100% 50%,0 100%);width:12px}
+.hero-playback[data-state="paused"] .hero-playback__glyph::after{display:none}
 .hero-progress{position:absolute;z-index:4;bottom:12px;left:24px;right:24px;display:flex;align-items:center;gap:12px;height:28px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
 .hero-progress[hidden]{display:none}
 .hero-progress::-webkit-scrollbar{display:none}
@@ -273,11 +314,13 @@ if (!customElements.get('hero-carousel')) customElements.define('hero-carousel',
  .stitch--white{left:131px;top:274px}
  .stitch--green{left:172px;top:265px}
  .hero-progress{right:16px}
+ .hero-playback{right:20px;bottom:48px}
 }
 @media(max-width:40rem){
  .hero-copy h1{font-size:24px}
 }
 @media(prefers-reduced-motion:reduce){
+ .hero-playback{display:none}
  .hero-gradient-overlay{transition:none!important}
  .hero-copy[data-hero-reveal]{animation:none}
  .hero[data-hero-ready] .hero-progress__step[data-state="active"] .hero-progress__fill{animation:none;transform:scaleX(1)}
