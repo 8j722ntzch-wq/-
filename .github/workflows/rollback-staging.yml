@@ -1,0 +1,99 @@
+name: Emergency rollback of exposed staging assets
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: masterskaya-staging-deployment
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Recreate the exact published file tree for safe removal
+        env:
+          PUBLIC_FORM_DELIVERY_ENABLED: 'true'
+          UI_KIT_BUILD: '0'
+          PUBLIC_YANDEX_MAPS_API_KEY: ${{ vars.YANDEX_MAPS_API_KEY }}
+        run: |
+          npx astro build --outDir dist-staging
+          rm -rf -- dist-staging/preview-login
+          test -f dist-staging/index.html
+          test -f dist-staging/assets/figma/portfolio-ruckit.jpg
+      - name: Remove uploaded staging files but preserve host Basic Auth configuration
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+          for name in SFTP_HOST SFTP_USERNAME SSHPASS SFTP_KNOWN_HOSTS; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing $name"; exit 1; }
+          done
+          port="${SFTP_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || exit 1
+          workdir="$(mktemp -d)"
+          trap 'rm -rf -- "$workdir"' EXIT
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$workdir/known_hosts"
+          known_host="$SFTP_HOST"
+          if [[ "$port" != 22 ]]; then known_host="[$SFTP_HOST]:$port"; fi
+          ssh-keygen -F "$known_host" -f "$workdir/known_hosts" >/dev/null || exit 1
+          printf '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>Мастерская — предпросмотр временно закрыт</title><body><h1>Предпросмотр временно недоступен</h1></body></html>\n' > "$workdir/holding.html"
+          {
+            printf '%s\n' 'ls www/baltmotors.by/.htaccess' 'ls www/.masterskaya-preview.htpasswd' 'cd www/baltmotors.by'
+            while IFS= read -r -d '' file; do
+              relative="${file#dist-staging/}"
+              case "$relative" in
+                .htaccess|.htpasswd|_preview/*) echo "::error::Forbidden cleanup path"; exit 1 ;;
+              esac
+              [[ "$relative" == *\"* ]] && { echo "::error::Unsafe cleanup path"; exit 1; }
+              printf -- '-rm "%s"\n' "$relative"
+            done < <(find dist-staging -type f -print0)
+            printf 'put "%s" "index.html"\n' "$workdir/holding.html"
+            printf '%s\n' 'bye'
+          } > "$workdir/rollback.sftp"
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass
+          if ! sshpass -e sftp -P "$port" \
+            -oBatchMode=no -oStrictHostKeyChecking=yes \
+            -oUserKnownHostsFile="$workdir/known_hosts" -oGlobalKnownHostsFile=/dev/null \
+            -oConnectTimeout=20 -oConnectionAttempts=1 \
+            -oNumberOfPasswordPrompts=1 \
+            -oPreferredAuthentications=password,keyboard-interactive -oPubkeyAuthentication=no \
+            -b "$workdir/rollback.sftp" "$SFTP_USERNAME@$SFTP_HOST" > "$workdir/result.log" 2>&1; then
+            echo "::error::Rollback SFTP failed"; exit 1;
+          fi
+          echo "STAGING_FILE_ROLLBACK_COMPLETE"
+          for path in "/assets/figma/portfolio-ruckit.jpg" "/documents/personal-data-policy.pdf" "/api/submit.php"; do
+            status="$(curl -sS --connect-timeout 8 --max-time 20 -o /dev/null -w '%{http_code}' "https://baltmotors.by$path?rollback=$GITHUB_RUN_ID")"
+            if [[ "$status" == 200 ]]; then
+              echo "::error::Public staging content still available at $path; contact hoster.by immediately."
+              exit 1
+            fi
+            echo "ROLLBACK_RESOURCE $path HTTP_$status"
+          done
+          status="$(curl -sS --connect-timeout 8 --max-time 20 -o /dev/null -w '%{http_code}' https://baltmotors.by/)"
+          if [[ "$status" != 401 ]]; then
+            echo "::error::Root Basic Auth is not enforcing HTTP 401"; exit 1;
+          fi
+          echo "ROLLBACK_AUTH_STILL_ACTIVE HTTP_401"
