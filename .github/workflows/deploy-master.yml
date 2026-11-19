@@ -1,0 +1,153 @@
+name: Deploy Masterskaya master to baltmotors.by
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: masterskaya-staging-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out master
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Build public site from master
+        env:
+          PUBLIC_FORM_DELIVERY_ENABLED: 'true'
+          PUBLIC_YANDEX_MAPS_API_KEY: ${{ vars.YANDEX_MAPS_API_KEY }}
+          UI_KIT_BUILD: '0'
+        run: |
+          set -euo pipefail
+          npx astro build --outDir dist-live
+          # Do not publish the obsolete password-login page or internal UI kit.
+          rm -rf -- dist-live/preview-login
+          test -s dist-live/index.html
+          test -s dist-live/portfolio/index.html
+          test -s dist-live/policy/index.html
+          test -s dist-live/api/submit.php
+          test -s dist-live/documents/personal-data-policy.pdf
+          test -s dist-live/robots.txt
+          test ! -e dist-live/.htaccess
+          test ! -e dist-live/_preview
+          test ! -e dist-live/__ui
+          grep -q '<consultation-form' dist-live/index.html
+          php -l dist-live/api/submit.php
+      - name: Install SFTP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass
+      - name: Upload master and restore readable permissions
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+          for name in SFTP_HOST SFTP_USERNAME SSHPASS SFTP_KNOWN_HOSTS; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing SFTP secret: $name"; exit 1; }
+          done
+          [[ "$SFTP_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || exit 1
+          [[ "$SFTP_USERNAME" =~ ^[A-Za-z0-9_][A-Za-z0-9_.@-]*$ ]] || exit 1
+          port="${SFTP_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || exit 1
+          tmp="$(mktemp -d)"
+          trap 'rm -rf -- "$tmp"' EXIT
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$tmp/known_hosts"
+          host_key="$SFTP_HOST"
+          if [[ "$port" != 22 ]]; then host_key="[$SFTP_HOST]:$port"; fi
+          ssh-keygen -F "$host_key" -f "$tmp/known_hosts" >/dev/null || {
+            echo "::error::SFTP host key not pinned"; exit 1;
+          }
+          {
+            printf '%s\n' 'cd www/baltmotors.by' 'chmod 755 .'
+            # Enumerate parent directories before descendants, even for a fresh host.
+            while IFS= read -r -d '' dir; do
+              rel="${dir#dist-live/}"
+              if [[ "$rel" == *\"* || "$rel" == *$'\n'* || "$rel" == *$'\r'* ]]; then
+                echo "::error::Unsafe directory name"; exit 1
+              fi
+              printf -- '-mkdir "%s"\n' "$rel"
+              printf 'chmod 755 "%s"\n' "$rel"
+            done < <(find dist-live -mindepth 1 -type d -print0)
+            while IFS= read -r -d '' file; do
+              rel="${file#dist-live/}"
+              case "$rel" in
+                .htaccess|.htpasswd|_preview/*|preview-login/*)
+                  echo "::error::Old auth file in publishing directory"; exit 1 ;;
+              esac
+              if [[ "$rel" == *\"* || "$rel" == *$'\n'* || "$rel" == *$'\r'* ]]; then
+                echo "::error::Unsafe file name"; exit 1
+              fi
+              printf 'put "%s" "%s"\n' "$PWD/$file" "$rel"
+              printf 'chmod 644 "%s"\n' "$rel"
+            done < <(find dist-live -type f -print0)
+            printf '%s\n' 'bye'
+          } > "$tmp/deploy.sftp"
+          sshpass -e sftp -P "$port" \
+            -oBatchMode=no -oStrictHostKeyChecking=yes \
+            -oUserKnownHostsFile="$tmp/known_hosts" \
+            -oGlobalKnownHostsFile=/dev/null \
+            -oConnectTimeout=20 -oConnectionAttempts=1 \
+            -oNumberOfPasswordPrompts=1 \
+            -oPreferredAuthentications=password,keyboard-interactive \
+            -oPubkeyAuthentication=no \
+            -b "$tmp/deploy.sftp" "$SFTP_USERNAME@$SFTP_HOST" > "$tmp/result.log" 2>&1 || {
+              echo "::error::SFTP deployment failed (no password logged)";
+              tail -n 12 "$tmp/result.log" | sed -E 's#(sftp://)[^/]+#\1[REDACTED]#g';
+              exit 1;
+            }
+          echo "SFTP_MASTER_UPLOAD_COMPLETE"
+      - name: Verify public site, pages, assets, and old login removal
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          for entry in 'HOME|/' 'PORTFOLIO|/portfolio/' 'POLICY|/policy/' 'IMAGE|/assets/figma/portfolio-ruckit.jpg' 'PDF|/documents/personal-data-policy.pdf'; do
+            IFS='|' read -r label path <<< "$entry"
+            status="$(curl -sS -L --max-redirs 2 --connect-timeout 10 --max-time 25 \
+              -D "$tmp/$label.headers" -o "$tmp/$label.body" -w '%{http_code}' \
+              "https://baltmotors.by$path?release=$GITHUB_RUN_ID")"
+            if [[ "$status" != 200 ]]; then
+              echo "::error::$label must be HTTP 200, received $status"; exit 1
+            fi
+            if grep -qi '^www-authenticate:' "$tmp/$label.headers"; then
+              echo "::error::Old password protection still enabled at $path"; exit 1
+            fi
+            echo "LIVE_$label HTTP_200"
+          done
+          grep -q '<consultation-form' "$tmp/HOME.body" || {
+            echo "::error::The published homepage is not the Astro master build"; exit 1;
+          }
+          grep -q 'noindex, nofollow' "$tmp/HOME.body" || {
+            echo "::error::Search engine preview protection is missing"; exit 1;
+          }
+          grep -aq '^%PDF' "$tmp/PDF.body" || {
+            echo "::error::PDF did not load correctly"; exit 1;
+          }
+          [[ "$(head -c 3 "$tmp/IMAGE.body" | od -An -tx1 | tr -d ' \n')" == ffd8ff ]] || {
+            echo "::error::Portfolio image response is not a JPEG"; exit 1;
+          }
+          printf '%s\n' 'PUBLIC_MASTER_VERIFIED'
