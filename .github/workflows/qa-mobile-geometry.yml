@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run build:kit
       - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npx playwright test tests/ui/mobile-geometry-qa.spec.ts --reporter=list
+      - run: npx playwright test tests/ui/mobile-geometry-qa.spec.ts tests/ui/hero-visual-qa.spec.ts --reporter=list
       - name: Store visual review artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
