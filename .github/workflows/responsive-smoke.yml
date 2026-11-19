@@ -1,0 +1,43 @@
+name: Homepage responsive smoke
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'src/pages/index.astro'
+      - 'src/components/blocks/Hero.astro'
+      - 'tests/ui/responsive-home.spec.ts'
+      - '.github/workflows/responsive-smoke.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'src/pages/index.astro'
+      - 'src/components/blocks/Hero.astro'
+      - 'tests/ui/responsive-home.spec.ts'
+      - '.github/workflows/responsive-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homepage-responsive-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  responsive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build:kit
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/ui/responsive-home.spec.ts --project=chromium
