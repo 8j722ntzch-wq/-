@@ -1,0 +1,100 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Header from '../../components/blocks/Header.astro';
+import PromoBar from '../../components/blocks/PromoBar.astro';
+import Footer from '../../components/blocks/Footer.astro';
+import Icon from '../../components/ui/Icon.astro';
+import PortfolioShowcase from '../../components/blocks/PortfolioShowcase.astro';
+import ProjectStory from '../../components/portfolio/ProjectStory.astro';
+import ApplicationSection from '../../components/blocks/ApplicationSection.astro';
+import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import Modal from '../../components/dialogs/Modal.astro';
+import {portfolioProjects} from '../../data/portfolio';
+export function getStaticPaths(){return portfolioProjects.map(project=>({params:{slug:project.slug},props:{project}}));}
+const {project}=Astro.props;
+const dialogId='portfolio-project-consultation';
+const links=[
+  {label:'Услуги',href:'/#services'},
+  {label:'О нас',href:'/#advantages'},
+  {label:'Бизнесу',href:'/#audiences'},
+  {label:'Портфолио',href:'/portfolio/'},
+  {label:'Контакты',href:'/contacts/'},
+];
+---
+<SiteLayout title={project.title+' — Мастерская'} description={project.tag+': '+project.title+'. Пример работы из портфолио мастерской.'}>
+  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="#forms"/>
+  <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
+  <main id="content" class="portfolio-detail">
+    <div class="portfolio-detail__intro">
+      <nav class="container portfolio-breadcrumbs" aria-label="Хлебные крошки">
+        <a href="/portfolio/">Портфолио<span><Icon name="arrow" size={14}/></span></a>
+        <a href={project.serviceHref}>{project.tag}<span><Icon name="arrow" size={14}/></span></a>
+        <span aria-current="page">{project.title}</span>
+      </nav>
+      <section class="container project-overview" aria-labelledby="project-title">
+        <div class="project-overview__heading">
+          <span class:list={['project-overview__tag',{'project-overview__tag--pink':project.tone==='pink'}]}><span aria-hidden="true"></span>{project.tag}</span>
+          <h1 id="project-title">{project.title}</h1>
+        </div>
+        <div class="project-overview__meta">
+          <span><Icon name={project.audience==='Бизнесу'?'business':'personal'} size={20}/>{project.audience}</span>
+          <span><Icon name="price" size={20}/>{project.price}</span>
+        </div>
+        <img class="project-overview__image" src={project.image} width="1236" height="695" alt={project.imageAlt} fetchpriority="high"/>
+      </section>
+      <ProjectStory/>
+    </div>
+    <PortfolioShowcase/>
+    <div id="forms" class="container"><ApplicationSection title={'Расскажите, что\nнужно сделать'} description="Опишите вещь и желаемый результат" eyebrow="08 / Давайте обсудим" home policyDialog="preview-notice" defaultService={project.tag}/></div>
+  </main>
+  <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation policyDialog="preview-notice"/>
+  <ConsultationDialog id={dialogId} policyDialog="preview-notice" defaultService={project.tag}/>
+  <Modal id="preview-notice" title="Предпросмотр сайта" description="Отправка заявок пока не подключена.">
+    <div class="preview-copy"><p>Введённые имя, телефон и выбранные услуги остаются в браузере и никуда не передаются.</p><p>Тексты проектов, контакты, цены и юридические условия ещё предстоит подтвердить перед публикацией сайта.</p></div>
+  </Modal>
+</SiteLayout>
+<style>
+.portfolio-detail{display:grid;gap:80px;padding:40px 0 80px}
+.portfolio-detail__intro{display:grid;gap:0}
+.portfolio-breadcrumbs{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:36px;font:500 14px/1.25 var(--font-body)}
+.portfolio-breadcrumbs a{display:inline-flex;align-items:center;gap:12px;text-decoration:underline}
+.portfolio-breadcrumbs a>span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}
+.portfolio-breadcrumbs [aria-current=page]{max-width:100%;overflow-wrap:anywhere}
+.project-overview{display:grid;gap:0}
+.project-overview__heading{display:grid;justify-items:start;gap:8px}
+.project-overview__heading h1{font:700 36px/1.25 var(--font-body);overflow-wrap:anywhere}
+.project-overview__tag{display:inline-flex;gap:4px;align-items:center;padding:4px 8px;border-radius:500px;background:var(--color-blue);color:var(--color-white);font:700 12px/1.2 var(--font-body);text-transform:uppercase}
+.project-overview__tag--pink{background:var(--color-pink)}
+.project-overview__tag>span{width:8px;height:8px;border-radius:50%;background:currentColor}
+.project-overview__meta{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-top:12px;font:700 12px/1.2 var(--font-body);text-transform:uppercase}
+.project-overview__meta>span{display:flex;gap:8px;align-items:center}
+.project-overview__meta :global(.icon){color:var(--color-blue)}
+.project-overview__image{margin-top:24px;display:block;width:100%;height:auto;aspect-ratio:1236/695;object-fit:cover;border-radius:4px}
+.portfolio-detail__intro :global(.project-story){margin-top:24px}
+#forms{scroll-margin-top:24px}
+.preview-copy{display:grid;gap:16px;line-height:1.5}
+/* Portfolio_Ruckit/Hello Kitty (Mobile) — Figma 223:21381 / 223:21418.
+   340px column, two-line breadcrumbs, images 340×191, story contract preserved. */
+@media(max-width:58rem){
+ .portfolio-detail{gap:80px;padding:40px 0 80px}
+ .portfolio-breadcrumbs{width:calc(100% - 50px);display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:8px;row-gap:8px;align-items:start;margin-bottom:24px;font:500 12px/1.2 var(--font-body)}
+ .portfolio-breadcrumbs a{gap:6px;align-items:center;white-space:nowrap;font-size:12px;line-height:16px}
+ .portfolio-breadcrumbs a>span{height:16px;width:16px}
+ .portfolio-breadcrumbs [aria-current=page]{grid-column:1/-1;font-size:12px;line-height:14px;overflow-wrap:anywhere}
+ .project-overview{width:calc(100% - 50px)}
+ .project-overview__heading{gap:8px}
+ .project-overview__heading h1{font:700 24px/1.25 var(--font-heading)}
+ .project-overview__tag{min-height:22px;padding:4px 8px;font-size:12px;line-height:14px}
+ .project-overview__meta{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:12px;font:700 12px/1.2 var(--font-body);min-height:44px}
+ .project-overview__meta>span{height:20px;white-space:nowrap;max-width:100%}
+ .project-overview__image{width:100%;height:191px;aspect-ratio:auto;object-fit:cover;margin-top:24px}
+ .portfolio-detail__intro :global(.project-story){margin-top:24px}
+ #forms{width:calc(100% - 50px)}
+ #forms :global(.application){min-height:574px;padding:20px;gap:40px}
+ #forms :global(.application-copy h2){font-size:24px;line-height:1.25}
+ #forms :global(.application-copy>p:last-of-type){font-size:14px;line-height:1.25}
+ #forms :global(consultation-form form){gap:12px}
+ #forms :global(.consent-copy){font-size:12px;line-height:1.25}
+ #forms :global(.button--solid){min-height:38px;font-size:12px}
+}
+</style>

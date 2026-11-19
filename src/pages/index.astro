@@ -1,0 +1,63 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Header from '../components/blocks/Header.astro';
+import PromoBar from '../components/blocks/PromoBar.astro';
+import Hero from '../components/blocks/Hero.astro';
+import Footer from '../components/blocks/Footer.astro';
+import WorkStages from '../components/blocks/WorkStages.astro';
+import ApplicationSection from '../components/blocks/ApplicationSection.astro';
+import ServiceCard from '../components/cards/ServiceCard.astro';
+import AudienceCard from '../components/cards/AudienceCard.astro';
+import AdvantageCard from '../components/cards/AdvantageCard.astro';
+import PortfolioCard from '../components/cards/PortfolioCard.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Accordion from '../components/ui/Accordion.astro';
+import Icon from '../components/ui/Icon.astro';
+import ConsultationDialog from '../components/dialogs/ConsultationDialog.astro';
+import Modal from '../components/dialogs/Modal.astro';
+import { services, audiences, advantages, projects, questions } from '../data/home';
+const dialogId='home-consultation';
+---
+<SiteLayout title="Мастерская — ремонт, вышивка и печать на одежде" description="Ремонт и подгонка одежды, машинная вышивка, печать, шевроны и стразы. Для себя, команды и бизнеса.">
+ <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="#forms"/>
+ <Header phone="+375 (29) 777-77-77" dialogId={dialogId}/>
+ <main id="content" class="homepage">
+  <div class="container hero-wrap"><Hero dialogId={dialogId}/></div>
+  <section id="services" class="container home-section" aria-labelledby="services-title">
+   <SectionHeading id="services-title" eyebrow="01 / Наши услуги">Свобода замысла.<br/>Точность в деталях.</SectionHeading>
+   <div class="service-grid">{services.map((service,i)=><ServiceCard {...service} size={i<3?'m':'l'} tag="Скоро в продаже" actionLabel="Узнать подробнее"/>)}</div>
+  </section>
+  <section id="audiences" class="audiences" aria-labelledby="audiences-title"><div class="container home-section">
+   <img class="ruler" src="/assets/figma/ruler-white.svg" width="553" height="10" alt="" loading="lazy"/>
+   <SectionHeading id="audiences-title" eyebrow="02 / Для любых задач" color="light">Для себя, спортивной команды и бизнеса</SectionHeading>
+   <div class="three-columns">{audiences.map(audience=><AudienceCard {...audience}/>)}</div>
+  </div></section>
+  <section id="advantages" class="container home-section" aria-labelledby="advantages-title">
+   <SectionHeading id="advantages-title" eyebrow="03 / Формат работы">Ваша вещь — наша реализация</SectionHeading>
+   <div class="three-columns">{advantages.map(advantage=><AdvantageCard {...advantage} compact/>)}</div>
+  </section>
+  <section id="portfolio" class="container home-section" aria-labelledby="portfolio-title">
+   <SectionHeading id="portfolio-title" eyebrow="04 / Портфолио">Наши работы<a slot="action" href="/portfolio/" class="portfolio-all">Смотреть все работы<span><Icon name="arrow" size={14}/></span></a></SectionHeading>
+   <div class="two-columns">{projects.map(project=><PortfolioCard {...project} dialogId={dialogId} home/>)}</div>
+  </section>
+  <WorkStages/>
+  <div id="forms" class="container"><ApplicationSection title={'Расскажите, что\nнужно сделать'} description="Опишите вещь и желаемый результат" eyebrow="06 / Давайте обсудим" home policyDialog="preview-notice"/></div>
+  <section id="faq" class="container home-section faq" aria-labelledby="faq-title">
+   <SectionHeading id="faq-title" eyebrow="07 / Вопросы">Поможем получить максимум</SectionHeading>
+   <div class="questions">{questions.map(item=><Accordion question={item.question}>{item.answer}</Accordion>)}</div>
+  </section>
+ </main>
+ <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home policyDialog="preview-notice"/>
+ <ConsultationDialog id={dialogId} policyDialog="preview-notice"/>
+ <Modal id="preview-notice" title="Предпросмотр сайта" description="Отправка заявок пока не подключена."><div class="preview-copy"><p>Введённые имя, телефон и выбранные услуги остаются в браузере и никуда не передаются.</p><p>Тексты политик, контакты и условия предложений из макета ещё предстоит подтвердить перед публикацией сайта.</p></div></Modal>
+</SiteLayout>
+<style>
+.homepage{display:flex;flex-direction:column;gap:80px;padding-top:10px;padding-bottom:80px}
+.home-section{display:grid;gap:24px;position:relative;scroll-margin-top:24px}
+.service-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.service-grid :global(.service-card){grid-column:span 2}.service-grid :global(.service-card--l){grid-column:span 3}
+.three-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.two-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.audiences{padding:80px 0;background:var(--color-blue)}.audiences :global(h3){white-space:pre-line}.ruler{position:absolute;width:553px;height:10px;right:0;top:-20px}
+.portfolio-all{display:flex;align-items:center;gap:6px;border:0;background:none;text-decoration:none;font:500 14px/1.25 var(--font-body);padding:0;color:var(--color-black)}.portfolio-all>span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}.portfolio-all:hover{text-decoration:underline}
+.questions{display:grid;gap:4px}.faq{gap:22px}.faq :global(.accordion__action){opacity:0}.faq :global(details:hover .accordion__action),.faq :global(summary:focus-visible .accordion__action),.faq :global(details[open] .accordion__action){opacity:1}
+#forms{scroll-margin-top:24px}.gallery{display:grid;gap:28px}.gallery figure{margin:0}.gallery img{width:100%;border-radius:4px}.gallery figcaption{display:grid;gap:8px;margin-top:12px}.gallery figcaption span{font-size:14px;color:var(--color-gray-3)}.preview-copy{display:grid;gap:16px;line-height:1.5}
+</style>

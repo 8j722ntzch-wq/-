@@ -1,0 +1,52 @@
+name: Development component checks
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+
+permissions:
+  contents: read
+
+env:
+  # Public browser API key (HTTP Referer restricted). Blank until configured.
+  PUBLIC_YANDEX_MAPS_API_KEY: ${{ vars.YANDEX_MAPS_API_KEY }}
+
+concurrency:
+  group: component-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  components:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build:kit
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:ui
+      - name: Audit dependencies and fail on new advisories
+        if: always()
+        run: |
+          npm audit --json > npm-audit.json || true
+          node scripts/verify-security-audit.mjs npm-audit.json
+      - name: Save checks and review artifacts (no deployment)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: components-${{ github.sha }}
+          retention-days: 7
+          path: |
+            dist-kit/
+            playwright-report/
+            test-results/
+            npm-audit.json

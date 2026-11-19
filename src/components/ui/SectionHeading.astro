@@ -1,0 +1,20 @@
+---
+interface Props { as?: 'h1' | 'h2' | 'h3'; eyebrow?: string; color?: 'ink' | 'blue' | 'light'; size?: 'hero' | 'section' | 'title'; id?: string; }
+const { as: Tag = 'h2', eyebrow, color = 'ink', size = 'hero', id } = Astro.props;
+---
+<div class:list={['heading', `heading--${color}`]}>
+  {eyebrow && <p class="heading__eyebrow">{eyebrow}</p>}
+  <div class="heading__row"><Tag id={id} class:list={['heading__title', `heading__title--${size}`]}><slot /></Tag><slot name="action" /></div>
+</div>
+<style>
+  .heading { display: grid; gap: var(--space-2); color: var(--color-black); }
+  .heading--blue { color: var(--color-blue); }
+  .heading--light { color: var(--color-white); }
+  .heading__eyebrow { font: 700 var(--text-label)/1.2 var(--font-body); text-transform: uppercase; }
+  .heading__row { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .heading__title { min-width: 0; font-family: var(--font-heading); font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+  .heading__title--hero { font-size: var(--text-hero); }
+  .heading__title--section { font-size: var(--text-section); font-weight: 600; line-height: 1.3; letter-spacing: 0em; }
+  .heading__title--title { font-size: var(--text-title); }
+  @media (max-width: 47.99rem) { .heading__title--hero { font-size: 1.75rem; } .heading__title--section { font-size: 1.5rem; } }
+</style>

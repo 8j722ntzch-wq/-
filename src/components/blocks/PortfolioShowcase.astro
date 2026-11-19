@@ -1,0 +1,31 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import PortfolioCard from '../cards/PortfolioCard.astro';
+import Icon from '../ui/Icon.astro';
+import { portfolioProjects } from '../../data/portfolio';
+---
+<section id="portfolio" class="portfolio-showcase container" aria-labelledby="related-portfolio-title">
+  <SectionHeading id="related-portfolio-title" eyebrow="Портфолио">
+    Наши работы
+    <a slot="action" href="/portfolio/" class="portfolio-showcase__more"><span class="portfolio-showcase__link-desktop">Смотреть все работы</span><span class="portfolio-showcase__link-mobile">Все работы</span><span class="portfolio-showcase__arrow"><Icon name="arrow" size={14}/></span></a>
+  </SectionHeading>
+  <div class="portfolio-showcase__grid">{portfolioProjects.map(project=><PortfolioCard {...project} home />)}</div>
+</section>
+<style>
+.portfolio-showcase{display:grid;gap:24px}
+.portfolio-showcase__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.portfolio-showcase__more{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font:500 14px/1.25 var(--font-body)}
+.portfolio-showcase__more:hover{text-decoration:underline}
+.portfolio-showcase__more .portfolio-showcase__arrow{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}
+.portfolio-showcase__link-mobile{display:none}
+@media(max-width:58rem){
+ .portfolio-showcase{width:calc(100% - 50px);gap:24px}
+ .portfolio-showcase__grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .portfolio-showcase :global(.heading__title--hero){font-size:24px;line-height:1.25}
+ .portfolio-showcase :global(.heading__row){flex-wrap:nowrap;align-items:flex-end;gap:8px}
+ .portfolio-showcase__more{font-size:12px;line-height:1.2;white-space:nowrap;gap:6px}
+ .portfolio-showcase__link-desktop{display:none}
+ .portfolio-showcase__link-mobile{display:inline}
+ .portfolio-showcase__more .portfolio-showcase__arrow{width:16px;height:16px}
+}
+</style>

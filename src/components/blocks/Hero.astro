@@ -1,0 +1,33 @@
+---
+import Button from '../ui/Button.astro';
+interface Props { dialogId?:string; }
+const {dialogId='consultation'}=Astro.props;
+---
+<section class="hero" aria-labelledby="hero-title">
+  <img class="hero-grid" src="/assets/figma/hero-grid.svg" width="473" height="549" alt="" />
+  <img class="hero-photo" src="/assets/figma/home-hero.webp" width="1863" height="844" alt="Мастер показывает худи с нашивкой в швейной мастерской" fetchpriority="high" />
+  <div class="hero-copy">
+    <h1 id="hero-title">Получи скидку <mark>100 BYN</mark> на свой первый заказ до 1 декабря</h1>
+    <p>Объявляем акцию в честь открытия. Узнай все условия, перейдя по кнопке ниже!</p>
+    <Button size="m" icon openDialog={dialogId} context="Акция: скидка 100 BYN на первый заказ до 1 декабря">Оставить заявку</Button>
+  </div>
+  <img class="stitch stitch--white" src="/assets/figma/stitch-white.svg" width="156" height="3" alt="" />
+  <img class="stitch stitch--green" src="/assets/figma/stitch-green.svg" width="156" height="3" alt="" />
+  <!-- The design supplies one slide. These marks are decorative until other slides exist. -->
+  <div class="hero-progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+</section>
+<style>
+.hero{height:560px;position:relative;isolation:isolate;overflow:hidden;border-radius:4px;background:linear-gradient(109.3328deg,#006dff 71.635%,#c5ee69cc 100%);color:var(--color-milk)}
+.hero-grid{position:absolute;width:473px;height:549px;left:467px;top:11px;max-width:none;z-index:-2}
+.hero-photo{position:absolute;inset:0 0 0 1px;width:calc(100% - 1px);height:100%;object-fit:cover;z-index:-1}
+.hero-copy{position:relative;padding:36px;width:586px}
+h1{font:700 36px/1.2 var(--font-heading);text-transform:uppercase;max-width:514px}
+mark{color:var(--color-black);background:var(--color-green);border-radius:4px;box-shadow:4px 0 var(--color-green),-4px 0 var(--color-green);white-space:nowrap}
+.hero-copy p{max-width:386px;margin-top:12px;margin-bottom:24px}
+.hero-copy :global(.button){width:224px}
+.hero-copy :global(.button:hover){color:var(--color-green)}
+.stitch{position:absolute;max-width:none;width:155.816px;height:2.816px}
+.stitch--white{left:36px;top:410px}.stitch--green{left:77px;top:401px}
+.hero-progress{position:absolute;left:24px;right:24px;bottom:24px;display:flex;gap:12px}
+.hero-progress span{height:4px;flex:1;border:1px solid var(--color-white);border-radius:2px}.hero-progress span:first-child{background:var(--color-white)}
+</style>

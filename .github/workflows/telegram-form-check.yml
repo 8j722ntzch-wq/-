@@ -1,0 +1,52 @@
+name: Telegram form PHP checks (development)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'public/api/submit.php'
+      - 'src/components/forms/ConsultationForm.astro'
+      - 'src/layouts/SiteLayout.astro'
+      - 'tests/ui/telegram-form-delivery.spec.ts'
+      - '.github/workflows/telegram-form-check.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: telegram-form-php-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax check (no secrets)
+        run: |
+          php -v
+          php -l public/api/submit.php
+      - name: Non-delivery HTTP validation (no secrets or real Telegram API)
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -S 127.0.0.1:8787 -t public >/dev/null 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 25); do
+            curl -sS -o /dev/null http://127.0.0.1:8787/api/submit.php && break || true
+            sleep 0.2
+          done
+          request() {
+            curl -sS --max-time 5 -o /dev/null -w '%{http_code}' "$@" http://127.0.0.1:8787/api/submit.php
+          }
+          test "$(request)" = "405"
+          test "$(request -X POST -H 'Content-Type: application/json' -d '{}')" = "403"
+          test "$(request -X POST -H 'Origin: https://baltmotors.by' -H 'Content-Type: application/json' -d '{}')" = "422"
+          # A synthetic request must still fail closed without the private config.
+          payload='{"request_id":"9e5e9424-1c75-41f1-8cb0-42c4dff31666","name":"Test","phone":"+375 (29) 123-45-67","services":["Машинная вышивка"],"context":"","consent":true,"website":""}'
+          test "$(request -X POST -H 'Origin: https://baltmotors.by' -H 'Content-Type: application/json' -d "$payload")" = "503"
+          echo "PHP syntax and endpoint validation passed without bot secrets."

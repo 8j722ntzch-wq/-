@@ -1,0 +1,74 @@
+---
+import SocialButton from '../ui/SocialButton.astro';
+import Button from '../ui/Button.astro';
+import ActionLink from '../ui/ActionLink.astro';
+import { services } from '../../data/home';
+interface Props { email?:string;phone?:string;hours?:string[];socials?:{label:string;icon:'instagram'|'telegram'|'youtube';href:string}[];maps?:{label:string;icon:'yandex'|'google';href:string}[];dialogId?:string;home?:boolean;policyDialog?:string;siteNavigation?:boolean; }
+const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=false,policyDialog,siteNavigation=false}=Astro.props;
+---
+<footer id="footer" class:list={['footer',{'footer--home':home}]}>
+ <div class="footer-inner">
+  <div class="footer-top">
+   <div class="footer-contact">
+    <div class="contact-lines">{email&&<p class="contact-line">{email}</p>}{phone&&<p class="contact-line">{phone}</p>}</div>
+    {(socials.length>0||home)&&<div class="socials">
+     {socials.map(s=><SocialButton name={s.icon} href={s.href} label={s.label}/>)}
+     {home&&!socials.length&&(['instagram','telegram','youtube'] as const).map(icon=><SocialButton name={icon} label={icon}/>)}
+    </div>}
+    <Button size="m" openDialog={dialogId}>Оставить заявку</Button>
+   </div>
+   <div class="footer-column"><h3>Услуги:</h3><div class="footer-links">{services.map(service=>(home||siteNavigation)?<a href={service.href}>{service.title}</a>:<a href="#services">{service.title}</a>)}</div></div>
+   <div class="footer-column">
+    <h3>Навигация:</h3><div class="footer-links"><a href={(siteNavigation?'/':'')+'#advantages'}>О нас</a><a href={(siteNavigation?'/':'')+'#audiences'}>Бизнесу</a><a href="/portfolio/">Портфолио</a><a href="/contacts/">Контакты</a></div>
+    {(maps.length>0||home)&&<div class="maps"><h3>Мы на картах:</h3><div class="map-links">{maps.map(m=><a href={m.href}><img src={`/assets/figma/${m.icon}.svg`} width="18" height="18" alt=""/>{m.label}</a>)}{home&&!maps.length&&<><a href="/contacts/#map"><img src="/assets/figma/yandex.svg" width="18" height="18" alt=""/>Yandex Maps</a><span title="Ссылка на организацию будет добавлена после подтверждения адреса"><img src="/assets/figma/google.svg" width="18" height="18" alt=""/>Google Maps</span></>}</div></div>}
+    {hours.length>0&&<div class="hours"><h3>Режим работы:</h3>{hours.map(h=><p class="footer-hours">{h}</p>)}</div>}
+   </div>
+  </div>
+  <div class="wordmark">Мастерская</div>
+  <div class="footer-bottom">
+   <div class="footer-legal"><div><a href="/policy/#privacy">Политика конфиденциальности</a><a href="/policy/#personal-data">Политика обработки персональных данных</a></div><p>Мастерская © {new Date().getFullYear()} Все права защищены</p></div>
+   <ActionLink href="#top" variant="linear" size="m" icon iconDirection="up">Вернуться наверх</ActionLink>
+  </div>
+ </div>
+</footer>
+<style>
+.footer{background:var(--color-black);color:var(--color-white);padding:40px 0}
+.footer-inner{width:min(var(--container),calc(100% - 2rem));margin:auto}
+.footer-top{display:grid;grid-template-columns:6fr 3fr 3fr;gap:12px;min-height:331px}
+.footer-contact{display:flex;flex-direction:column;align-items:start;gap:24px}.contact-lines{display:grid;gap:4px}
+.contact-line{font:700 clamp(18px,2.2vw,32px)/1.3 var(--font-body);overflow-wrap:anywhere}
+.socials{display:flex;gap:12px;margin-top:-8px}.socials a,.social-placeholder{display:grid;place-items:center;width:48px;height:48px;border:1.5px solid var(--color-gray-6);border-radius:4px}.socials a:hover{background:var(--color-green);color:var(--color-black)}
+.footer-column{display:flex;flex-direction:column;align-items:start;gap:12px}.footer-column h3{color:var(--color-gray-4);font:600 14px/1.3 var(--font-heading);letter-spacing:0em}
+.footer-links{display:grid;gap:4px;justify-items:start}.footer-links a,.footer-service{font:700 16px/1.25 var(--font-body);text-decoration:none}.footer-service{border:0;padding:0;background:none;color:inherit;text-align:left}.footer-links a:hover,.footer-service:hover{text-decoration:underline;color:var(--color-green)}
+.maps{display:grid;gap:12px;margin-top:26px}.map-links{display:grid;gap:4px}.map-links a,.map-links>span{display:flex;align-items:center;gap:6px;font-size:14px;text-decoration:none}.hours{display:grid;gap:4px;margin-top:16px}.hours h3{margin-bottom:8px}.footer-hours{font-size:14px}
+.wordmark{font:700 clamp(28px,8.6vw,120px)/1.3 var(--font-body);margin-top:12px}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:11px;font-size:12px}.footer-legal{display:grid;gap:22px;text-transform:uppercase;color:var(--color-gray-4)}.footer-legal>div{display:flex;gap:16px}.footer-legal a{text-decoration:none}.footer-legal a:hover{text-decoration:underline}
+.footer-bottom :global(.button){color:var(--color-white);--button-border:var(--color-gray-6)}.footer-bottom :global(.button:hover){color:var(--color-black)}.footer :global(.button--solid:hover){color:var(--color-green);border-color:var(--color-green)}
+@media(max-width:56rem){.footer-top{grid-template-columns:1fr 1fr;gap:32px}.footer-contact{grid-column:1/-1}.footer-bottom,.footer-legal>div{flex-wrap:wrap}.wordmark{margin-top:32px;font-size:9vw}}
+</style>
+
+<style>
+/* Figma block_Footer — Mobile 390x1041; desktop rules above remain intact. */
+@media(max-width:58rem){
+  .footer{padding:40px 0}
+  .footer-inner{width:calc(100% - 50px);max-width:var(--container)}
+  .footer-top{grid-template-columns:minmax(0,1fr);min-height:0;gap:24px}
+  .footer-contact{grid-column:auto;gap:16px}
+  .contact-lines{gap:4px}
+  .contact-line{font:700 clamp(18px,7.18vw,28px)/1.3 var(--font-body)}
+  .socials{gap:12px;margin:0}
+  .footer-contact :global(.button){width:100%;min-height:38px;padding:10.5px 14.5px;font-size:12px;line-height:1.2}
+  .footer-column{gap:12px}
+  .footer-column h3{font-size:14px}
+  .footer-links{gap:4px}
+  .maps{margin-top:24px;gap:12px}
+  .hours{margin-top:16px}
+  .wordmark{font:700 50px/1.3 var(--font-body);margin-top:24px}
+  .footer-bottom{display:flex;flex-direction:column-reverse;align-items:stretch;gap:28px;padding-top:12px}
+  .footer-bottom :global(.button){width:100%;min-height:0}
+  .footer-bottom :global(.button--split){--control-height:38px;--control-padding:16px}
+  .footer-bottom :global(.button__label){font-size:12px}
+  .footer-legal{gap:22px}
+  .footer-legal>div{flex-direction:column;align-items:start;gap:4px}
+}
+</style>

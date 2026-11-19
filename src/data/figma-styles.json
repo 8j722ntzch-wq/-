@@ -1,0 +1,491 @@
+{
+  "variables": [
+    {
+      "id": "VariableID:51:1625",
+      "name": "Colors/Grays/White",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.9960784316062927,
+          "g": 0.9960784316062927,
+          "b": 0.9960784316062927,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1490",
+      "name": "Colors/Grays/Milky White",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.9607843160629272,
+          "g": 0.95686274766922,
+          "b": 0.9333333373069763,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1491",
+      "name": "Colors/Grays/Gray 1",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.9450980424880981,
+          "g": 0.9333333373069763,
+          "b": 0.9725490212440491,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1492",
+      "name": "Colors/Grays/Gray 2",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.9215686321258545,
+          "g": 0.9058823585510254,
+          "b": 0.9450980424880981,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1493",
+      "name": "Colors/Grays/Gray 3",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.7607843279838562,
+          "g": 0.7490196228027344,
+          "b": 0.7882353067398071,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1494",
+      "name": "Colors/Grays/Gray 4",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.45098039507865906,
+          "g": 0.43529412150382996,
+          "b": 0.4745098054409027,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1495",
+      "name": "Colors/Grays/Gray 5",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.26274511218070984,
+          "g": 0.250980406999588,
+          "b": 0.29019609093666077,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1496",
+      "name": "Colors/Grays/Gray 6",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.14235275983810425,
+          "g": 0.14235275983810425,
+          "b": 0.14235275983810425,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1497",
+      "name": "Colors/Grays/Black",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.04916616529226303,
+          "g": 0.04916616529226303,
+          "b": 0.04916616529226303,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1498",
+      "name": "Colors/Primary/Blue",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0,
+          "g": 0.4274509847164154,
+          "b": 1,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:24:1499",
+      "name": "Colors/Primary/Green",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.772549033164978,
+          "g": 0.9333333373069763,
+          "b": 0.4117647111415863,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:26:1523",
+      "name": "Colors/Primary/Blue (Dark)",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.1411764770746231,
+          "g": 0.2823529541492462,
+          "b": 0.7215686440467834,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "VariableID:26:1524",
+      "name": "Colors/Primary/Green (Dark)",
+      "resolvedType": "COLOR",
+      "valuesByMode": {
+        "24:0": {
+          "r": 0.4117647111415863,
+          "g": 0.4941176474094391,
+          "b": 0.23137255012989044,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "text": [
+    {
+      "id": "S:75ed84ab48f6749c37b4f12a75029526f500e83b,",
+      "name": "H1 — 36",
+      "fontName": {
+        "family": "Inter",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700,
+          "slnt": 0
+        }
+      },
+      "fontSize": 36,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 125
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:47c9869ff116e7643223fa59941ca4ad62a0923d,",
+      "name": "H2 — 32 (Semibold)",
+      "fontName": {
+        "family": "Inter",
+        "style": "Semi Bold",
+        "variationSettings": {
+          "wght": 600,
+          "slnt": 0
+        }
+      },
+      "fontSize": 32,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 129.99999523162842
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:8b56005c2e6fd7387925a7751ecb6bdba2a947c2,",
+      "name": "H3 — 28",
+      "fontName": {
+        "family": "Inter",
+        "style": "Semi Bold",
+        "variationSettings": {
+          "wght": 600,
+          "slnt": 0
+        }
+      },
+      "fontSize": 28,
+      "lineHeight": {
+        "unit": "AUTO"
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:5c46cb80dab737c3ed4fbc5497c0037a5f263c67,",
+      "name": "H4 — 24 (Bold)",
+      "fontName": {
+        "family": "Inter",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700,
+          "slnt": 0
+        }
+      },
+      "fontSize": 24,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 125
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:fc5e483d12051027920e200d9e4b6541754dd20b,",
+      "name": "H5 — 20 (Bold)",
+      "fontName": {
+        "family": "Inter",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700,
+          "slnt": 0
+        }
+      },
+      "fontSize": 20,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 129.99999523162842
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:88dce8914dcfb44414c9d01fddfd5092d811e065,",
+      "name": "H6 — 16 (Semibold)",
+      "fontName": {
+        "family": "Inter",
+        "style": "Semi Bold",
+        "variationSettings": {
+          "wght": 600,
+          "slnt": 0
+        }
+      },
+      "fontSize": 16,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 125
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:9c8787f56c43fc00d171161566e7b476a917c406,",
+      "name": "H7 — 14 (Semibold)",
+      "fontName": {
+        "family": "Inter",
+        "style": "Semi Bold",
+        "variationSettings": {
+          "wght": 600,
+          "slnt": 0
+        }
+      },
+      "fontSize": 14,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 125
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:8e4ac62cb7649712f8b9b5d7d51daefea5c9c87c,",
+      "name": "H8 — 12 (Semibold)",
+      "fontName": {
+        "family": "Inter",
+        "style": "Semi Bold",
+        "variationSettings": {
+          "wght": 600,
+          "slnt": 0
+        }
+      },
+      "fontSize": 12,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 120.00000476837158
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:19b5807aaa193dcd3db93a5a86a28cab943a863e,",
+      "name": "P1 — 16 (Medium)",
+      "fontName": {
+        "family": "JetBrains Mono",
+        "style": "Medium",
+        "variationSettings": {
+          "wght": 500
+        }
+      },
+      "fontSize": 16,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 125
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:81fdd70c30772edc927b90695482072fca2550c0,",
+      "name": "P2 — 14 (Medium)",
+      "fontName": {
+        "family": "JetBrains Mono",
+        "style": "Medium",
+        "variationSettings": {
+          "wght": 500
+        }
+      },
+      "fontSize": 14,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 125
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:9b08c59def1656527e745c5358a47db9dfbe7bcd,",
+      "name": "Superscript — 14",
+      "fontName": {
+        "family": "JetBrains Mono",
+        "style": "Bold",
+        "variationSettings": {
+          "wght": 700
+        }
+      },
+      "fontSize": 12,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 120.00000476837158
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "UPPER",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:7b5fb9c8fe864f94b062a448b68f79cca668e660,",
+      "name": "P1 — 20",
+      "fontName": {
+        "family": "JetBrains Mono",
+        "style": "Medium",
+        "variationSettings": {
+          "wght": 500
+        }
+      },
+      "fontSize": 20,
+      "lineHeight": {
+        "unit": "PERCENT",
+        "value": 129.99999523162842
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    },
+    {
+      "id": "S:fac629b120c0901c16eb4d4716a828d8dfb20831,",
+      "name": "Иллюстрации/Формат",
+      "fontName": {
+        "family": "JetBrains Mono",
+        "style": "Medium",
+        "variationSettings": {
+          "wght": 500
+        }
+      },
+      "fontSize": 32,
+      "lineHeight": {
+        "unit": "PIXELS",
+        "value": 40
+      },
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "ORIGINAL",
+      "textDecoration": "NONE"
+    }
+  ],
+  "paints": [],
+  "effects": [
+    {
+      "id": "S:ef020e5f4151a1c181efac2cafd8d74a4597ebad,",
+      "name": "Shadow"
+    }
+  ],
+  "grids": [
+    {
+      "id": "S:fa37ee4caf9a9710861f48656abaaf95701f4891,",
+      "name": "Desktop (1236 px)"
+    }
+  ],
+  "collection": {
+    "id": "VariableCollectionId:24:1489",
+    "name": "Variable collection",
+    "modes": [
+      {
+        "name": "Mode 1",
+        "modeId": "24:0"
+      }
+    ]
+  }
+}

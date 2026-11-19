@@ -1,0 +1,68 @@
+/* Five Figma Mobile service screens: 236:23411, 236:23445, 236:23481,
+   236:23520, 236:23551. Scope ALL overrides to services; desktop unaffected. */
+@media(max-width:58rem){
+ .service-page{padding:40px 0 80px;gap:80px}
+ .service-page .container{width:calc(100% - 50px)}
+ .service-page .service-content,.service-page .service-portfolio{min-width:0;gap:24px}
+ .service-page .service-content .heading,.service-page .service-portfolio .heading{gap:8px}
+ .service-page .service-content .heading__eyebrow,.service-page .service-portfolio .heading__eyebrow{font:700 12px/14px var(--font-body)}
+ .service-page .service-content .heading__title--hero,.service-page .service-portfolio .heading__title--hero{font:700 24px/30px var(--font-heading)}
+ .service-page .service-content .heading__row{display:block}
+ .service-page .service-content .service-copy{font:500 14px/18px var(--font-body)}
+ .service-page .service-copy h2{font:700 20px/26px var(--font-heading)}
+ .service-page .service-copy h3{font:700 16px/20px var(--font-heading)}
+ .service-page .service-copy ul{padding-left:16px;line-height:18px}
+ .service-page--repair .service-copy .copy-group .copy-group{display:block}
+ .service-page--repair .service-copy .copy-group .copy-group p{display:inline}
+ .service-page--repair .service-copy .copy-group .copy-group p+p::before{content:' '}
+ .service-page--printing .service-content .service-copy{font:700 14px/17px var(--font-body)}
+ .service-page .service-content .table-heading{font:700 20px/26px var(--font-heading);margin-bottom:-12px}
+ .service-page .service-content .button--split{--control-height:38px;--control-padding:16px;gap:4px;font-size:12px;line-height:14px}
+ .service-page .service-content .button--split .button__icon{width:38px;flex:0 0 38px}
+ .service-page .service-content .button--split .button__label{font-size:12px}
+ .service-page .service-portfolio .heading__row{align-items:flex-end;flex-wrap:nowrap;gap:8px}
+ .service-page .service-portfolio .portfolio-grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .service-page .portfolio-all{font-size:12px;line-height:16px;white-space:nowrap}
+ .service-page .portfolio-all__desktop{display:none}
+ .service-page .portfolio-all__mobile{display:inline}
+ .service-page .portfolio-all .portfolio-all__icon{width:16px;height:16px}
+
+ /* Figma: price rows 30px, horizontal scroll only within 340px content column.
+    Standard table width 806px = 176px label + seven 90px data columns. */
+ .service-page .price-group--service{min-width:0;max-width:100%}
+ .service-page .price-group--service .table-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+ .service-page .price-group--service table{width:806px;min-width:806px;table-layout:fixed}
+ .service-page .price-group--service col:first-child{width:176px!important}
+ .service-page .price-group--service col:not(:first-child){width:90px!important}
+ .service-page .price-group--service th,.service-page .price-group--service td{font:500 14px/18px var(--font-body);padding:6px 12px 6px 0;min-width:0;vertical-align:middle}
+ .service-page .price-group--service th{font-weight:700}
+ .service-page .price-group--service th:first-child{width:176px;min-width:0}
+ .service-page .price-group--service thead tr{height:30px}
+ .service-page .price-group--service summary{height:30px;min-height:30px;gap:8px;font:700 14px/18px var(--font-body)}
+ .service-page .price-group--service .price-toggle{gap:6px;font:500 12px/14px var(--font-body);white-space:nowrap}
+ .service-page .price-group--service .price-toggle i{width:16px;height:16px}
+ .service-page .price-group--service .price-toggle .icon{width:14px;height:14px}
+ .service-page--rhinestones .table-scroll[aria-label="Стоимость изготовления матрицы"] table{width:516px;min-width:516px}
+ .service-page--rhinestones .table-scroll[aria-label="Стоимость изготовления матрицы"] col:not(:first-child){width:85px!important}
+ .service-page--rhinestones .table-scroll[aria-label="Стоимость за 1 стразину"] table{width:428px;min-width:428px}
+ .service-page--rhinestones .table-scroll[aria-label="Стоимость за 1 стразину"] col:not(:first-child){width:84px!important}
+ .service-page--rhinestones .table-scroll[aria-label="Стоимость изготовления матрицы"]{padding-bottom:6px}
+ .service-page--rhinestones .table-scroll[aria-label="Стоимость за 1 стразину"]{padding-bottom:10px}
+
+ /* Six print-format cards: Mobile 260×304, controls beneath track, scroll step 272px. */
+ .service-page--printing print-formats{display:flex;flex-direction:column;gap:24px}
+ .service-page--printing .format-track{order:0;grid-auto-columns:260px;gap:12px;width:100%}
+ .service-page--printing .format-controls{order:1;position:static;justify-content:flex-end;gap:8px}
+
+ /* Two existing 340×458 / 340×438 portfolio cards followed by the 340×574 application. */
+ .service-page #forms .application{min-height:574px;padding:20px;gap:40px;grid-template-columns:minmax(0,1fr)}
+ .service-page #forms .application-copy h2{font:700 24px/30px var(--font-heading);margin-top:12px}
+ .service-page #forms .application-copy>p:last-of-type{font:500 14px/18px var(--font-body);margin-top:12px}
+ .service-page #forms .application-stitch{display:block;width:155.816px;height:2.816px;bottom:auto}
+ .service-page #forms .application-stitch--white{left:224px;top:144px}
+ .service-page #forms .application-stitch--green{left:194px;top:157px}
+ .service-page #forms consultation-form form{gap:16px}
+ .service-page #forms .application .service-options .option span{height:38px;min-height:38px;padding:0 10.5px;font:700 12px/14px var(--font-body)}
+ .service-page #forms .application .consent-copy{display:block;font:500 14px/18px var(--font-body)}
+ .service-page #forms .application .button--solid{height:50px;min-height:50px;font:700 14px/20px var(--font-body)}
+}

@@ -1,0 +1,84 @@
+.button {
+  --button-bg: var(--color-green);
+  --button-border: transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  min-height: 60px;
+  padding: 18.5px 22.5px;
+  border: var(--border-control) solid var(--button-border);
+  border-radius: var(--radius-control);
+  background: var(--button-bg);
+  color: var(--color-black);
+  font: 700 1rem/1.25 var(--font-body);
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: background-color var(--motion-fast), border-color var(--motion-fast);
+}
+.button--m { min-height: 50px; padding: 14.5px 18.5px; font-size: .875rem; }
+.button--s { min-height: 38px; padding: 10.5px 14.5px; font-size: .75rem; line-height: 1.2; }
+.button--linear { --button-bg: transparent; --button-border: var(--color-black); }
+.button--full { width: 100%; }
+@media (hover: hover) and (pointer: fine) {
+  .button--solid:hover:not(:disabled) { background: transparent; border-color: var(--color-black); }
+  .button--linear:hover:not(:disabled) { background: var(--color-green); border-color: transparent; }
+}
+.button--solid:active:not(:disabled) { background: var(--color-green); border-color: transparent; }
+.button--linear:active:not(:disabled) { background: transparent; border-color: var(--color-black); }
+.button:disabled { background: transparent; border-color: var(--color-gray-3); color: var(--color-gray-3); }
+.button[aria-busy='true'] { cursor: progress; }
+/* A single semantic control with two visual segments, Figma 24:643. */
+.button--split { --control-height:60px; --control-padding:24px; gap:8px; min-height:0; padding:0; border:0; background:none !important; }
+.button--split.button--m { --control-height:50px; --control-padding:20px; }
+.button--split.button--s { --control-height:38px; --control-padding:16px; }
+.button--split .button__label,.button--split .button__icon { display:flex; justify-content:center; align-items:center; min-height:var(--control-height); border:1.5px solid var(--button-border); border-radius:4px; background:var(--button-bg); transition:background-color var(--motion-fast),border-color var(--motion-fast); }
+.button--split .button__label { flex:1; padding:8px calc(var(--control-padding) - 1.5px); }
+.button--split .button__icon { width:var(--control-height); flex:none; align-self:stretch; }
+@media(hover:hover) and (pointer:fine) {
+ .button--split.button--solid:hover:not(:disabled) { --button-bg:transparent; --button-border:currentColor; }
+ .button--split.button--linear:hover:not(:disabled) { --button-bg:var(--color-green); --button-border:transparent; }
+}
+.button--split.button--solid:active:not(:disabled){--button-bg:var(--color-green);--button-border:transparent;}
+.button--split.button--linear:active:not(:disabled){--button-bg:transparent;--button-border:currentColor;}
+.button--split:disabled { --button-bg:transparent; --button-border:var(--color-gray-3); }
+
+
+/* button_Basic 24:643 — new type/size variants, preserving Solid/Linear S/M/L. */
+.button--solid.button--xl,.button--linear.button--xl{min-height:60px;font-size:16px}
+.button--solid.button--xs,.button--linear.button--xs{min-height:30px;padding:6px 10px;font-size:12px}
+.button--split.button--xl{--control-height:60px;--control-padding:24px}
+.button--split.button--xs{--control-height:30px;--control-padding:10px}
+.button--text,.button--text-bold,.button--text-latex{
+  --button-bg:transparent;
+  --button-border:transparent;
+  justify-content:flex-start;
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  letter-spacing:0;
+}
+.button--text,.button--text-latex{font-weight:500}
+.button--text-bold{font-weight:700}
+.button--text.button--s,.button--text-latex.button--s{font-size:14px;line-height:1.3}
+.button--text.button--xs,.button--text-latex.button--xs{font-size:12px;line-height:1.2}
+.button--text-bold.button--s{font-size:14px;line-height:1.25}
+.button--text-bold.button--m,.button--text.button--m{font-size:16px;line-height:1.25}
+.button--text-bold.button--l,.button--text.button--l{font-size:28px;line-height:1.3}
+.button--text-bold.button--xl,.button--text.button--xl{font-size:32px;line-height:1.3}
+.button--text.button--xs:not(.button--inline-icon){color:var(--color-gray-4);text-transform:uppercase}
+.button--inline-icon{display:inline-flex;align-items:center;gap:6px}
+.button--inline-icon .button__label{padding:0;min-height:0}
+.button--inline-icon .button__icon{display:grid;place-items:center;flex:none}
+.button--text-latex .button__icon{width:18px;height:18px}
+.button--text-bold.button--l .button__icon{width:20px;height:20px;background:var(--color-black);color:var(--color-green);border-radius:50%}
+.button--text:hover:not(:disabled),.button--text-latex:hover:not(:disabled){text-decoration:underline}
+.button--text-bold:hover:not(:disabled){color:var(--color-green);text-decoration:underline}
+.button--text:active:not(:disabled),.button--text-latex:active:not(:disabled){text-decoration:underline;opacity:.7}
+.button--text-bold:active:not(:disabled){color:var(--color-green);opacity:.7}
+.button--text:disabled,.button--text-latex:disabled,.button--text-bold:disabled{background:transparent;border:0;color:var(--color-gray-3)}

@@ -1,0 +1,74 @@
+---
+import Icon from '../ui/Icon.astro';
+import Button from '../ui/Button.astro';
+import ActionLink from '../ui/ActionLink.astro';
+interface Props {
+  title:string;image:string;imageAlt:string;audience:string;price:string;quantity:string;
+  ownItem?:boolean;tag:string;href?:string;tone?:'blue'|'pink';dialogId?:string;home?:boolean;
+}
+const {title,image,imageAlt,audience,price,quantity,ownItem=false,tag,href,tone='blue',dialogId='consultation',home=false}=Astro.props;
+---
+<article
+  class:list={['portfolio-card',{'portfolio-card--home':home,'portfolio-card--pink':tone==='pink'}]}
+  style={'--portfolio-accent:var(--color-'+tone+')'}
+  data-portfolio-type={tone==='pink'?'hello-kitty':'ruckit'}
+>
+  <div class="portfolio-image">
+    <img src={image} width="612" height="344" alt={imageAlt} loading="lazy"/>
+    <span class:list={['portfolio-tag','portfolio-tag--'+tone]}>{tag}</span>
+  </div>
+  <div class="portfolio-meta">
+    <span><Icon name={audience==='Для бизнеса'||audience==='Бизнесу'?'business':'personal'} size={20}/>{audience}</span>
+    <span><Icon name="price" size={20}/>{price}</span>
+    {ownItem&&<span><Icon name="own-item" size={20}/>Своя вещь</span>}
+  </div>
+  <h3><strong>Проект:</strong> <span class="portfolio-project-value">{title}</span></h3>
+  <p class="portfolio-volume"><strong>{home?'Объём:':'Объём заказа:'}</strong> <span class="portfolio-volume-value">{quantity}</span></p>
+  {href
+    ? <ActionLink href={href} variant="linear" size="m" fullWidth icon>Узнать больше о работе</ActionLink>
+    : <Button variant="linear" size="m" fullWidth icon openDialog={dialogId} service={tag} context={'Проект: '+title}>{home?'Узнать больше о работе':'Хочу так же'}</Button>}
+</article>
+<style>
+.portfolio-card--home .portfolio-volume{font:500 20px/1.3 var(--font-body);margin-top:-12px}
+.portfolio-card--home .portfolio-volume strong{font-family:var(--font-heading)}
+.portfolio-card--home .portfolio-meta{text-transform:uppercase}
+.portfolio-card--home .portfolio-meta :global(.icon){color:var(--portfolio-accent)}
+.portfolio-card--home .portfolio-tag{display:flex;align-items:center;gap:4px;color:var(--color-white)}
+.portfolio-card--home .portfolio-tag::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor}
+.portfolio-card--home{min-height:506px}
+.portfolio-card{min-width:0;display:flex;flex-direction:column;gap:12px}
+.portfolio-image{position:relative;overflow:hidden;border-radius:4px}
+.portfolio-image>img{width:100%;aspect-ratio:612/344;object-fit:cover}
+.portfolio-tag{position:absolute;left:20px;bottom:20px;background:var(--color-blue);color:var(--color-white);padding:4px 8px;border-radius:500px;font:700 12px/1.2 var(--font-body);text-transform:uppercase}
+.portfolio-tag--pink{background:var(--color-pink);color:var(--color-black)}
+.portfolio-meta{display:flex;gap:12px 24px;flex-wrap:wrap;font-size:12px}
+.portfolio-meta>span{display:flex;gap:8px;align-items:center}
+.portfolio-card h3{font:500 20px/1.3 var(--font-body)}
+.portfolio-card h3 strong{font-family:var(--font-heading)}
+.portfolio-volume{font-size:14px;margin-top:-8px}
+.portfolio-card>:last-child{margin-top:auto}
+.portfolio-card:is(:hover,:focus-within) .portfolio-project-value,
+.portfolio-card:is(:hover,:focus-within) .portfolio-volume-value{text-decoration:underline}
+
+/* container_Портфолио (Mobile): 340×458 Ruckit / 340×438 Hello Kitty.
+   Photo 340×280, meta at y=292, descriptions at y=348, CTA 38px. */
+@media(max-width:58rem){
+ .portfolio-card{width:100%;max-width:340px;height:458px;min-height:458px;gap:0}
+ .portfolio-card--home{min-height:458px}
+ .portfolio-card--pink,.portfolio-card--home.portfolio-card--pink{height:438px;min-height:438px}
+ .portfolio-image{height:280px;flex:0 0 280px}
+ .portfolio-image>img{width:100%;height:280px;aspect-ratio:auto;object-fit:cover}
+ .portfolio-tag{bottom:19px}
+ .portfolio-meta{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex-wrap:nowrap;margin-top:12px;height:44px;flex:0 0 44px;font:700 12px/1.2 var(--font-body)}
+ .portfolio-meta>span{gap:8px;min-height:20px;white-space:nowrap}
+ .portfolio-card h3{display:flex;align-items:flex-start;gap:8px;margin-top:12px;font:500 16px/20px var(--font-body)}
+ .portfolio-card h3 strong{font:700 16px/20px var(--font-heading);flex:0 0 65px}
+ .portfolio-project-value{min-width:0;flex:1}
+ .portfolio-card .portfolio-volume,.portfolio-card--home .portfolio-volume{display:flex;gap:8px;margin-top:0;font:500 16px/20px var(--font-body)}
+ .portfolio-card .portfolio-volume strong,.portfolio-card--home .portfolio-volume strong{font:700 16px/20px var(--font-heading);flex:0 0 60px}
+ .portfolio-volume-value{min-width:0}
+ .portfolio-card :global(.button--split){--control-height:38px;--control-padding:16px;gap:4px;font-size:12px}
+ .portfolio-card :global(.button--split .button__icon){width:38px;flex:0 0 38px}
+ .portfolio-card :global(.button--split .button__label){font-size:12px}
+}
+</style>

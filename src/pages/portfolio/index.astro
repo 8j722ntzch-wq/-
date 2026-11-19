@@ -1,0 +1,55 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Header from '../../components/blocks/Header.astro';
+import PromoBar from '../../components/blocks/PromoBar.astro';
+import Footer from '../../components/blocks/Footer.astro';
+import SectionHeading from '../../components/ui/SectionHeading.astro';
+import PortfolioCatalog from '../../components/blocks/PortfolioCatalog.astro';
+import ApplicationSection from '../../components/blocks/ApplicationSection.astro';
+import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import Modal from '../../components/dialogs/Modal.astro';
+const dialogId='portfolio-consultation';
+const links=[
+  {label:'Услуги',href:'/#services'},
+  {label:'О нас',href:'/#advantages'},
+  {label:'Бизнесу',href:'/#audiences'},
+  {label:'Портфолио',href:'/portfolio/'},
+  {label:'Контакты',href:'/contacts/'},
+];
+---
+<SiteLayout title="Наши работы — Мастерская" description="Примеры машинной вышивки, нанесения страз, печати и ремонта одежды. Портфолио мастерской.">
+  <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="#forms"/>
+  <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
+  <main id="content" class="portfolio-index">
+    <section id="portfolio" class="container portfolio-index__content" aria-labelledby="portfolio-title">
+      <SectionHeading as="h1" id="portfolio-title" eyebrow="Портфолио">Наши работы</SectionHeading>
+      <PortfolioCatalog/>
+    </section>
+    <div id="forms" class="container"><ApplicationSection title={'Расскажите, что\nнужно сделать'} description="Опишите вещь и желаемый результат" eyebrow="08 / Давайте обсудим" home policyDialog="preview-notice"/></div>
+  </main>
+  <Footer email="info@masterskaya.by" phone="+375 (29) 777-77-77" hours={['Пн — Пт: 9:00 – 18:00','Сб — Вс: 10:00 – 20:00']} dialogId={dialogId} home siteNavigation policyDialog="preview-notice"/>
+  <ConsultationDialog id={dialogId} policyDialog="preview-notice"/>
+  <Modal id="preview-notice" title="Предпросмотр сайта" description="Отправка заявок пока не подключена.">
+    <div class="preview-copy"><p>Введённые имя, телефон и выбранные услуги остаются в браузере и никуда не передаются.</p><p>Контакты, цены, проекты и условия предложений ещё предстоит подтвердить перед публикацией сайта.</p></div>
+  </Modal>
+</SiteLayout>
+<style>
+.portfolio-index{display:grid;gap:48px;padding:40px 0 80px}
+.portfolio-index__content{display:grid;gap:24px}
+#forms{scroll-margin-top:24px}
+.preview-copy{display:grid;gap:16px;line-height:1.5}
+/* Portfolio_All (Mobile) — Figma 223:21351: inner 340px, x25,
+   heading y161, tabs y237, first card y299, application after 80px. */
+@media(max-width:58rem){
+ .portfolio-index{gap:80px;padding:40px 0 80px}
+ .portfolio-index__content{width:calc(100% - 50px);gap:24px}
+ .portfolio-index__content :global(.heading__title--hero){font-size:24px;line-height:1.25}
+ #forms{width:calc(100% - 50px)}
+ #forms :global(.application){min-height:574px;padding:20px;gap:40px}
+ #forms :global(.application-copy h2){font-size:24px;line-height:1.25}
+ #forms :global(.application-copy>p:last-of-type){font-size:14px;line-height:1.25}
+ #forms :global(consultation-form form){gap:12px}
+ #forms :global(.consent-copy){font-size:12px;line-height:1.25}
+ #forms :global(.button--solid){min-height:38px;font-size:12px}
+}
+</style>

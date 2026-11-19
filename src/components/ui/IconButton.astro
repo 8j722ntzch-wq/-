@@ -1,0 +1,15 @@
+---
+import Icon from './Icon.astro';
+interface Props { icon?: string; label:string; disabled?:boolean; kind?:'dark'|'green'|'outline'; direction?:'left'|'right'|'up'; controls?:string; }
+const {icon='arrow-latex',label,disabled=false,kind='dark',direction='right',controls}=Astro.props;
+---
+<button type="button" class:list={['icon-button',`icon-button--${kind}`,`icon-button--${direction}`]} aria-label={label} aria-controls={controls} disabled={disabled}><Icon name={icon}/></button>
+<style>
+.icon-button{display:inline-grid;place-items:center;width:36px;height:36px;padding:5px;border:1.5px solid transparent;border-radius:4px;background:var(--color-black);color:var(--color-green);flex:none}
+.icon-button--green{background:var(--color-green);color:var(--color-black)}
+.icon-button--outline{background:transparent;color:inherit;border-color:var(--color-gray-6)}
+.icon-button--right :global(.icon){transform:rotate(90deg)}.icon-button--left :global(.icon){transform:rotate(-90deg)}
+.icon-button:disabled{opacity:.3;cursor:not-allowed}
+@media(hover:hover){.icon-button:hover:not(:disabled){background:var(--color-green);color:var(--color-black);border-color:currentColor}}
+@media(pointer:coarse){.icon-button{width:44px;height:44px}}
+</style>

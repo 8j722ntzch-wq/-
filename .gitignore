@@ -1,0 +1,20 @@
+node_modules/
+dist/
+dist-kit/
+.astro/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+test-results/
+playwright-report/
+
+# Local verification output
+playwright-report/
+test-results/
+npm-audit.json
+
+# Password-protected staging preview (generated, never committed)
+dist-preview/
+.masterskaya-preview-auth.php

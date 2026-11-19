@@ -1,0 +1,19 @@
+---
+import ConsultationForm from '../forms/ConsultationForm.astro';
+interface Props { title?:string;description?:string;eyebrow?:string;home?:boolean;servicePage?:boolean;mobileEyebrow?:string;policyDialog?:string;defaultService?:string; }
+const {title='Расскажите, что нужно сделать',description='Оставьте заявку — обсудим задачу и подберём решение для вашей вещи.',eyebrow='06 / Ваша идея — наша работа',home=false,servicePage=false,mobileEyebrow,policyDialog,defaultService}=Astro.props;
+---
+<section class="application" aria-labelledby="application-title">
+ <div class="application-copy"><p class="type-superscript"><span class:list={{'application-eyebrow--desktop':!!mobileEyebrow}}>{eyebrow}</span>{mobileEyebrow&&<span class="application-eyebrow--mobile">{mobileEyebrow}</span>}</p><h2 id="application-title" class="type-h1">{title}</h2><p>{description}</p></div>
+ <img class="application-grid" src="/assets/figma/application-grid.svg" width="365" height="309" alt="" loading="lazy"/>
+ <img class="application-stitch application-stitch--white" src="/assets/figma/stitch-white.svg" width="156" height="3" alt="" loading="lazy"/>
+ <img class="application-stitch application-stitch--green" src="/assets/figma/stitch-green.svg" width="156" height="3" alt="" loading="lazy"/>
+ <ConsultationForm home={home} servicePage={servicePage} policyDialog={policyDialog} defaultService={defaultService}/>
+</section>
+<style>
+.application{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px;padding:36px;min-height:432px;border-radius:4px;background:var(--gradient-application);box-shadow:var(--shadow);color:var(--color-white);overflow:hidden}
+.application-eyebrow--mobile{display:none}.application-copy{position:relative;min-width:0}.application-copy h2{max-width:465px;text-transform:uppercase;margin-top:12px;white-space:pre-line}.application-copy>p:last-of-type{margin-top:12px;max-width:465px}
+.application-grid{position:absolute;bottom:0;left:0;z-index:-1;width:365px;height:309px;max-width:none}
+.application-stitch{position:absolute;z-index:-1;width:155.816px;height:2.816px;max-width:none}.application-stitch--white{left:134px;bottom:107.18px}.application-stitch--green{left:104px;bottom:94.18px}
+@media(max-width:58rem){.application{grid-template-columns:1fr;padding:24px;gap:32px}.application-copy h2{font-size:28px}.application-stitch{display:none}.application-eyebrow--desktop{display:none}.application-eyebrow--mobile{display:inline}}
+</style>

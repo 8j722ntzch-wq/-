@@ -1,0 +1,217 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import MenuButton from '../ui/MenuButton.astro';
+import SocialButton from '../ui/SocialButton.astro';
+import ServiceMenuItem from '../cards/ServiceMenuItem.astro';
+import {services} from '../../data/home';
+
+interface Props {
+  links?:{label:string;href:string}[];
+  phone?:string;
+  phoneHref?:string;
+  dialogId?:string;
+  logoHref?:string;
+}
+const {
+  links=[
+    {label:'Услуги',href:'#services'},
+    {label:'О нас',href:'#advantages'},
+    {label:'Бизнесу',href:'#audiences'},
+    {label:'Портфолио',href:'/portfolio/'},
+    {label:'Контакты',href:'/contacts/'},
+  ],
+  phone,phoneHref,dialogId='consultation',logoHref='#top',
+}=Astro.props;
+const otherLinks=links.filter(link=>link.label!=='Услуги');
+const desktopMenuId='desktop-services-'+crypto.randomUUID();
+const mobileMenuId='mobile-menu-'+crypto.randomUUID();
+---
+<site-header class="site-header">
+  <header class="header-inner">
+    <a href={logoHref} class="logo" aria-label="Мастерская — к началу"><span aria-hidden="true"></span>LOGO</a>
+
+    <nav class="desktop-nav" aria-label="Основная навигация">
+      <button type="button" class="desktop-services-trigger" data-desktop-services aria-controls={desktopMenuId} aria-expanded="false" aria-haspopup="true">
+        Услуги <Icon name="arrow-latex" size={18}/>
+      </button>
+      {otherLinks.map(link=><a href={link.href}>{link.label}</a>)}
+    </nav>
+
+    {phone&&(phoneHref
+      ? <a class="header-phone" href={phoneHref}>{phone}</a>
+      : <span class="header-phone">{phone}</span>
+    )}
+    <div class="header-cta"><Button size="s" openDialog={dialogId}>Оставить заявку</Button></div>
+    <MenuButton controls={mobileMenuId}/>
+  </header>
+
+  <div class="desktop-mega" id={desktopMenuId} data-desktop-mega hidden>
+    <div class="desktop-mega__grid container">
+      {services.map(service=><ServiceMenuItem title={service.title} href={service.href} illustration={service.illustration}/>)}
+    </div>
+  </div>
+
+  <div class="mobile-panel" id={mobileMenuId} data-mobile-panel hidden>
+    <nav class="mobile-panel__nav" data-mobile-nav aria-label="Мобильная навигация">
+      <button type="button" class="mobile-panel__services-toggle" data-mobile-services aria-expanded="false">
+        <span>Услуги</span><span class="mobile-panel__services-icon"><Icon name="arrow" size={14}/></span>
+      </button>
+      {otherLinks.map(link=><a class="mobile-panel__nav-link" href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <div class="mobile-panel__services" data-mobile-services-list hidden>
+      <button type="button" class="mobile-panel__services-toggle" data-mobile-back>
+        <span>Услуги</span><span class="mobile-panel__services-icon"><Icon name="arrow-left-14" size={14}/></span>
+      </button>
+      <div class="mobile-panel__services-grid">
+        {services.map(service=><ServiceMenuItem title={service.title} href={service.href} illustration={service.illustration}/>)}
+      </div>
+    </div>
+
+    <div class="mobile-panel__bottom">
+      <div class="mobile-panel__contacts">
+        <span>info@masterskaya.by</span>
+        {phone&&<span>{phone}</span>}
+      </div>
+      <div class="mobile-panel__socials" aria-label="Социальные сети">
+        {(['instagram','telegram','youtube'] as const).map(social=><SocialButton name={social} label={social}/>)}
+      </div>
+      <Button size="s" fullWidth openDialog={dialogId}>Оставить заявку</Button>
+    </div>
+  </div>
+</site-header>
+<script>
+class SiteHeader extends HTMLElement{
+  connectedCallback(){
+    const mobileToggle=this.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+    const mobilePanel=this.querySelector<HTMLElement>('[data-mobile-panel]')!;
+    const mobileNav=this.querySelector<HTMLElement>('[data-mobile-nav]')!;
+    const mobileServices=this.querySelector<HTMLElement>('[data-mobile-services-list]')!;
+    const mobileServicesToggle=this.querySelector<HTMLButtonElement>('[data-mobile-services]')!;
+    const mobileBack=this.querySelector<HTMLButtonElement>('[data-mobile-back]')!;
+    const desktopTrigger=this.querySelector<HTMLButtonElement>('[data-desktop-services]')!;
+    const desktopMega=this.querySelector<HTMLElement>('[data-desktop-mega]')!;
+    const mobileMedia=window.matchMedia('(max-width: 58rem)');
+    const closeDesktop=()=>{
+      desktopMega.hidden=true;
+      desktopTrigger.setAttribute('aria-expanded','false');
+    };
+    const openDesktop=()=>{
+      if(mobileMedia.matches)return;
+      desktopMega.hidden=false;
+      desktopTrigger.setAttribute('aria-expanded','true');
+    };
+    const mobileView=(servicesOpen:boolean,focus=false)=>{
+      mobileNav.hidden=servicesOpen;
+      mobileServices.hidden=!servicesOpen;
+      mobileServicesToggle.setAttribute('aria-expanded',String(servicesOpen));
+      this.dataset.mobileView=servicesOpen?'services':'main';
+      if(focus)(servicesOpen?mobileBack:mobileServicesToggle).focus();
+    };
+    const setMobile=(open:boolean,restoreFocus=false)=>{
+      mobilePanel.hidden=!open;
+      mobileToggle.setAttribute('aria-expanded',String(open));
+      mobileToggle.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');
+      mobileToggle.dataset.state=open?'opened':'default';
+      this.dataset.mobileOpen=String(open);
+      document.documentElement.classList.toggle('site-menu-active',open);
+      if(open) {closeDesktop();mobileView(false);mobileServicesToggle.focus();}
+      else {mobileView(false);if(restoreFocus)mobileToggle.focus();}
+    };
+    const closeAll=()=>{closeDesktop();setMobile(false);};
+
+    desktopTrigger.addEventListener('pointerenter',openDesktop);
+    desktopTrigger.addEventListener('click',()=>desktopMega.hidden?openDesktop():closeDesktop());
+    this.addEventListener('pointerleave',()=>{
+      if(!desktopMega.hidden && !mobileMedia.matches)closeDesktop();
+    });
+    desktopMega.addEventListener('click',event=>{
+      if((event.target as Element).closest('a'))closeDesktop();
+    });
+    this.addEventListener('focusout',event=>{
+      const next=(event as FocusEvent).relatedTarget;
+      if(next instanceof Node && !this.contains(next))closeDesktop();
+    });
+
+    mobileToggle.addEventListener('click',()=>setMobile(mobilePanel.hidden));
+    mobileServicesToggle.addEventListener('click',()=>mobileView(true,true));
+    mobileBack.addEventListener('click',()=>mobileView(false,true));
+    mobilePanel.addEventListener('click',event=>{
+      const target=event.target as Element;
+      if(target.closest('a[href]')||target.closest('[data-open-dialog]'))setMobile(false);
+    });
+    this.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){
+        if(!mobilePanel.hidden){
+          event.preventDefault();
+          if(!mobileServices.hidden)mobileView(false,true);
+          else setMobile(false,true);
+        } else if(!desktopMega.hidden){
+          event.preventDefault();closeDesktop();desktopTrigger.focus();
+        }
+      }
+      if(event.key==='Tab'&&!mobilePanel.hidden){
+        const controls=[mobileToggle,...mobilePanel.querySelectorAll<HTMLElement>('a[href],button:not(:disabled)')]
+          .filter(element=>element.getClientRects().length>0);
+        const first=controls[0],last=controls[controls.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+      }
+    });
+    const onDesktopChange=()=>{
+      if(!mobileMedia.matches){closeAll();}
+      else closeDesktop();
+    };
+    mobileMedia.addEventListener('change',onDesktopChange);
+  }
+}
+if(!customElements.get('site-header'))customElements.define('site-header',SiteHeader);
+</script>
+<style>
+.site-header{display:block;position:relative;z-index:var(--z-header);background:var(--color-milk);border-bottom:1px solid var(--color-gray-2)}
+.header-inner{width:min(var(--container),calc(100% - 2rem));height:63px;min-height:63px;margin:0 auto;display:flex;align-items:center;gap:40px}
+.logo{display:inline-flex;gap:12px;align-items:center;flex:none;text-decoration:none;font:700 24px/1.25 var(--font-heading)}
+.logo>span{display:block;flex:none;width:28px;height:28px;background:var(--color-blue);transform:rotate(45deg);margin:6px}
+.desktop-nav{display:flex;flex:1;gap:12px;align-items:center}
+.desktop-nav a,.desktop-services-trigger{font:500 14px/1.3 var(--font-body);color:var(--color-black);letter-spacing:0;text-decoration:none;white-space:nowrap}
+.desktop-nav a:hover,.desktop-nav a:focus-visible{text-decoration:underline}
+.desktop-services-trigger{display:inline-flex;gap:6px;align-items:center;border:0;padding:0;background:transparent}
+.desktop-services-trigger:hover,.desktop-services-trigger[aria-expanded=true]{text-decoration:underline}
+.header-phone{font:700 14px/1.25 var(--font-body);text-decoration:none;white-space:nowrap}
+.header-inner :global(.menu-button){display:none}
+.desktop-mega{position:absolute;z-index:var(--z-menu);top:100%;left:0;width:100%;padding:12px 0 24px;background:var(--color-milk);border-bottom:1px solid var(--color-gray-2);box-shadow:var(--shadow)}
+.desktop-mega__grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.mobile-panel{display:none}
+@media(max-width:74rem){
+  .header-inner{gap:20px}
+  .header-phone{display:none}
+}
+@media(max-width:58rem){
+  .site-header{position:relative}
+  .header-inner{height:63px;gap:12px;justify-content:space-between}
+  .logo{margin-right:auto}
+  .header-inner :global(.menu-button){display:grid}
+  .desktop-nav,.header-phone,.header-cta,.desktop-mega{display:none!important}
+  .mobile-panel{position:absolute;top:100%;left:0;right:0;z-index:var(--z-menu);display:flex;flex-direction:column;gap:0;height:calc(100dvh - 64px);min-height:480px;overflow-y:auto;overscroll-behavior:contain;padding:12px 25px 133px;background:var(--color-milk);box-shadow:var(--shadow)}
+  .mobile-panel__nav{display:grid;align-content:start;gap:0}
+  .mobile-panel__services-toggle,.mobile-panel__nav-link{display:flex;align-items:center;justify-content:space-between;flex:none;width:100%;height:52px;border:0;border-bottom:1px solid var(--color-green);padding:8px 0;background:transparent;color:var(--color-black);font:700 28px/1.3 var(--font-body);text-decoration:none;text-align:left}
+  .mobile-panel__services-toggle{height:44px;align-items:flex-start;padding:0 0 8px}
+  .mobile-panel__nav-link:last-child{border-bottom:0}
+  .mobile-panel__services-icon{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}
+  .mobile-panel__services-icon :global(.icon){display:inline-block}
+  .mobile-panel__services{display:grid;align-content:start;gap:8px}
+  .mobile-panel__services-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .mobile-panel__services-grid :global(a:last-child){grid-column:1/-1}
+  .mobile-panel__bottom{display:grid;justify-items:stretch;gap:16px;margin-top:auto;padding-top:48px}
+  .mobile-panel__contacts{display:grid;gap:4px;font:700 clamp(20px,7.18vw,28px)/1.3 var(--font-body);overflow-wrap:anywhere}
+  .mobile-panel__socials{display:flex;align-items:center;gap:12px}
+  .mobile-panel__bottom :global(.button){width:100%;min-height:38px;padding:10.5px 14.5px;font-size:12px;line-height:1.2}
+}
+@media(max-width:25rem){
+  .mobile-panel{padding-inline:25px}
+}
+</style>
+<style is:global>
+html.site-menu-active{overflow:hidden}
+</style>

@@ -1,0 +1,43 @@
+name: Public Telegram form build preflight (development)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/telegram-public-form-build.yml'
+      - 'src/components/forms/ConsultationForm.astro'
+      - 'src/layouts/SiteLayout.astro'
+      - 'public/api/submit.php'
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build the public form mode without publishing
+        env:
+          PUBLIC_FORM_DELIVERY_ENABLED: 'true'
+        run: npm run build:kit
+      - name: Validate actual compiled markup and policy assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { readFile, access } from 'node:fs/promises';
+          const home=await readFile('dist-kit/index.html','utf8');
+          if(!home.includes('data-delivery="enabled"')) throw new Error('The built form remains in preview mode');
+          for(const path of ['dist-kit/api/submit.php','dist-kit/policy/index.html','dist-kit/documents/personal-data-policy.pdf']) await access(path);
+          console.log('PUBLIC_FORM_BUILD_READY: compiled form enabled, PHP and policy assets present.');
+          NODE
+          php -l dist-kit/api/submit.php

@@ -1,0 +1,35 @@
+name: Telegram recipient verification (development)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/telegram-recipient-verify.yml'
+      - 'scripts/verify-telegram-group.mjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: telegram-recipient-verification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Checkout development (without persisted credentials)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - name: Verify bot and privately deliver Telegram group ID
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/verify-telegram-group.mjs

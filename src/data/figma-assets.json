@@ -1,0 +1,387 @@
+[
+  {
+    "name": "tshirt-a3",
+    "id": "159:5474",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/tshirt-a3.svg"
+  },
+  {
+    "name": "polo",
+    "id": "159:5496",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/polo.svg"
+  },
+  {
+    "name": "jersey",
+    "id": "159:5520",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/jersey.svg"
+  },
+  {
+    "name": "work-jacket",
+    "id": "159:5521",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/work-jacket.svg"
+  },
+  {
+    "name": "vest",
+    "id": "159:5524",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/vest.svg"
+  },
+  {
+    "name": "cap",
+    "id": "159:5525",
+    "width": 260,
+    "height": 232,
+    "src": "/assets/figma/cap.svg"
+  },
+  {
+    "name": "arrow",
+    "id": "24:857",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/arrow.svg"
+  },
+  {
+    "name": "arrow-latex",
+    "id": "24:641",
+    "width": 18,
+    "height": 18,
+    "src": "/assets/figma/arrow-latex.svg"
+  },
+  {
+    "name": "close",
+    "id": "24:928",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/close.svg"
+  },
+  {
+    "name": "instagram",
+    "id": "24:1238",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/instagram.svg"
+  },
+  {
+    "name": "telegram",
+    "id": "24:1242",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/telegram.svg"
+  },
+  {
+    "name": "youtube",
+    "id": "24:1244",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/youtube.svg"
+  },
+  {
+    "name": "google",
+    "id": "24:898",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/google.svg"
+  },
+  {
+    "name": "yandex",
+    "id": "24:909",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/yandex.svg"
+  },
+  {
+    "name": "calculator",
+    "id": "76:4374",
+    "width": 32,
+    "height": 32,
+    "src": "/assets/figma/calculator.svg"
+  },
+  {
+    "name": "printer",
+    "id": "76:4376",
+    "width": 32,
+    "height": 32,
+    "src": "/assets/figma/printer.svg"
+  },
+  {
+    "name": "own-item",
+    "id": "76:4375",
+    "width": 32,
+    "height": 32,
+    "src": "/assets/figma/own-item.svg"
+  },
+  {
+    "name": "business",
+    "id": "72:3775",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/business.svg"
+  },
+  {
+    "name": "personal",
+    "id": "72:3776",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/personal.svg"
+  },
+  {
+    "name": "price",
+    "id": "127:10085",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/price.svg"
+  },
+  {
+    "name": "tick",
+    "id": "24:821",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/tick.svg"
+  },
+  {
+    "name": "patches",
+    "id": "38:531",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/patches.svg"
+  },
+  {
+    "name": "rhinestones",
+    "id": "38:535",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/rhinestones.svg"
+  },
+  {
+    "name": "repair",
+    "id": "38:539",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/repair.svg"
+  },
+  {
+    "name": "printing",
+    "id": "38:544",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/printing.svg"
+  },
+  {
+    "name": "embroidery",
+    "id": "38:548",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/embroidery.svg"
+  },
+  {
+    "name": "audience-self",
+    "id": "66:2956",
+    "width": 320,
+    "height": 320,
+    "src": "/assets/figma/audience-self.svg"
+  },
+  {
+    "name": "audience-team",
+    "id": "66:2955",
+    "width": 320,
+    "height": 320,
+    "src": "/assets/figma/audience-team.svg"
+  },
+  {
+    "name": "audience-business",
+    "id": "66:2954",
+    "width": 320,
+    "height": 320,
+    "src": "/assets/figma/audience-business.svg"
+  },
+  {
+    "name": "portfolio-ruckit",
+    "id": "70:3748",
+    "width": 612,
+    "height": 344,
+    "src": "/assets/figma/portfolio-ruckit.jpg"
+  },
+  {
+    "name": "portfolio-hello-kitty",
+    "id": "72:3755",
+    "width": 612,
+    "height": 344,
+    "src": "/assets/figma/portfolio-hello-kitty.jpg"
+  },
+  {
+    "name": "hero-grid",
+    "id": "66:3685",
+    "width": 473,
+    "height": 549,
+    "src": "/assets/figma/hero-grid.svg"
+  },
+  {
+    "name": "stitch-white",
+    "id": "66:3721",
+    "width": 156,
+    "height": 3,
+    "src": "/assets/figma/stitch-white.svg"
+  },
+  {
+    "name": "stitch-green",
+    "id": "66:3731",
+    "width": 156,
+    "height": 3,
+    "src": "/assets/figma/stitch-green.svg"
+  },
+  {
+    "name": "ruler-white",
+    "id": "66:3633",
+    "width": 553,
+    "height": 10,
+    "src": "/assets/figma/ruler-white.svg"
+  },
+  {
+    "name": "ruler-black",
+    "id": "88:2848",
+    "width": 553,
+    "height": 10,
+    "src": "/assets/figma/ruler-black.svg"
+  },
+  {
+    "name": "application-grid",
+    "id": "88:3064",
+    "width": 365,
+    "height": 309,
+    "src": "/assets/figma/application-grid.svg"
+  },
+  {
+    "name": "home-hero",
+    "id": "61:2376",
+    "width": 1863,
+    "height": 844,
+    "src": "/assets/figma/home-hero.webp"
+  },
+  {
+    "name": "instagram-20",
+    "id": "204:13068",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/instagram-20.svg"
+  },
+  {
+    "name": "telegram-20",
+    "id": "204:13072",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/telegram-20.svg"
+  },
+  {
+    "name": "youtube-20",
+    "id": "204:13074",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/youtube-20.svg"
+  },
+  {
+    "name": "arrow-up-20",
+    "id": "208:14404",
+    "width": 20,
+    "height": 20,
+    "src": "/assets/figma/arrow-up-20.svg"
+  },
+  {
+    "name": "arrow-up-14",
+    "id": "208:14412",
+    "width": 14,
+    "height": 14,
+    "src": "/assets/figma/arrow-up-14.svg"
+  },
+  {
+    "name": "arrow-left-14",
+    "id": "209:15802",
+    "width": 14,
+    "height": 14,
+    "src": "/assets/figma/arrow-left-14.svg"
+  },
+  {
+    "name": "burger-open",
+    "id": "24:1125",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/burger-open.svg"
+  },
+  {
+    "name": "burger-close",
+    "id": "24:1129",
+    "width": 24,
+    "height": 24,
+    "src": "/assets/figma/burger-close.svg"
+  },
+  {
+    "name": "tshirt-a3-mobile",
+    "id": "216:16627",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/tshirt-a3-mobile.svg"
+  },
+  {
+    "name": "polo-mobile",
+    "id": "216:16654",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/polo-mobile.svg"
+  },
+  {
+    "name": "jersey-mobile",
+    "id": "216:16689",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/jersey-mobile.svg"
+  },
+  {
+    "name": "work-jacket-mobile",
+    "id": "216:16722",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/work-jacket-mobile.svg"
+  },
+  {
+    "name": "vest-mobile",
+    "id": "216:16781",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/vest-mobile.svg"
+  },
+  {
+    "name": "cap-mobile",
+    "id": "216:16817",
+    "width": 220,
+    "height": 196,
+    "src": "/assets/figma/cap-mobile.svg"
+  },
+  {
+    "name": "audience-self-mobile",
+    "id": "216:16171",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/audience-self-mobile.svg"
+  },
+  {
+    "name": "audience-team-mobile",
+    "id": "216:16218",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/audience-team-mobile.svg"
+  },
+  {
+    "name": "audience-business-mobile",
+    "id": "216:16272",
+    "width": 240,
+    "height": 240,
+    "src": "/assets/figma/audience-business-mobile.svg"
+  }
+]

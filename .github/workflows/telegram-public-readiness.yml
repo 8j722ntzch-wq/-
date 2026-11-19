@@ -1,0 +1,40 @@
+name: Masterskaya public form readiness (read only)
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - '.github/workflows/telegram-public-readiness.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check-public:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Inspect public domain without submitting any data
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp="$(mktemp -d)"
+          trap 'rm -rf "$temp"' EXIT
+          url="https://baltmotors.by"
+          for item in 'HOME|/' 'POLICY|/policy/' 'POLICY_PDF|/documents/personal-data-policy.pdf' 'PHP_ENDPOINT|/api/submit.php'; do
+            IFS='|' read -r label path <<< "$item"
+            code="$(curl -sS -L --max-redirs 3 --connect-timeout 8 --max-time 20 -o "$temp/$label" -w '%{http_code}' "$url$path" || true)"
+            if [[ "$code" =~ ^[0-9]{3}$ ]]; then
+              printf '%s_HTTP_%s\n' "$label" "$code"
+            else
+              printf '%s_NETWORK_UNAVAILABLE\n' "$label"
+            fi
+            if [[ "$label" == HOME && "$code" == 200 ]]; then
+              if grep -qa '<consultation-form' "$temp/HOME"; then
+                echo "HOME_CONSULTATION_COMPONENT_PRESENT"
+              else
+                echo "HOME_CONSULTATION_COMPONENT_MISSING"
+              fi
+            fi
+          done
+          echo "Public readiness check only: no writes or Telegram messages." >> "$GITHUB_STEP_SUMMARY"

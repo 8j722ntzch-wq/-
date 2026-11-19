@@ -1,0 +1,103 @@
+{
+  "effect": {
+    "name": "Shadow",
+    "effects": [
+      {
+        "type": "DROP_SHADOW",
+        "visible": true,
+        "radius": 11,
+        "boundVariables": {},
+        "color": {
+          "r": 0,
+          "g": 0.4274509847164154,
+          "b": 1,
+          "a": 0.05999999865889549
+        },
+        "offset": {
+          "x": 0,
+          "y": 5
+        },
+        "spread": 0,
+        "blendMode": "NORMAL",
+        "showShadowBehindNode": true
+      },
+      {
+        "type": "DROP_SHADOW",
+        "visible": true,
+        "radius": 20,
+        "boundVariables": {},
+        "color": {
+          "r": 0,
+          "g": 0.4274509847164154,
+          "b": 1,
+          "a": 0.05000000074505806
+        },
+        "offset": {
+          "x": 0,
+          "y": 20
+        },
+        "spread": 0,
+        "blendMode": "NORMAL",
+        "showShadowBehindNode": true
+      },
+      {
+        "type": "DROP_SHADOW",
+        "visible": true,
+        "radius": 28,
+        "boundVariables": {},
+        "color": {
+          "r": 0,
+          "g": 0.4274509847164154,
+          "b": 1,
+          "a": 0.029999999329447746
+        },
+        "offset": {
+          "x": 0,
+          "y": 46
+        },
+        "spread": 0,
+        "blendMode": "NORMAL",
+        "showShadowBehindNode": true
+      },
+      {
+        "type": "DROP_SHADOW",
+        "visible": true,
+        "radius": 33,
+        "boundVariables": {},
+        "color": {
+          "r": 0,
+          "g": 0.4274509847164154,
+          "b": 1,
+          "a": 0.009999999776482582
+        },
+        "offset": {
+          "x": 0,
+          "y": 82
+        },
+        "spread": 0,
+        "blendMode": "NORMAL",
+        "showShadowBehindNode": true
+      }
+    ]
+  },
+  "grid": {
+    "name": "Desktop (1236 px)",
+    "layoutGrids": [
+      {
+        "pattern": "COLUMNS",
+        "visible": true,
+        "color": {
+          "r": 1,
+          "g": 0,
+          "b": 0,
+          "a": 0.10000000149011612
+        },
+        "gutterSize": 12,
+        "alignment": "CENTER",
+        "count": 12,
+        "sectionSize": 92,
+        "boundVariables": {}
+      }
+    ]
+  }
+}

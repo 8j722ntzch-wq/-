@@ -1,0 +1,46 @@
+---
+import Icon from '../ui/Icon.astro';
+interface Props { id:string;title:string;description?:string;variant?:'consultation'|'success'; }
+const {id,title,description,variant}=Astro.props;
+---
+<dialog id={id} class:list={['modal',variant&&`modal--${variant}`]} data-modal aria-labelledby={id+'-title'} aria-describedby={description?id+'-description':undefined}>
+ <div class="modal-inner"><div class="modal-heading"><h2 id={id+'-title'} class="type-h1">{title}</h2><button type="button" class="modal-close" data-close-dialog aria-label="Закрыть окно"><Icon name="close"/></button></div>{description&&<p id={id+'-description'} class="modal-description">{description}</p>}<div class="modal-content"><slot/></div></div>
+</dialog>
+<script>
+const triggers=new WeakMap<HTMLDialogElement,HTMLElement>();
+document.addEventListener('click',event=>{
+ const target=event.target as Element;
+ const opener=target.closest<HTMLElement>('[data-open-dialog]');
+ if(opener){const dialog=document.getElementById(opener.dataset.openDialog!) as HTMLDialogElement|null;if(dialog?.tagName==='DIALOG'&&!dialog.open){event.preventDefault();triggers.set(dialog,opener);dialog.dispatchEvent(new CustomEvent('prepare-form',{detail:{service:opener.dataset.service,context:opener.dataset.context}}));dialog.showModal();}return;}
+ const closer=target.closest('[data-close-dialog]');
+ if(closer)closer.closest('dialog')?.close();
+});
+document.querySelectorAll<HTMLDialogElement>('dialog[data-modal]').forEach(dialog=>{
+ // Keep sequential focus inside the window in browsers that otherwise move to browser chrome.
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab')return;
+  const focusable=Array.from(dialog.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex]:not([tabindex="-1"])')).filter(el=>el.getClientRects().length>0&&!el.closest('[hidden]'));
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(!first)return;
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ });
+ let startedOutside=false;
+ const outside=(event:MouseEvent)=>{const r=dialog.getBoundingClientRect();return event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom;};
+ dialog.addEventListener('pointerdown',event=>{startedOutside=event.target===dialog&&outside(event);});
+ dialog.addEventListener('click',event=>{if(event.target===dialog&&startedOutside&&outside(event))dialog.close();startedOutside=false;});
+ dialog.addEventListener('close',()=>{triggers.get(dialog)?.focus();});
+});
+</script>
+<style>
+.modal{width:min(704px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white);overflow:auto;overscroll-behavior:contain}.modal::backdrop{background:#0d0d0db3;backdrop-filter:blur(3px)}.modal-inner{padding:36px}.modal-heading{display:flex;align-items:start;justify-content:space-between;gap:16px}.modal-heading h2{text-transform:uppercase;overflow-wrap:anywhere}.modal-close{display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid transparent;border-radius:4px;background:var(--color-green);color:var(--color-black);padding:0}.modal-close:hover{border-color:var(--color-green);color:var(--color-green);background:transparent} .modal-description{margin-top:12px;color:var(--color-gray-3)}.modal--consultation .modal-description{color:var(--color-gray-2)}.modal-content{margin-top:24px}@media(max-width:40rem){
+ .modal{width:min(340px,calc(100% - 40px));border-radius:0}
+ .modal-inner{padding:20px}
+ .modal-heading{gap:12px}
+ .modal-heading h2{font-size:24px;line-height:30px}
+ .modal-close{width:36px;height:36px}
+ .modal-description{max-width:252px;font-size:14px;line-height:18px}
+ .modal--success .modal-description{margin-top:8px}
+ .modal--success .modal-content{margin-top:16px}
+}
+</style>

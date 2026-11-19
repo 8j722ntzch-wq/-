@@ -1,0 +1,26 @@
+---
+import Icon from '../ui/Icon.astro';
+interface Props { text:string; href:string; linkLabel?:string; }
+const {text,href,linkLabel='Узнать больше'}=Astro.props;
+---
+<aside class="promo" aria-label="Предложение мастерской">
+  <p>{text}</p>
+  <span class="promo-dot" aria-hidden="true"></span>
+  <a href={href}>{linkLabel}<span class="promo-arrow"><Icon name="arrow" size={14}/></span></a>
+</aside>
+<style>
+/* Figma frame_Discount 208:13996 — Desktop 32px, Mobile 57px. */
+.promo{height:32px;min-height:32px;display:flex;align-items:center;justify-content:center;gap:12px;padding:6px 16px;background:var(--color-green);color:var(--color-black);text-align:center;overflow:hidden}
+.promo p{font:700 14px/1.25 var(--font-body);text-transform:uppercase;white-space:nowrap}
+.promo-dot{width:7px;height:7px;flex:none;background:var(--color-black);border-radius:50%;box-shadow:0 0 3px 2px #0d0d0d33}
+.promo a{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font:500 14px/1.25 var(--font-body);text-decoration:none}
+.promo a:hover{text-decoration:underline}
+.promo-arrow{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}
+@media(max-width:40rem){
+ .promo{height:57px;min-height:57px;flex-direction:column;justify-content:center;gap:4px;padding:6px 8px}
+ .promo p{font-size:12px;line-height:1.25;max-width:100%;white-space:normal}
+ .promo-dot{width:6px;height:6px;box-shadow:0 0 2px 1px #0d0d0d33}
+ .promo a{font-size:12px;line-height:1.2}
+ .promo-arrow{width:16px;height:16px}
+}
+</style>
