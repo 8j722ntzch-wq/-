@@ -12,6 +12,8 @@
  .service-page .service-copy h2{font:700 20px/26px var(--font-heading)}
  .service-page .service-copy h3{font:700 16px/20px var(--font-heading)}
  .service-page .service-copy ul{padding-left:16px;line-height:18px}
+ /* Stabilize Cyrillic wrapping at 390px without reducing the 14px text size. */
+ .service-page--rhinestones .service-content .service-copy :is(p,li){letter-spacing:-.22px}
  .service-page--repair .service-copy .copy-group .copy-group{display:block}
  .service-page--repair .service-copy .copy-group .copy-group p{display:inline}
  .service-page--repair .service-copy .copy-group .copy-group p+p::before{content:' '}

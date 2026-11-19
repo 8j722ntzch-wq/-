@@ -1,0 +1,32 @@
+name: QA mobile services three-engine geometry
+on:
+  push:
+    branches: [qa/finish-mobile-hero-20261119]
+permissions:
+  contents: read
+jobs:
+  geometry:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build:kit
+      - run: npx playwright install chromium firefox webkit
+      - run: npx playwright test tests/ui/services-mobile.spec.ts tests/ui/mobile-scroll-portfolio.spec.ts tests/ui/hero-carousel.spec.ts --reporter=list
+      - name: Keep evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: qa-mobile-hero-final
+          retention-days: 5
+          path: |
+            test-results/
+            playwright-report/
