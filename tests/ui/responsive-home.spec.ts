@@ -38,10 +38,28 @@ test('Homepage reflows on live window resizing without clipping or page-wide hor
         copyLeft: copy.left, copyRight: copy.right,
         desktopNavVisible: headerNav !== 'none',
         mobileToggleVisible: mobileToggle !== 'none',
+        overflowingElements: [...document.body.querySelectorAll<HTMLElement>('*')]
+          .filter(el => el.getBoundingClientRect().right > innerWidth + 1)
+          .filter(el => {
+            let parent = el.parentElement;
+            while (parent) {
+              const overflow = getComputedStyle(parent).overflowX;
+              if (['hidden','clip','auto','scroll'].includes(overflow)) return false;
+              parent = parent.parentElement;
+            }
+            return true;
+          })
+          .sort((a,b) => b.getBoundingClientRect().right - a.getBoundingClientRect().right)
+          .slice(0,10).map(el => ({
+            tag:el.tagName.toLowerCase(),
+            className:String(el.className).slice(0,90),
+            right:Math.round(el.getBoundingClientRect().right),
+            width:Math.round(el.getBoundingClientRect().width),
+          })),
       };
     });
 
-    expect(metrics.overflow, `overflow at ${target.width}px`).toBeLessThanOrEqual(1);
+    expect(metrics.overflow, `overflow at ${target.width}px: ${JSON.stringify(metrics.overflowingElements)}`).toBeLessThanOrEqual(1);
     expect(metrics.copyLeft, `Hero copy clips left at ${target.width}px`).toBeGreaterThanOrEqual(metrics.heroLeft - 1);
     expect(metrics.copyRight, `Hero copy clips right at ${target.width}px`).toBeLessThanOrEqual(metrics.heroRight + 1);
     expect(metrics.desktopNavVisible).toBe(!target.mobileHeader);
