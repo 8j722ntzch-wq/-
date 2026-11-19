@@ -59,7 +59,7 @@ for(const project of portfolioProjects){
     expect(gaps).toEqual({h2Content:'12px',h3Body:'8px',textBlocks:'20px',bodies:'8px'});
     const related=page.locator('.portfolio-showcase');
     await expect(related.locator('.portfolio-card')).toHaveCount(2);
-    await expect(related.getByRole('link',{name:'Смотреть все работы'})).toHaveAttribute('href','/portfolio/');
+    await expect(related.getByRole('link',{name:'Наши работы'})).toHaveAttribute('href','/portfolio/');
     await expect(page.locator('#forms [name=services]:checked')).toHaveValue(project.tag);
     const dialog=page.locator('#portfolio-project-consultation');
     await page.locator('header').getByRole('button',{name:'Оставить заявку'}).click();
@@ -75,11 +75,11 @@ for(const project of portfolioProjects){
 
 test('home and service pages link to full portfolio and individual cases',async({page})=>{
   await page.goto('/');
-  await page.getByRole('link',{name:'Смотреть все работы'}).click();
+  await page.getByRole('link',{name:'Наши работы'}).click();
   await expect(page).toHaveURL(/\/portfolio\/$/);
   await page.getByRole('link',{name:'Узнать больше о работе'}).first().click();
   await expect(page).toHaveURL(/\/portfolio\/ruckit\/$/);
   await page.goto('/services/printing/');
-  await page.getByRole('link',{name:'Смотреть все работы'}).click();
+  await page.getByRole('link',{name:'Наши работы'}).click();
   await expect(page).toHaveURL(/\/portfolio\/$/);
 });

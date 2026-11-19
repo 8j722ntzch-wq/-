@@ -163,7 +163,7 @@ test('FAQ expands with keyboard and portfolio link opens the full catalog', asyn
   await expect(page.locator('#faq details').first()).toContainText('от одного изделия');
   await page.keyboard.press('Space');
   await expect(page.locator('#faq details').first()).not.toHaveAttribute('open', '');
-  await page.getByRole('link', { name: 'Смотреть все работы' }).click();
+  await page.getByRole('link', { name: 'Наши работы' }).click();
   await expect(page).toHaveURL(/\/portfolio\/$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Наши работы' })).toBeVisible();
 });

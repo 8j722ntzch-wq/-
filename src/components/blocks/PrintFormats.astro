@@ -57,7 +57,7 @@ print-formats{display:flex;flex-direction:column;gap:24px;min-width:0}
 @media(max-width:58rem){
  .formats-heading{display:contents}
  .formats-heading :global(.heading){order:0}
- .format-track{order:1;width:100%;grid-auto-columns:260px}
+ .format-track{order:1;width:calc(100% + 25px);max-width:none;grid-auto-columns:260px}
  .format-controls{order:2;align-self:flex-end}
 }
 </style>

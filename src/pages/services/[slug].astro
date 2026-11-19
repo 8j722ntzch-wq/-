@@ -30,7 +30,7 @@ const links=[{label:'Услуги',href:'/#services'},{label:'О нас',href:'/
    <Button size="m" fullWidth icon openDialog={dialogId} service={page.title} context={page.title}>Оставить заявку</Button>
   </section>
   <section id="portfolio" class="container service-portfolio" aria-labelledby="portfolio-title">
-   <SectionHeading id="portfolio-title" eyebrow="07 / Портфолио">Наши работы<a slot="action" href="/portfolio/" class="portfolio-all"><span class="portfolio-all__desktop">Смотреть все работы</span><span class="portfolio-all__mobile">Все работы</span><span class="portfolio-all__icon"><Icon name="arrow" size={14}/></span></a></SectionHeading>
+   <SectionHeading id="portfolio-title" eyebrow="07 / Портфолио">Наши работы<a slot="action" href="/portfolio/" class="portfolio-all"><span class="portfolio-all__desktop">Наши работы</span><span class="portfolio-all__mobile">Все работы</span><span class="portfolio-all__icon"><Icon name="arrow" size={14}/></span></a></SectionHeading>
    <div class="portfolio-grid">{projects.map(project=><PortfolioCard {...project} dialogId={dialogId} home/>)}</div>
   </section>
   <div id="forms" class="container"><ApplicationSection title={'Расскажите, что\nнужно сделать'} description="Опишите вещь и желаемый результат" eyebrow="08 / Давайте обсудим" mobileEyebrow="06 / Давайте обсудим" home servicePage policyDialog="preview-notice" defaultService={page.title}/></div>

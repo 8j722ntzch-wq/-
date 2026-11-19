@@ -133,7 +133,7 @@ test('Mobile print carousel controls are directly below track and right-aligned 
  const controls=await page.locator('.format-controls').boundingBox();
  expect(heading&&track&&controls).toBeTruthy();
  closeTo(heading!.x,25,1);closeTo(heading!.y,161,5);
- closeTo(track!.x,25,1);closeTo(track!.width,340,1);closeTo(track!.height,304,1);
+ closeTo(track!.x,25,1);closeTo(track!.width,365,1);closeTo(track!.x+track!.width,390,1);closeTo(track!.height,304,1);
  closeTo(track!.y-(heading!.y+heading!.height),24,3);
  closeTo(controls!.x,285,2);closeTo(controls!.width,80,1);closeTo(controls!.height,36,1);
  closeTo(controls!.y-(track!.y+track!.height),24,2);

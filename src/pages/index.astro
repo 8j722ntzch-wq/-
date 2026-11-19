@@ -37,7 +37,7 @@ const dialogId='home-consultation';
    <div class="three-columns">{advantages.map(advantage=><AdvantageCard {...advantage} compact/>)}</div>
   </section>
   <section id="portfolio" class="container home-section" aria-labelledby="portfolio-title">
-   <SectionHeading id="portfolio-title" eyebrow="04 / Портфолио">Наши работы<a slot="action" href="/portfolio/" class="portfolio-all">Смотреть все работы<span><Icon name="arrow" size={14}/></span></a></SectionHeading>
+   <SectionHeading id="portfolio-title" eyebrow="04 / Портфолио">Наши работы<a slot="action" href="/portfolio/" class="portfolio-all"><span class="portfolio-all__desktop">Наши работы</span><span class="portfolio-all__mobile">Все работы</span><span class="portfolio-all__icon"><Icon name="arrow" size={14}/></span></a></SectionHeading>
    <div class="two-columns">{projects.map(project=><PortfolioCard {...project} dialogId={dialogId} home/>)}</div>
   </section>
   <WorkStages/>
@@ -57,7 +57,7 @@ const dialogId='home-consultation';
 .service-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}.service-grid :global(.service-card){grid-column:span 2}.service-grid :global(.service-card--l){grid-column:span 3}
 .three-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.two-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .audiences{padding:80px 0;background:var(--color-blue)}.audiences :global(h3){white-space:pre-line}.ruler{position:absolute;width:553px;height:10px;right:0;top:-20px}
-.portfolio-all{display:flex;align-items:center;gap:6px;border:0;background:none;text-decoration:none;font:500 14px/1.25 var(--font-body);padding:0;color:var(--color-black)}.portfolio-all>span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}.portfolio-all:hover{text-decoration:underline}
+.portfolio-all{display:flex;align-items:center;gap:6px;border:0;background:none;text-decoration:none;font:500 14px/1.25 var(--font-body);padding:0;color:var(--color-black)}.portfolio-all__desktop{display:inline}.portfolio-all__mobile{display:none}.portfolio-all .portfolio-all__icon{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}.portfolio-all:hover{text-decoration:underline}
 .questions{display:grid;gap:4px}.faq{gap:22px}.faq :global(.accordion__action){opacity:0}.faq :global(details:hover .accordion__action),.faq :global(summary:focus-visible .accordion__action),.faq :global(details[open] .accordion__action){opacity:1}
 #forms{scroll-margin-top:24px}.gallery{display:grid;gap:28px}.gallery figure{margin:0}.gallery img{width:100%;border-radius:4px}.gallery figcaption{display:grid;gap:8px;margin-top:12px}.gallery figcaption span{font-size:14px;color:var(--color-gray-3)}.preview-copy{display:grid;gap:16px;line-height:1.5}
 
@@ -79,7 +79,13 @@ const dialogId='home-consultation';
  .questions{min-width:0;grid-template-columns:minmax(0,1fr)}
  .audiences{padding:64px 0}
  .ruler{max-width:100%}
- .portfolio-all{white-space:normal}
+ /* Keep the CTA's text and arrow together beside the mobile portfolio title. */
+ #portfolio :global(.heading__row){flex-wrap:nowrap;align-items:center;gap:8px}
+ #portfolio :global(.heading__title--hero){font-size:24px;line-height:30px}
+ .portfolio-all{white-space:nowrap;font-size:12px;flex:0 0 auto}
+ .portfolio-all__desktop{display:none}
+ .portfolio-all__mobile{display:inline}
+ .portfolio-all .portfolio-all__icon{width:16px;height:16px}
 }
 @media(max-width:40rem){
  .homepage{gap:48px;padding-bottom:48px}
