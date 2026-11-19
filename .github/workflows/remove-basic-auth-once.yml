@@ -1,0 +1,93 @@
+name: Remove legacy Basic Auth from baltmotors.by (one-time)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/remove-basic-auth-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: masterskaya-staging-deployment
+  cancel-in-progress: false
+
+jobs:
+  remove-old-password:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Install SFTP client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass
+      - name: Remove ONLY the old Basic Auth files, keep the site holding page
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+          for name in SFTP_HOST SFTP_USERNAME SSHPASS SFTP_KNOWN_HOSTS; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing SFTP secret $name"; exit 1; }
+          done
+          port="${SFTP_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || exit 1
+          workdir="$(mktemp -d)"
+          trap 'rm -rf -- "$workdir"' EXIT
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$workdir/known_hosts"
+          host_key="$SFTP_HOST"
+          if [[ "$port" != 22 ]]; then host_key="[$SFTP_HOST]:$port"; fi
+          ssh-keygen -F "$host_key" -f "$workdir/known_hosts" >/dev/null || { echo "::error::Host key not pinned"; exit 1; }
+          sftp_run() {
+            sshpass -e sftp -P "$port" \
+              -oBatchMode=no -oStrictHostKeyChecking=yes \
+              -oUserKnownHostsFile="$workdir/known_hosts" \
+              -oGlobalKnownHostsFile=/dev/null \
+              -oConnectTimeout=20 -oConnectionAttempts=1 \
+              -oNumberOfPasswordPrompts=1 \
+              -oPreferredAuthentications=password,keyboard-interactive \
+              -oPubkeyAuthentication=no \
+              -b "$1" "$SFTP_USERNAME@$SFTP_HOST" > "$workdir/result.log" 2>&1
+          }
+
+          # Safety: only remove .htaccess if it is exactly the four-line Basic Auth
+          # file established during this conversation, not any other site rules.
+          printf '%s\n' \
+            'get www/baltmotors.by/.htaccess '"$workdir/htaccess" \
+            'ls www/baltmotors.by/index.html' \
+            'bye' > "$workdir/read.sftp"
+          sftp_run "$workdir/read.sftp" || { echo "::error::Cannot read current site config; no changes made"; exit 1; }
+          printf 'AuthType Basic\nAuthName "Client Preview"\nAuthUserFile /var/www/h220918/data/www/.masterskaya-preview.htpasswd\nRequire valid-user\n' > "$workdir/expected"
+          if ! cmp -s "$workdir/expected" "$workdir/htaccess"; then
+            echo "::error::The existing .htaccess has changed; refusing to delete unrelated rules"
+            exit 1
+          fi
+
+          printf '%s\n' \
+            'rm www/baltmotors.by/.htaccess' \
+            '-rm www/.masterskaya-preview.htpasswd' \
+            '-rm www/.masterskaya-preview-auth.php' \
+            'bye' > "$workdir/remove.sftp"
+          sftp_run "$workdir/remove.sftp" || { echo "::error::Legacy password removal failed"; exit 1; }
+
+          # Ensure the authentication dialog is gone; do not publish the new
+          # staging site. Existing rollback holding page stays in place.
+          status="$(curl -sS --connect-timeout 8 --max-time 20 -D "$workdir/headers" -o "$workdir/page" -w '%{http_code}' "https://baltmotors.by/?auth-removed=$GITHUB_RUN_ID")"
+          if [[ "$status" != 200 ]] || grep -qi '^www-authenticate:' "$workdir/headers"; then
+            echo "::error::Login challenge still present (HTTP $status)"
+            exit 1
+          fi
+          if ! grep -q 'Предпросмотр временно недоступен' "$workdir/page"; then
+            echo "::error::Unexpected public page after password removal"
+            exit 1
+          fi
+          echo 'LEGACY_BASIC_AUTH_REMOVED HTTP_200'
+          echo 'The password protection was removed. Only the previously installed temporary holding page is served.' >> "$GITHUB_STEP_SUMMARY"
