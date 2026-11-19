@@ -34,6 +34,8 @@ class ConsultationForm extends HTMLElement {
   const context = form.querySelector<HTMLInputElement>('[name=context]')!;
   const website = form.querySelector<HTMLInputElement>('[name=website]')!;
   let requestId = crypto.randomUUID();
+  // Capture the on-site page where the visitor opens the form.
+  let sourcePage = window.location.pathname;
   let sending = false;
   const showResult = (message: string, isError = false) => {
    result.textContent = message;
@@ -43,6 +45,7 @@ class ConsultationForm extends HTMLElement {
 
   this.closest('dialog')?.addEventListener('prepare-form', event => {
    const {service, context: formContext} = (event as CustomEvent<{service?:string;context?:string}>).detail;
+   sourcePage = window.location.pathname;
    const selectedService = service || this.dataset.defaultService;
    if (selectedService) form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input => {
     input.checked = input.value === selectedService;
@@ -82,6 +85,7 @@ class ConsultationForm extends HTMLElement {
     services,
     consent: consent.checked,
     context: context.value,
+    source_page: this.closest('dialog') ? sourcePage : window.location.pathname,
     website: website.value,
    };
    sending = true;
