@@ -147,6 +147,16 @@ consultation-form{display:block;min-width:0}form{display:grid;gap:16px}.form-fie
 </style>
 
 <style>
+/* Popup-only interactive state: outline and text both use the lime accent,
+   while the inline homepage and service forms keep their current variants. */
+@media(hover:hover) and (pointer:fine){
+ .consultation-form--dialog .button--solid[type=submit]:hover:not(:disabled){
+  background:transparent;border-color:var(--color-green);color:var(--color-green)
+ }
+}
+.consultation-form--dialog .button--solid[type=submit]:focus-visible:not(:disabled){
+ background:transparent;border-color:var(--color-green);color:var(--color-green)
+}
 /* The consultation popup is an exact Mobile 340×550 component in Figma.
  * Keep compact service pills and its solid submit button limited to the dialog;
  * embedded application forms retain their existing layout and wording. */
