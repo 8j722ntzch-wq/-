@@ -24,17 +24,15 @@ test('Popup submit hover uses transparent fill, lime border and lime text',async
  await expect(submit).toHaveCSS('color','rgb(13, 13, 13)');
 });
 
-test('Desktop services hover uses a black rather than blue menu shadow',async({page},testInfo)=>{
+test('Desktop services hover displays its menu without a drop shadow',async({page},testInfo)=>{
  await page.setViewportSize({width:1470,height:900});
  await page.goto('/');
  const trigger=page.locator('[data-desktop-services]');
  await trigger.hover();
  const menu=page.locator('[data-desktop-mega]');
  await expect(menu).toBeVisible();
- const shadow=await menu.evaluate(el=>getComputedStyle(el).boxShadow);
- expect(shadow).toMatch(/rgba?\(13, 13, 13/);
- expect(shadow).not.toContain('0, 109, 255');
- if(testInfo.project.name==='chromium')await testInfo.attach('desktop-mega-black-shadow',{body:await page.screenshot(),contentType:'image/png'});
+ await expect(menu).toHaveCSS('box-shadow','none');
+ if(testInfo.project.name==='chromium')await testInfo.attach('desktop-mega-without-shadow',{body:await page.screenshot(),contentType:'image/png'});
 });
 
 for(const viewport of [{width:390,height:880},{width:390,height:700},{width:360,height:640},{width:928,height:768}]){

@@ -44,9 +44,7 @@ test('frame_Discount Desktop is centered and 32px high, desktop mega-menu suppor
   await expect(trigger).toHaveAttribute('aria-expanded','true');
   const mega=header.locator('[data-desktop-mega]');
   await expect(mega).toBeVisible();
-  const shadow=await mega.evaluate(el=>getComputedStyle(el).boxShadow);
-  expect(shadow).toMatch(/rgba?\(13, 13, 13/);
-  expect(shadow).not.toContain('0, 109, 255');
+  await expect(mega).toHaveCSS('box-shadow','none');
   if(testInfo.project.name==='chromium')await testInfo.attach('desktop-services-expanded', {body:await page.screenshot(),contentType:'image/png'});
   const cards=mega.locator('.service-menu-item');
   await expect(cards).toHaveCount(5);
