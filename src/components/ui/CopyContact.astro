@@ -4,7 +4,7 @@ const {value,display=value}=Astro.props;
 ---
 <copy-contact class="copy-contact">
   <button type="button" class="copy-contact__button" data-copy-value={value} title={`Скопировать: ${display}`} aria-label={`Скопировать в буфер обмена: ${display}`}>{display}</button>
-  <span class="copy-contact__feedback" role="status" aria-live="polite"></span>
+  <span class="copy-contact__feedback" aria-live="polite" aria-atomic="true"></span>
 </copy-contact>
 <script>
 class CopyContact extends HTMLElement {
