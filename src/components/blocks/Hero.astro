@@ -1,57 +1,268 @@
 ---
 import Button from '../ui/Button.astro';
-interface Props { dialogId?:string; }
-const {dialogId='consultation'}=Astro.props;
+import {heroSlides, type HeroSlide} from '../../data/hero';
+
+interface Props {
+  dialogId?: string;
+  slides?: HeroSlide[];
+  intervalMs?: number;
+}
+const {
+  dialogId = 'consultation',
+  slides = heroSlides,
+  intervalMs = 20_000,
+} = Astro.props;
+// A misconfigured empty collection must not render an unusable carousel.
+const pages = slides.length ? slides : heroSlides.slice(0, 1);
+const first = pages[0];
 ---
-<section class="hero" aria-labelledby="hero-title">
+<hero-carousel
+  class="hero"
+  role="region"
+  aria-roledescription="карусель"
+  aria-label="Предложения мастерской"
+  aria-labelledby="hero-title"
+  data-hero-theme={first.theme}
+  data-hero-active="0"
+  data-hero-slides={JSON.stringify(pages)}
+  data-hero-interval={intervalMs}
+  data-hero-count={pages.length}
+>
+  <div class="hero-gradient-overlay" aria-hidden="true"></div>
   <img class="hero-grid" src="/assets/figma/hero-grid.svg" width="473" height="549" alt="" />
-  <img class="hero-photo" src="/assets/figma/home-hero.webp" width="1863" height="844" alt="Мастер показывает худи с нашивкой в швейной мастерской" fetchpriority="high" />
+  <img class="hero-photo" src="/assets/figma/home-hero.webp" width="1863" height="844"
+       alt="Мастер показывает худи с нашивкой в швейной мастерской" fetchpriority="high" />
   <div class="hero-copy">
-    <h1 id="hero-title">Получи скидку <mark>100 BYN</mark> на свой первый заказ до 1 декабря</h1>
-    <p>Объявляем акцию в честь открытия. Узнай все условия, перейдя по кнопке ниже!</p>
-    <Button size="m" icon openDialog={dialogId} context="Акция: скидка 100 BYN на первый заказ до 1 декабря">Оставить заявку</Button>
+    <h1 id="hero-title"><span data-hero-before>{first.before}</span><mark data-hero-accent>{first.highlight}</mark><span data-hero-after>{first.after}</span></h1>
+    <p data-hero-description>{first.description}</p>
+    <Button size="m" icon openDialog={dialogId} service={first.service} context={first.context}>Оставить заявку</Button>
   </div>
   <img class="stitch stitch--white" src="/assets/figma/stitch-white.svg" width="156" height="3" alt="" />
   <img class="stitch stitch--green" src="/assets/figma/stitch-green.svg" width="156" height="3" alt="" />
-  <!-- The design supplies one slide. These marks are decorative until other slides exist. -->
-  <div class="hero-progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-</section>
+  <nav class="hero-progress" aria-label="Переключение слайдов" hidden={pages.length <= 1}>
+    {pages.map((slide, index) =>
+      <button
+        type="button" class="hero-progress__step"
+        data-hero-page={index}
+        data-state={index === 0 ? 'active' : 'pending'}
+        aria-label={`Слайд ${index + 1} из ${pages.length}`}
+        aria-current={index === 0 ? 'true' : undefined}
+        title={`Слайд ${index + 1}`}
+      ><span class="hero-progress__fill" aria-hidden="true"></span></button>
+    )}
+  </nav>
+</hero-carousel>
+<script>
+import type {HeroSlide} from '../../data/hero';
+
+class HeroCarousel extends HTMLElement {
+  private destroyCarousel?: () => void;
+  connectedCallback() {
+    this.destroyCarousel?.();
+    const slides = JSON.parse(this.dataset.heroSlides || '[]') as HeroSlide[];
+    if (!slides.length) return;
+    const duration = Math.max(250, Number(this.dataset.heroInterval) || 20_000);
+    this.style.setProperty('--hero-duration', duration + 'ms');
+    const progress = [...this.querySelectorAll<HTMLButtonElement>('[data-hero-page]')];
+    const overlay = this.querySelector<HTMLElement>('.hero-gradient-overlay')!;
+    const copy = this.querySelector<HTMLElement>('.hero-copy')!;
+    const before = copy.querySelector<HTMLElement>('[data-hero-before]')!;
+    const accent = copy.querySelector<HTMLElement>('[data-hero-accent]')!;
+    const after = copy.querySelector<HTMLElement>('[data-hero-after]')!;
+    const description = copy.querySelector<HTMLElement>('[data-hero-description]')!;
+    const cta = copy.querySelector<HTMLButtonElement>('[data-open-dialog]')!;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const listeners = new AbortController();
+    let active = 0;
+    let timeLeft = duration;
+    let startedAt = 0;
+    let timer: number | undefined;
+    let hovered = false;
+    let focused = false;
+
+    const unavailable = () => slides.length < 2 || hovered || focused || document.hidden || motion.matches;
+    const stop = () => {
+      if (timer !== undefined) {
+        window.clearTimeout(timer);
+        timeLeft = Math.max(1, timeLeft - (performance.now() - startedAt));
+        timer = undefined;
+      }
+      this.dataset.heroPaused = 'true';
+    };
+    const start = () => {
+      if (unavailable()) {
+        this.dataset.heroPaused = 'true';
+        return;
+      }
+      if (timer !== undefined) return;
+      delete this.dataset.heroPaused;
+      startedAt = performance.now();
+      timer = window.setTimeout(() => {
+        timer = undefined;
+        show((active + 1) % slides.length);
+      }, timeLeft);
+    };
+    const show = (next: number) => {
+      stop();
+      timeLeft = duration;
+      const oldGradient = getComputedStyle(this).backgroundImage;
+      active = (next + slides.length) % slides.length;
+      const slide = slides[active];
+      if (!motion.matches) {
+        overlay.style.transition = 'none';
+        overlay.style.backgroundImage = oldGradient;
+        overlay.style.opacity = '1';
+      }
+      this.dataset.heroTheme = slide.theme;
+      this.dataset.heroActive = String(active);
+      before.textContent = slide.before;
+      accent.textContent = slide.highlight;
+      after.textContent = slide.after;
+      description.textContent = slide.description;
+      cta.dataset.context = slide.context;
+      if (slide.service) cta.dataset.service = slide.service;
+      else delete cta.dataset.service;
+
+      copy.removeAttribute('data-hero-reveal');
+      if (!motion.matches) {
+        void copy.offsetWidth;
+        copy.setAttribute('data-hero-reveal', '');
+        void overlay.offsetWidth;
+        overlay.style.transition = 'opacity 500ms ease';
+        overlay.style.opacity = '0';
+      } else {
+        overlay.style.opacity = '0';
+      }
+      for (const [index, button] of progress.entries()) {
+        button.dataset.state = index < active ? 'complete' : index === active ? 'active' : 'pending';
+        if (index === active) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+        const fill = button.querySelector<HTMLElement>('.hero-progress__fill')!;
+        fill.style.animation = 'none';
+        void fill.offsetWidth;
+        fill.style.animation = '';
+      }
+      start();
+    };
+
+    this.dataset.heroReady = 'true';
+    start();
+    for (const button of progress) {
+      button.addEventListener('click', () => show(Number(button.dataset.heroPage)), {signal: listeners.signal});
+      button.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+        event.preventDefault();
+        const change = event.key === 'ArrowRight' ? 1 : -1;
+        const next = (active + change + slides.length) % slides.length;
+        show(next);
+        progress[next]?.focus();
+      }, {signal: listeners.signal});
+    }
+    this.addEventListener('mouseenter', () => { hovered = true; stop(); }, {signal: listeners.signal});
+    this.addEventListener('mouseleave', () => { hovered = false; start(); }, {signal: listeners.signal});
+    this.addEventListener('focusin', () => { focused = true; stop(); }, {signal: listeners.signal});
+    this.addEventListener('focusout', (event: FocusEvent) => {
+      if (!event.relatedTarget || !this.contains(event.relatedTarget as Node)) {
+        focused = false;
+        start();
+      }
+    }, {signal: listeners.signal});
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    }, {signal: listeners.signal});
+    motion.addEventListener('change', () => {
+      if (motion.matches) stop();
+      else start();
+    }, {signal: listeners.signal});
+    this.destroyCarousel = () => {
+      stop();
+      listeners.abort();
+    };
+  }
+  disconnectedCallback() {
+    this.destroyCarousel?.();
+    this.destroyCarousel = undefined;
+  }
+}
+if (!customElements.get('hero-carousel')) customElements.define('hero-carousel', HeroCarousel);
+</script>
 <style>
-.hero{height:560px;position:relative;isolation:isolate;overflow:hidden;border-radius:4px;background:linear-gradient(109.3328deg,#006dff 71.635%,#c5ee69cc 100%);color:var(--color-milk)}
-.hero-grid{position:absolute;width:473px;height:549px;left:467px;top:11px;max-width:none;z-index:-2}
-.hero-photo{position:absolute;inset:0 0 0 1px;width:calc(100% - 1px);height:100%;object-fit:cover;z-index:-1}
-.hero-copy{position:relative;padding:36px;width:586px}
-h1{font:700 36px/1.2 var(--font-heading);text-transform:uppercase;max-width:514px}
-mark{color:var(--color-black);background:var(--color-green);border-radius:4px;box-shadow:4px 0 var(--color-green),-4px 0 var(--color-green);white-space:nowrap}
-.hero-copy p{max-width:386px;margin-top:12px;margin-bottom:24px}
+.hero{
+  position:relative;display:block;height:560px;isolation:isolate;
+  border-radius:4px;overflow:hidden;color:var(--color-milk);
+  background-color:var(--color-blue);
+  background-image:var(--hero-desktop-gradient);
+}
+.hero[data-hero-theme="blue-lime"]{
+  --hero-desktop-gradient:linear-gradient(109.3328deg,#006dff 71.635%,rgb(197 238 105 / 80%) 100%);
+  --hero-mobile-gradient:linear-gradient(95.147deg,#006dff 71.635%,rgb(197 238 105 / 80%) 100%);
+}
+.hero[data-hero-theme="lime-blue"]{
+  --hero-desktop-gradient:linear-gradient(109.3328deg,rgb(197 238 105 / 80%) 72%,#006dff 100%);
+  --hero-mobile-gradient:linear-gradient(95.147deg,rgb(197 238 105 / 80%) 72%,#006dff 100%);
+}
+.hero[data-hero-theme="black-blue"]{
+  --hero-desktop-gradient:linear-gradient(109.3328deg,rgb(13 13 13 / 80%) 72%,#006dff 100%);
+  --hero-mobile-gradient:linear-gradient(95.147deg,rgb(13 13 13 / 80%) 72%,#006dff 100%);
+  background-color:#0d0d0d;
+}
+.hero[data-hero-theme="black-lime"]{
+  --hero-desktop-gradient:linear-gradient(109.3328deg,#0d0d0d 74%,rgb(197 238 105 / 80%) 100%);
+  --hero-mobile-gradient:linear-gradient(95.147deg,#0d0d0d 74%,rgb(197 238 105 / 80%) 100%);
+  background-color:#0d0d0d;
+}
+.hero-gradient-overlay{position:absolute;inset:0;z-index:0;opacity:0;pointer-events:none}
+.hero-grid{position:absolute;width:473px;height:549px;left:467px;top:11px;max-width:none;z-index:1;pointer-events:none}
+.hero-photo{position:absolute;left:1px;top:0;width:calc(100% - 1px);height:100%;max-width:none;object-fit:fill;z-index:2;pointer-events:none}
+.hero-copy{position:absolute;top:36px;left:36px;z-index:3;width:514px}
+.hero-copy h1{font:700 36px/1.2 var(--font-heading);text-transform:uppercase;overflow-wrap:normal}
+.hero-copy mark{color:var(--color-black);background:var(--color-green);border-radius:4px;box-shadow:4px 0 var(--color-green),-4px 0 var(--color-green);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero[data-hero-theme="black-blue"] .hero-copy mark{color:var(--color-white);background:var(--color-blue);box-shadow:4px 0 var(--color-blue),-4px 0 var(--color-blue)}
+.hero-copy p{font:500 16px/20px var(--font-body);max-width:386px;margin-top:12px;margin-bottom:24px}
 .hero-copy :global(.button){width:224px}
 .hero-copy :global(.button:hover){color:var(--color-green)}
-.stitch{position:absolute;max-width:none;width:155.816px;height:2.816px}
-.stitch--white{left:36px;top:410px}.stitch--green{left:77px;top:401px}
-.hero-progress{position:absolute;left:24px;right:24px;bottom:24px;display:flex;gap:12px}
-.hero-progress span{height:4px;flex:1;border:1px solid var(--color-white);border-radius:2px}.hero-progress span:first-child{background:var(--color-white)}
-
-/* Intermediate viewport: keep text inside the hero as its container narrows. */
+.stitch{position:absolute;z-index:3;max-width:none;width:155.816px;height:2.816px;pointer-events:none}
+.stitch--white{left:36px;top:410px}
+.stitch--green{left:77px;top:401px}
+.hero-progress{position:absolute;z-index:4;bottom:12px;left:24px;right:24px;display:flex;align-items:center;gap:12px;height:28px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.hero-progress[hidden]{display:none}
+.hero-progress::-webkit-scrollbar{display:none}
+.hero-progress__step{position:relative;flex:1 0 24px;min-width:24px;height:28px;padding:0;border:0;background:transparent;cursor:pointer;outline-offset:-2px}
+.hero-progress__step::before{content:'';position:absolute;left:0;right:0;top:12px;height:4px;border:1px solid var(--color-white);border-radius:2px}
+.hero-progress__fill{position:absolute;top:12px;left:0;width:100%;height:4px;background:var(--color-white);border-radius:2px;transform-origin:left center;transform:scaleX(0)}
+.hero-progress__step[data-state="complete"] .hero-progress__fill{transform:scaleX(1)}
+.hero:not([data-hero-ready]) .hero-progress__step[data-state="active"] .hero-progress__fill{transform:scaleX(1)}
+.hero[data-hero-ready] .hero-progress__step[data-state="active"] .hero-progress__fill{animation:hero-fill var(--hero-duration,20s) linear both}
+.hero[data-hero-paused] .hero-progress__step[data-state="active"] .hero-progress__fill{animation-play-state:paused}
+.hero-progress__step:focus-visible{outline:2px solid var(--color-green);border-radius:4px}
+.hero-copy[data-hero-reveal]{animation:hero-copy-enter 380ms ease-out both}
+@keyframes hero-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes hero-copy-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:74rem){
- .hero-copy{width:min(65%,586px);padding:32px}
- h1{font-size:clamp(28px,3vw,36px)}
+ .hero-copy{width:min(514px,calc(100% - 64px))}
+ .hero-copy h1{font-size:clamp(28px,3vw,36px)}
 }
-/* On tablet the image moves below the copy rather than squeezing the copy. */
 @media(max-width:58rem){
- .hero{height:auto;min-height:640px;display:flex;flex-direction:column;background:var(--color-blue)}
- .hero-grid,.stitch{display:none}
- .hero-photo{inset:auto 0 0;width:100%;height:44%;object-fit:cover;object-position:center 42%}
- .hero-copy{width:100%;padding:30px 24px 0}
- h1{max-width:700px;font-size:clamp(25px,4vw,32px)}
- .hero-copy p{max-width:520px}
- .hero-progress{bottom:16px;left:20px;right:20px}
+ .hero{height:600px;background-image:var(--hero-mobile-gradient)}
+ .hero-grid{left:27px;top:111px}
+ .hero-photo{width:691px;height:313px;top:auto;bottom:0;left:calc(50% - 371px)}
+ .hero-copy{top:20px;left:20px;width:min(300px,calc(100% - 40px))}
+ .hero-copy h1{font-size:24px;line-height:1.2}
+ .hero-copy p{font:500 14px/18px var(--font-body);max-width:300px;margin:12px 0}
+ .hero-copy :global(.button){width:182px;height:38px;min-height:38px;--control-height:38px;--control-padding:16px;gap:4px;font-size:12px;line-height:14px}
+ .hero-copy :global(.button__icon){width:38px;flex:0 0 38px}
+ .hero-copy :global(.button__label){font-size:12px}
+ .stitch--white{left:131px;top:274px}
+ .stitch--green{left:172px;top:265px}
+ .hero-progress{right:16px}
 }
 @media(max-width:40rem){
- .hero{min-height:720px}
- .hero-copy{padding:24px 20px 0}
- h1{font-size:clamp(22px,7vw,28px);line-height:1.2}
- .hero-copy p{font-size:14px;line-height:1.5;margin:12px 0 20px}
- .hero-copy :global(.button){width:100%;max-width:224px}
- .hero-photo{height:42%;object-position:60% center}
+ .hero-copy h1{font-size:24px}
+}
+@media(prefers-reduced-motion:reduce){
+ .hero-gradient-overlay{transition:none!important}
+ .hero-copy[data-hero-reveal]{animation:none}
+ .hero[data-hero-ready] .hero-progress__step[data-state="active"] .hero-progress__fill{animation:none;transform:scaleX(1)}
 }
 </style>
