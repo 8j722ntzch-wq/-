@@ -38,7 +38,7 @@
  /* The opened repair categories must be a mobile 340px table, not a
     desktop 806/1236px table pushed into a mobile viewport. */
  .service-page--repair .repair-groups .price-group--service{width:100%;min-width:0}
- .service-page--repair .repair-groups .price-group.price-group--service summary{height:30px;min-height:30px;padding:0}
+ .service-page--repair .repair-groups .price-group.price-group--service summary{height:30px!important;min-height:30px!important;max-height:30px;padding:0}
  .service-page--repair .repair-groups .price-group--service .table-scroll{
   width:100%;max-width:100%;overflow-x:visible
  }
