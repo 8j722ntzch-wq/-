@@ -60,4 +60,32 @@ const dialogId='home-consultation';
 .portfolio-all{display:flex;align-items:center;gap:6px;border:0;background:none;text-decoration:none;font:500 14px/1.25 var(--font-body);padding:0;color:var(--color-black)}.portfolio-all>span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}.portfolio-all:hover{text-decoration:underline}
 .questions{display:grid;gap:4px}.faq{gap:22px}.faq :global(.accordion__action){opacity:0}.faq :global(details:hover .accordion__action),.faq :global(summary:focus-visible .accordion__action),.faq :global(details[open] .accordion__action){opacity:1}
 #forms{scroll-margin-top:24px}.gallery{display:grid;gap:28px}.gallery figure{margin:0}.gallery img{width:100%;border-radius:4px}.gallery figcaption{display:grid;gap:8px;margin-top:12px}.gallery figcaption span{font-size:14px;color:var(--color-gray-3)}.preview-copy{display:grid;gap:16px;line-height:1.5}
+
+/* Responsive layout transitions for the actual homepage (not just the header).
+   Desktop Figma geometry above 1184px stays unchanged. */
+@media(max-width:74rem){
+ .service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .service-grid :global(.service-card),.service-grid :global(.service-card--l){grid-column:span 1}
+ .service-grid :global(.service-card--l){display:flex;flex-direction:column;min-height:466px}
+ .service-grid :global(.service-card--l > img){grid-column:auto;grid-row:auto;margin:auto}
+ .service-grid :global(.service-card--l .service-action){grid-row:auto}
+ .three-columns{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .three-columns :global(.audience-card),.three-columns :global(.advantage-card){max-width:none}
+}
+@media(max-width:58rem){
+ .homepage{gap:64px;padding-bottom:64px}
+ .home-section{gap:20px}
+ .homepage>.container,.audiences>.container{width:min(var(--container),calc(100% - 50px));min-width:0}
+ .questions{min-width:0;grid-template-columns:minmax(0,1fr)}
+ .audiences{padding:64px 0}
+ .ruler{max-width:100%}
+ .portfolio-all{white-space:normal}
+}
+@media(max-width:40rem){
+ .homepage{gap:48px;padding-bottom:48px}
+ .audiences{padding:48px 0}
+ .service-grid,.three-columns,.two-columns{grid-template-columns:minmax(0,1fr)}
+ .two-columns{justify-items:center}
+ .two-columns :global(.portfolio-card){max-width:340px}
+}
 </style>
