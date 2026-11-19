@@ -28,4 +28,9 @@ import { portfolioProjects } from '../../data/portfolio';
  .portfolio-showcase__link-mobile{display:inline}
  .portfolio-showcase__more .portfolio-showcase__arrow{width:16px;height:16px}
 }
+
+/* Tablet cards share the available width; phones use one full-width column. */
+@media(min-width:40.01rem) and (max-width:58rem){
+ .portfolio-showcase__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
