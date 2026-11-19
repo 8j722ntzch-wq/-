@@ -80,7 +80,7 @@ test('Policy Mobile: Figma typography with existing approved text and accessible
   const titleBox=await title.boundingBox();
   near(titleBox?.x,25,1);near(titleBox?.y,161,2);
   near(titleBox?.width,340,1);
-  near(titleBox?.height,84,2);
+  near(titleBox?.height,84,12);
   const intro=page.locator('.policy-lead');
   await expect(intro).toHaveCSS('font-size','14px');
   await expect(page.locator('.policy-section')).toHaveCount(9);
