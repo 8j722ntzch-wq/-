@@ -139,20 +139,29 @@ jobs:
             echo "AUTH_PROTECTED $path HTTP_401"
           done
 
-          # SFTP upload never deletes remote files. Do not upload a root .htaccess
-          # or touch the private parent directory holding the Basic Auth password.
-          cat > "$workdir/deploy.lftp" <<EOF
-          set cmd:fail-exit true
-          set net:max-retries 1
-          set net:timeout 30
-          set sftp:connect-program "sshpass -e ssh -a -x -oBatchMode=no -oStrictHostKeyChecking=yes -oUserKnownHostsFile=$workdir/known_hosts -oGlobalKnownHostsFile=/dev/null -oConnectTimeout=20 -oConnectionAttempts=1 -oNumberOfPasswordPrompts=1 -oPreferredAuthentications=password,keyboard-interactive -oPubkeyAuthentication=no"
-          open -u "$SFTP_USERNAME" "sftp://$SFTP_HOST:$port"
-          mirror -R --no-perms --parallel=3 --exclude-glob .htaccess --exclude-glob .htpasswd dist-staging www/baltmotors.by
-          bye
-          EOF
-          if ! lftp -f "$workdir/deploy.lftp" > "$workdir/lftp-log" 2>&1; then
+          # Upload each file using the same authenticated SFTP client that
+          # successfully placed and removed the preflight security probes.
+          # No remote deletions and no changes to the existing Basic Auth files.
+          {
+            printf '%s\n' 'cd www/baltmotors.by'
+            while IFS= read -r -d '' folder; do
+              relative="${folder#dist-staging/}"
+              [[ "$relative" == *\"* ]] && { echo "::error::Unsafe directory name"; exit 1; }
+              printf -- '-mkdir "%s"\n' "$relative"
+            done < <(find dist-staging -mindepth 1 -type d -print0)
+            while IFS= read -r -d '' file; do
+              relative="${file#dist-staging/}"
+              case "$relative" in
+                .htaccess|.htpasswd|_preview/*|preview-login/*)
+                  echo "::error::Forbidden deployment path"; exit 1 ;;
+              esac
+              [[ "$relative" == *\"* ]] && { echo "::error::Unsafe file name"; exit 1; }
+              printf 'put "%s" "%s"\n' "$PWD/$file" "$relative"
+            done < <(find dist-staging -type f -print0)
+            printf '%s\n' 'bye'
+          } > "$workdir/upload.sftp"
+          if ! sftp_run "$workdir/upload.sftp"; then
             echo "::error::Staging SFTP upload failed. The protected site may contain a partial update."
-            tail -n 20 "$workdir/lftp-log" | sed -E 's#(sftp://)[^/]+#\1[REDACTED]#g'
             exit 1
           fi
           echo "STAGING_FILES_UPLOADED"
