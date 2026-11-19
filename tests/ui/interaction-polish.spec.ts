@@ -20,7 +20,6 @@ test('Portfolio cards use full-surface links, responsive widths and synced CTA h
     await page.goto('/portfolio/');
     const first=page.locator('.portfolio-catalog__item:visible').first();
     const card=first.locator('.portfolio-card');
-    const grid=page.locator('.portfolio-catalog__grid');
     const metrics=await page.evaluate(()=>{
       const grid=document.querySelector('.portfolio-catalog__grid')!.getBoundingClientRect();
       const card=document.querySelector('.portfolio-catalog__item:not([hidden]) .portfolio-card')!.getBoundingClientRect();
@@ -53,7 +52,7 @@ test('Portfolio pagination uses four existing text-style controls and genuinely 
   const numbers=nav.locator('.portfolio-pages__numbers .button--text');
   await expect(numbers).toHaveCount(4);
   for(let i=1;i<=4;i++)await expect(nav.getByRole('button',{name:'Страница '+i})).toBeVisible();
-  await expect(nav.getByRole('button',{name:'Страница 1})).toHaveAttribute('aria-current','page');
+  await expect(nav.getByRole('button',{name:'Страница 1'})).toHaveAttribute('aria-current','page');
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
   await nav.getByRole('button',{name:'Страница 2'}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
@@ -74,7 +73,6 @@ test('Stages section is no longer clipped by outer container and can be scrolled
     const section=document.querySelector<HTMLElement>('.stages')!;
     const container=document.querySelector<HTMLElement>('work-stages')!;
     const viewport=document.querySelector<HTMLElement>('.stage-viewport')!;
-    const sr=section.getBoundingClientRect();
     const cr=container.getBoundingClientRect();
     const vr=viewport.getBoundingClientRect();
     return {overflow:getComputedStyle(section).overflowX,containerRight:cr.right,
