@@ -9,8 +9,6 @@
  .service-page .service-content .heading__title--hero,.service-page .service-portfolio .heading__title--hero{font:700 24px/30px var(--font-heading)}
  .service-page .service-content .heading__row{display:block}
  .service-page .service-content .service-copy{font:500 14px/18px var(--font-body)}
- /* Compact the tall embroidery description using the same 8px text rhythm. */
- .service-page--embroidery .service-copy > .copy-group{gap:8px}
  .service-page .service-copy h2{font:700 20px/26px var(--font-heading)}
  .service-page .service-copy h3{font:700 16px/20px var(--font-heading)}
  .service-page .service-copy ul{padding-left:16px;line-height:18px}
