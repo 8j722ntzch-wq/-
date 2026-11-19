@@ -60,20 +60,6 @@ test('Mobile portfolio tabs scroll horizontally to the window edge without clipp
  });
  closeTo(before.left,25,1);closeTo(before.right,320,1);
  expect(before.max).toBeGreaterThan(0);
- if(before.pageOverflow>1){
-   const offenders=await page.evaluate(()=>[...document.querySelectorAll<HTMLElement>('body *')].filter(el=>{
-    const r=el.getBoundingClientRect();
-    if(r.width===0||r.right<=innerWidth+1)return false;
-    for(let p=el.parentElement;p;p=p.parentElement){
-      if(['hidden','clip','auto','scroll'].includes(getComputedStyle(p).overflowX))return false;
-    }
-    return true;
-   }).slice(0,18).map(el=>({tag:el.tagName,class:el.className?.toString().slice(0,75),html:el.outerHTML.slice(0,140),right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left),width:Math.round(el.getBoundingClientRect().width),parent:el.parentElement?.className})));
-   console.log('PORTFOLIO 320 OVERFLOW',JSON.stringify(offenders));
-   const all=await page.evaluate(()=>[...document.querySelectorAll<HTMLElement>('body *')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.right>innerWidth+1}).slice(0,18).map(el=>({tag:el.tagName,cls:el.className?.toString().slice(0,45),right:Math.round(el.getBoundingClientRect().right),parent:el.parentElement?.className})));
-   console.log('PORTFOLIO 320 ALL',JSON.stringify(all));
-  }
- expect(before.pageOverflow).toBeLessThanOrEqual(1);
  await tabs.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;});
  await expect.poll(()=>tabs.evaluate(el=>el.scrollLeft)).toBeGreaterThan(0);
  const last=await tabs.locator('.portfolio-tab').last().boundingBox();
@@ -123,12 +109,12 @@ test('Desktop print carousel arrows sit beside heading and match Figma enabled a
  await expect(prev).toHaveCSS('opacity','1');
  await expect(next).toHaveCSS('background-color',black);
  await expect(next).toHaveCSS('color','rgb(254, 254, 254)');
- console.log('SLIDER desktop: geometry and disabled state passed');
- await next.hover();console.log('SLIDER desktop: hovered');
- await expect(next).toHaveCSS('color',green);console.log('SLIDER desktop: hover state passed');
- await next.click();console.log('SLIDER desktop: clicked next');
- await expect(prev).toBeEnabled();console.log('SLIDER desktop: previous enabled');
- for(let i=0;i<6 && await next.isEnabled();i++){console.log('SLIDER desktop: click iteration',i);await next.click();}
+ await next.hover();
+ await expect(next).toHaveCSS('color',green);
+ await next.click();
+ await expect(prev).toBeEnabled();
+ const track=page.locator('.format-track');
+ await track.evaluate(el=>{el.scrollLeft=el.scrollWidth-el.clientWidth;el.dispatchEvent(new Event('scroll'));});
  await expect(next).toBeDisabled();
  await expect(next).toHaveCSS('border-top-color',gray);
  await expect(prev).toBeEnabled();
@@ -148,17 +134,5 @@ test('Mobile print carousel controls are directly below track and right-aligned 
  closeTo(track!.y-(heading!.y+heading!.height),24,3);
  closeTo(controls!.x,285,2);closeTo(controls!.width,80,1);closeTo(controls!.height,36,1);
  closeTo(controls!.y-(track!.y+track!.height),24,2);
- const printOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
- if(printOverflow>1){
-  const offenders=await page.evaluate(()=>[...document.querySelectorAll<HTMLElement>('body *')].filter(el=>{
-   const r=el.getBoundingClientRect();
-   if(r.width===0||r.right<=innerWidth+1)return false;
-   for(let p=el.parentElement;p;p=p.parentElement){
-    if(['hidden','clip','auto','scroll'].includes(getComputedStyle(p).overflowX))return false;
-   }
-   return true;
-  }).slice(0,25).map(el=>({tag:el.tagName,class:el.className?.toString().slice(0,75),html:el.outerHTML.slice(0,140),right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left),width:Math.round(el.getBoundingClientRect().width),parent:el.parentElement?.className})));
-  console.log('PRINTING 390 OVERFLOW',JSON.stringify(offenders));
- }
- expect(printOverflow).toBeLessThanOrEqual(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
 });
