@@ -45,6 +45,7 @@ test('Four Figma pages rotate every 20 seconds and mark the current progress seg
   await page.clock.runFor(10_500);
   await expect(hero).toHaveAttribute('data-hero-active','1');
   await expect(hero).toHaveAttribute('data-hero-theme','lime-blue');
+  await expect(hero.locator('h1')).toContainText('Логотип и вышивка');
   await expect(buttons.nth(0)).toHaveAttribute('data-state','complete');
   await expect(buttons.nth(1)).toHaveAttribute('aria-current','true');
   await page.clock.runFor(20_000);
@@ -65,7 +66,9 @@ test('Pagination is controlled with mouse and keyboard, including the latest sli
   await buttons.nth(2).press('ArrowRight');
   await expect(hero).toHaveAttribute('data-hero-active','3');
   await expect(buttons.nth(3)).toBeFocused();
-  await expect(hero.locator('[data-open-dialog]')).toHaveAttribute('data-context',/Акция: скидка/);
+  await expect(hero.locator('[data-open-dialog]')).toHaveAttribute('data-context',/Hero: Ремонт и подгонка/);
+  await expect(hero.locator('[data-open-dialog]')).toHaveAttribute('data-service','Ремонт и подгонка');
+  await expect(hero.locator('h1')).toContainText('Ремонт и подгонка');
   await hero.locator('[data-open-dialog]').click();
   await expect(page.locator('#home-consultation')).toBeVisible();
 });
