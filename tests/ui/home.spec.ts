@@ -125,8 +125,10 @@ test('privacy links open the policy in a new tab without losing modal form data'
   await expect(policy).toHaveAttribute('href', '/documents/personal-data-policy.pdf');
   await expect(policy).toHaveAttribute('target', '_blank');
   const [popup] = await Promise.all([page.waitForEvent('popup'), policy.click()]);
-  await popup.waitForLoadState('domcontentloaded');
-  await expect(popup).toHaveURL(/\/documents\/personal-data-policy\.pdf$/);
+  // Native PDF viewers do not reliably emit DOMContentLoaded in every engine.
+  const resource=await page.request.get('/documents/personal-data-policy.pdf');
+  expect(resource.ok()).toBeTruthy();
+  expect(resource.headers()['content-type']).toMatch(/application\/pdf/);
   await popup.close();
   await expect(dialog).toBeVisible();
   await expect(name).toHaveValue('Тест');

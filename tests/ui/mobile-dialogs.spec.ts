@@ -50,7 +50,7 @@ test('Mobile consultation popup matches the Figma copy and 340×550 layout',asyn
  const consent=d.getByRole('checkbox',{name:/Согласен \(-а\) с Политикой конфиденциальности и Политикой обработки персональных данных/i});
  await expect(consent).toBeVisible();
  await expect(d.getByRole('link',{name:'Политикой конфиденциальности'})).toHaveAttribute('href','/policy/#privacy');
- await expect(d.getByRole('link',{name:'Политикой обработки персональных данных'})).toHaveAttribute('href','/policy/#personal-data');
+ await expect(d.getByRole('link',{name:'Политикой обработки персональных данных'})).toHaveAttribute('href','/documents/personal-data-policy.pdf');
  closeTo((await relativeRect(page,'#consultation .modal-close','#consultation')).width,36,1);
  if(testInfo.project.name==='chromium')await testInfo.attach('consultation-mobile',{body:await d.screenshot(),contentType:'image/png'});
 });
