@@ -17,3 +17,15 @@ const {title,description}=Astro.props;
   </head>
   <body id="top"><a class="skip-link" href="#content">К содержимому</a><slot /><SuccessDialog id="success"/></body>
 </html>
+
+<style is:global>
+/* Keep both original top strips visible while scrolling, across all routes. */
+:root{--promo-sticky-height:32px}
+body > .promo{position:sticky;top:0;z-index:90}
+body > .promo + site-header.site-header{position:sticky;top:var(--promo-sticky-height);z-index:89}
+html{scroll-padding-top:calc(var(--promo-sticky-height) + 64px)}
+@media(max-width:40rem){
+ :root{--promo-sticky-height:57px}
+}
+</style>
+
