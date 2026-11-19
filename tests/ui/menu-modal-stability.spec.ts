@@ -57,7 +57,7 @@ for(const viewport of [{width:390,height:880},{width:390,height:700},{width:360,
     const bottom=panelEl.querySelector<HTMLElement>('.mobile-panel__bottom')!;
     const contacts=bottom.querySelector<HTMLElement>('.mobile-panel__contacts')!;
     const last=tiles.at(-1)!;
-    const rect=(element:HTMLElement)=>element.getBoundingClientRect();
+    const rect=(element:Element)=>element.getBoundingClientRect();
     const absolute=(element:HTMLElement)=>{
       const r=rect(element),p=rect(panelEl);
       return {top:r.top-p.top+panelEl.scrollTop,bottom:r.bottom-p.top+panelEl.scrollTop,height:r.height};
