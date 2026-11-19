@@ -15,7 +15,7 @@ for (const slug of ['embroidery','rhinestones']) {
    const copy=content.querySelector('.service-copy')!;
    const paragraphEls=[...copy.querySelectorAll('p,h2,h3,li,ul,div.copy-group,div.copy-lines')];
    const others=[...content.querySelectorAll('.service-copy, .table-heading, .price-group')];
-   return {content:info(content),children:children.map(info),copyParts:paragraphEls.map(info),other:others.map(info),fonts:{body:getComputedStyle(copy).fontFamily,status:document.fonts.status},scrollWidth:document.documentElement.scrollWidth};
+   return {content:info(content),children:children.map(info),copyParts:paragraphEls.map(info),other:others.map(info),priceRows:[...content.querySelectorAll('.price-group table')].map(table=>({rows:[...table.querySelectorAll('tr')].map(tr=>({row:info(tr),cells:[...tr.children].map(info)}))})),fonts:{body:getComputedStyle(copy).fontFamily,status:document.fonts.status},scrollWidth:document.documentElement.scrollWidth};
   });
   console.log('GEOMETRY_REPORT '+JSON.stringify({browser:testInfo.project.name,slug,metrics}));
   await testInfo.attach('screen-'+slug,{body:await page.screenshot({fullPage:true}),contentType:'image/png'});

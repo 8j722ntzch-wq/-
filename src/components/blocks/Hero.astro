@@ -229,9 +229,14 @@ if (!customElements.get('hero-carousel')) customElements.define('hero-carousel',
 .hero-photo{position:absolute;left:1px;top:0;width:calc(100% - 1px);height:100%;max-width:none;object-fit:fill;z-index:2;pointer-events:none}
 .hero-copy{position:absolute;top:36px;left:36px;z-index:3;width:514px}
 .hero-copy h1{font:700 36px/1.2 var(--font-heading);text-transform:uppercase;overflow-wrap:normal}
-.hero-copy mark{color:var(--color-black);background:var(--color-green);border-radius:4px;box-shadow:4px 0 var(--color-green),-4px 0 var(--color-green);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero-copy mark{color:var(--color-black);background:var(--color-green);border-radius:4px;box-shadow:4px 0 var(--color-green),-4px 0 var(--color-green);box-decoration-break:clone;-webkit-box-decoration-break:clone;white-space:nowrap}
 .hero[data-hero-theme="black-blue"] .hero-copy mark{color:var(--color-white);background:var(--color-blue);box-shadow:4px 0 var(--color-blue),-4px 0 var(--color-blue)}
-.hero-copy p{font:500 16px/20px var(--font-body);max-width:386px;margin-top:12px;margin-bottom:24px}
+/* Preserve the lime-to-blue gradient, but use dark type and a blue accent for legibility. */
+.hero[data-hero-theme="lime-blue"] .hero-copy{color:var(--color-black)}
+.hero[data-hero-theme="lime-blue"] .hero-copy mark{color:var(--color-white);background:var(--color-blue);box-shadow:4px 0 var(--color-blue),-4px 0 var(--color-blue)}
+.hero[data-hero-theme="lime-blue"] .hero-copy :global(.button__label),.hero[data-hero-theme="lime-blue"] .hero-copy :global(.button__icon){border-color:var(--color-black)}
+
+.hero-copy p{font:500 16px/20px var(--font-body);max-width:420px;margin-top:12px;margin-bottom:24px}
 .hero-copy :global(.button){width:224px}
 .hero-copy :global(.button:hover){color:var(--color-green)}
 .stitch{position:absolute;z-index:3;max-width:none;width:155.816px;height:2.816px;pointer-events:none}
