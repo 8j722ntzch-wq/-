@@ -4,11 +4,13 @@ import {heroSlides, type HeroSlide} from '../../data/hero';
 
 interface Props {
   dialogId?: string;
+  titleId?: string;
   slides?: HeroSlide[];
   intervalMs?: number;
 }
 const {
   dialogId = 'consultation',
+  titleId = 'hero-title',
   slides = heroSlides,
   intervalMs = 20_000,
 } = Astro.props;
@@ -21,7 +23,7 @@ const first = pages[0];
   role="region"
   aria-roledescription="карусель"
   aria-label="Предложения мастерской"
-  aria-labelledby="hero-title"
+  aria-labelledby={titleId}
   data-hero-theme={first.theme}
   data-hero-active="0"
   data-hero-slides={JSON.stringify(pages)}
@@ -33,7 +35,7 @@ const first = pages[0];
   <img class="hero-photo" src="/assets/figma/home-hero.webp" width="1863" height="844"
        alt="Мастер показывает худи с нашивкой в швейной мастерской" fetchpriority="high" />
   <div class="hero-copy">
-    <h1 id="hero-title"><span data-hero-before>{first.before}</span><mark data-hero-accent>{first.highlight}</mark><span data-hero-after>{first.after}</span></h1>
+    <h1 id={titleId}><span data-hero-before>{first.before}</span><mark data-hero-accent>{first.highlight}</mark><span data-hero-after>{first.after}</span></h1>
     <p data-hero-description>{first.description}</p>
     <Button size="m" icon openDialog={dialogId} service={first.service} context={first.context}>Оставить заявку</Button>
   </div>

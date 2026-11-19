@@ -1,0 +1,47 @@
+name: Hero carousel Figma checks
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'src/components/blocks/Hero.astro'
+      - 'src/data/hero.ts'
+      - 'src/dev/hero-fixture.astro'
+      - 'tests/ui/hero-carousel.spec.ts'
+      - 'astro.config.mjs'
+      - '.github/workflows/hero-carousel-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hero-carousel-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hero:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build:kit
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/ui/hero-carousel.spec.ts --project=chromium
+      - name: Save screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hero-carousel-checks
+          retention-days: 7
+          path: |
+            playwright-report/
+            test-results/

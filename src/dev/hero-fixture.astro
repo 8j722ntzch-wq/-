@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/ComponentPreview.astro';
+import Hero from '../components/blocks/Hero.astro';
+import {heroSlides} from '../data/hero';
+
+// Component fixture is injected only for Astro dev / UI_KIT_BUILD, never production.
+const six = [
+  ...heroSlides,
+  {...heroSlides[0], id:'fifth'},
+  {...heroSlides[1], id:'sixth'},
+];
+---
+<Layout>
+  <main class="hero-qa">
+    <p>Hero QA — проверка 1, 2, 4 и 6 слайдов (только в UI-kit сборке)</p>
+    {[1, 2, 4, 6].map(count=>
+      <section id={`hero-count-${count}`} aria-label={`Пример с ${count} слайдами`}>
+        <Hero titleId={`hero-fixture-title-${count}`} slides={six.slice(0,count)}/>
+      </section>
+    )}
+  </main>
+</Layout>
+<style>
+.hero-qa{display:grid;gap:32px;padding:24px}
+.hero-qa section{max-width:1236px;width:100%;margin:0 auto}
+</style>
