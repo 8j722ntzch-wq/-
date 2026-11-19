@@ -42,4 +42,5 @@ jobs:
       - name: Site and new interaction regressions
         run: npx playwright test tests/ui/sticky-repair-controls.spec.ts tests/ui/portfolio.spec.ts tests/ui/portfolio-mobile-checkbox.spec.ts tests/ui/portfolio-print-refinements.spec.ts tests/ui/interaction-polish.spec.ts tests/ui/contacts.spec.ts --project=chromium
       - name: Repair mobile table and carousel specific acceptance
-        run: npx playwright test tests/ui/services-mobile.spec.ts --project=chromium --grep 'Mobile repair: eleven compact expandable price categories'
+        run: |
+          npx playwright test tests/ui/services-mobile.spec.ts --project=chromium --grep 'Mobile repair: eleven compact expandable price categories'
