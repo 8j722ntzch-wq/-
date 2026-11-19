@@ -100,6 +100,11 @@ test('Header/Menu Mobile has both main and services states with Figma dimensions
   expect(bbox?.height).toBeCloseTo(116,0);
   const last=await grid.locator('.service-menu-item').last().boundingBox();
   expect(last?.width).toBeCloseTo(340,0);
+  const content=header.locator('[data-mobile-services-list]');
+  expect((await content.boundingBox())?.height).toBeCloseTo(408,0);
+  const footer=header.locator('.mobile-panel__bottom');
+  const footerY=(await footer.boundingBox())!.y;
+  expect(footerY-(await grid.locator('.service-menu-item').last().boundingBox())!.bottom).toBeCloseTo(40,0);
   await page.keyboard.press('Escape');
   await expect(header.locator('[data-mobile-nav]')).toBeVisible();
   await expect(header.locator('[data-mobile-services-list]')).not.toBeVisible();
