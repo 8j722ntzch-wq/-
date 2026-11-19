@@ -3,14 +3,9 @@ test('policy route renders document sections, exact PDF and footer links',async(
   await page.goto('/policy/');
   await expect(page.getByRole('heading',{level:1,name:'Политика конфиденциальности'})).toBeVisible();
   await expect(page.locator('.policy-section')).toHaveCount(9);
-  await expect(page.getByRole('heading',{name:'Политика обработки персональных данных'})).toBeVisible();
   const pdf='/documents/personal-data-policy.pdf';
-  const open=page.getByRole('link',{name:/Открыть PDF/});
-  const save=page.getByRole('link',{name:/Скачать PDF/});
-  await expect(open).toHaveAttribute('href',pdf);
-  await expect(save).toHaveAttribute('href',pdf);
-  await expect(save).toHaveAttribute('download',/Политика-обработки/);
-  await expect(page.locator('object[type="application/pdf"]')).toHaveAttribute('data',pdf);
+  await expect(page.locator('.personal-data,.personal-data__preview,.personal-data__actions')).toHaveCount(0);
+  await expect(page.locator('footer a[href="'+pdf+'"]')).toHaveAttribute('target','_blank');
   const response=await request.get(pdf);
   expect(response.status()).toBe(200);
   expect(response.headers()['content-type']).toContain('application/pdf');
@@ -18,7 +13,7 @@ test('policy route renders document sections, exact PDF and footer links',async(
   expect(bytes.subarray(0,5).toString()).toBe('%PDF-');
   expect(bytes.byteLength).toBe(97036);
   await expect(page.locator('footer a[href="/policy/#privacy"]')).toBeVisible();
-  await expect(page.locator('footer a[href="/policy/#personal-data"]')).toBeVisible();
+  await expect(page.locator('footer a[href="/documents/personal-data-policy.pdf"]')).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });
 for(const source of ['/','/services/repair/','/portfolio/','/portfolio/ruckit/','/policy/']){

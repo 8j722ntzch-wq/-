@@ -1,6 +1,11 @@
 ---
 import PrintFormatCard from '../ui/PrintFormatCard.astro';
 import Icon from '../ui/Icon.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import '../../styles/slider.css';
+interface Props { heading:string; eyebrow:string; }
+const {heading,eyebrow}=Astro.props;
+const [firstLine,secondLine]=heading.split('\n');
 const formats=[
  {illustration:'tshirt-a3' as const,title:'А3: Грудь',description:'Зона нанесения А3 на груди футболки'},
  {illustration:'jersey' as const,title:'А4: Спина',description:'Зона нанесения А4 на спине джерси'},
@@ -11,8 +16,14 @@ const formats=[
 ];
 ---
 <print-formats aria-label="Форматы нанесения" role="region">
- <div class="format-controls"><button type="button" aria-label="Предыдущие форматы" disabled><Icon name="arrow-latex"/></button><button type="button" aria-label="Следующие форматы"><Icon name="arrow-latex"/></button></div>
- <div class="format-track" tabindex="0" aria-label="Шесть форматов нанесения">{formats.map(format=><PrintFormatCard {...format}/>)}</div>
+ <div class="formats-heading">
+  <SectionHeading as="h1" id="service-title" eyebrow={eyebrow}>{firstLine}<br/>{secondLine}</SectionHeading>
+  <div class="format-controls" role="group" aria-label="Переключение форматов нанесения">
+   <button class="slider-button" type="button" aria-label="Предыдущие форматы" aria-controls="print-formats-track" disabled><Icon name="arrow-latex" size={18}/></button>
+   <button class="slider-button" type="button" aria-label="Следующие форматы" aria-controls="print-formats-track"><Icon name="arrow-latex" size={18}/></button>
+  </div>
+ </div>
+ <div class="format-track" id="print-formats-track" tabindex="0" aria-label="Шесть форматов нанесения">{formats.map(format=><PrintFormatCard {...format}/>)}</div>
 </print-formats>
 <script>
 class PrintFormats extends HTMLElement{
@@ -31,5 +42,22 @@ class PrintFormats extends HTMLElement{
 if(!customElements.get('print-formats'))customElements.define('print-formats',PrintFormats);
 </script>
 <style>
-print-formats{display:block;position:relative;min-width:0}.format-controls{position:absolute;right:0;top:-60px;display:flex;gap:8px}.format-controls button{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:4px;color:var(--color-white);background:var(--color-black)}.format-controls button:disabled{opacity:.4}.format-controls button:first-child :global(.icon){transform:rotate(90deg)}.format-controls button:last-child :global(.icon){transform:rotate(-90deg)}.format-track{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.format-track :global(article){scroll-snap-align:start}.format-track::-webkit-scrollbar{display:none}@media(min-width:80rem){.format-track{margin-right:calc((var(--container) - 100vw)/2);padding-right:calc((100vw - var(--container))/2)}}
+print-formats{display:flex;flex-direction:column;gap:24px;min-width:0}
+.formats-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;min-width:0}
+.formats-heading :global(.heading){flex:1;min-width:0}
+.format-controls{display:flex;flex:0 0 auto;gap:8px;align-items:center}
+.format-controls button:first-child :global(.icon){transform:rotate(90deg)}
+.format-controls button:last-child :global(.icon){transform:rotate(-90deg)}
+.format-track{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:12px;min-width:0;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.format-track :global(article){scroll-snap-align:start}
+.format-track::-webkit-scrollbar{display:none}
+@media(min-width:80rem){
+ .format-track{margin-right:calc((var(--container) - 100vw)/2);padding-right:calc((100vw - var(--container))/2)}
+}
+@media(max-width:58rem){
+ .formats-heading{display:contents}
+ .formats-heading :global(.heading){order:0}
+ .format-track{order:1;width:100%;grid-auto-columns:260px}
+ .format-controls{order:2;align-self:flex-end}
+}
 </style>

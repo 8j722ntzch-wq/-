@@ -16,4 +16,19 @@ const {title='Расскажите, что нужно сделать',descriptio
 .application-grid{position:absolute;bottom:0;left:0;z-index:-1;width:365px;height:309px;max-width:none}
 .application-stitch{position:absolute;z-index:-1;width:155.816px;height:2.816px;max-width:none}.application-stitch--white{left:134px;bottom:107.18px}.application-stitch--green{left:104px;bottom:94.18px}
 @media(max-width:58rem){.application{grid-template-columns:1fr;padding:24px;gap:32px}.application-copy h2{font-size:28px}.application-stitch{display:none}.application-eyebrow--desktop{display:none}.application-eyebrow--mobile{display:inline}}
+
+/* CTA hover/focus on blue: outline and lettering stay lime, not black.
+   Use same styling for solid and two-segment variants. */
+.application :global(consultation-form .button--solid:not(:disabled):is(:hover,:focus-visible)){
+ --button-bg:transparent;--button-border:var(--color-green);
+ background:transparent;border-color:var(--color-green);color:var(--color-green);
+}
+.application :global(consultation-form .button--solid.button--split:not(:disabled):is(:hover,:focus-visible)){
+ --button-bg:transparent;--button-border:var(--color-green);color:var(--color-green);
+}
+@media(max-width:58rem){
+ .application :global(consultation-form .button--solid:not(.button--split)){
+  width:100%;height:50px;min-height:50px;padding:13.5px 18.5px;font:700 14px/20px var(--font-body);
+ }
+}
 </style>

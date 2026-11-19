@@ -88,11 +88,9 @@ test('Policy Mobile: Figma typography with existing approved text and accessible
   await expect(first.locator('h2')).toHaveCSS('font-size','20px');
   await expect(first.locator('p').first()).toHaveCSS('font-size','14px');
   await expect(page.locator('.policy-document')).toHaveCSS('width','340px');
-  await expect(page.locator('#personal-data')).toBeVisible();
-  await expect(page.getByRole('link',{name:/Открыть PDF/})).toHaveAttribute('href','/documents/personal-data-policy.pdf');
-  await expect(page.getByRole('link',{name:/Скачать PDF/})).toHaveAttribute('download',/Политика/);
-  await expect(page.locator('.personal-data__mobile-note')).toBeVisible();
-  await expect(page.locator('.personal-data__preview')).not.toBeVisible();
+  await expect(page.locator('.personal-data')).toHaveCount(0);
+  const pdfLink=page.locator('footer a[href="/documents/personal-data-policy.pdf"]');
+  await expect(pdfLink).toHaveAttribute('target','_blank');
   const file=await request.get('/documents/personal-data-policy.pdf');
   expect(file.status()).toBe(200);
   expect((await file.body()).subarray(0,5).toString()).toBe('%PDF-');
@@ -101,11 +99,11 @@ test('Policy Mobile: Figma typography with existing approved text and accessible
   if(testInfo.project.name==='chromium')await testInfo.attach('policy-mobile',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
 });
 
-test('Policy Mobile deep link reaches PDF block without breaking layout',async({page})=>{
+test('Policy Mobile keeps a direct footer link to the separate PDF',async({page})=>{
   await mobile(page);
-  await page.goto('/policy/#personal-data');
-  await expect(page.locator('#personal-data')).toBeVisible();
-  await expect(page.locator('#personal-data')).toBeInViewport();
+  await page.goto('/policy/');
+  await expect(page.locator('footer a[href="/documents/personal-data-policy.pdf"]')).toBeVisible();
+  await expect(page.locator('#personal-data')).toHaveCount(0);
   await noOverflow(page);
 });
 

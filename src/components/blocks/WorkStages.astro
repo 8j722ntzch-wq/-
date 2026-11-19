@@ -2,6 +2,7 @@
 import SectionHeading from '../ui/SectionHeading.astro';
 import WorkStage from '../cards/WorkStage.astro';
 import Icon from '../ui/Icon.astro';
+import '../../styles/slider.css';
 import { stages } from '../../data/home';
 ---
 <section id="stages" class="stages" aria-labelledby="stages-title">
@@ -9,8 +10,8 @@ import { stages } from '../../data/home';
   <img class="ruler" src="/assets/figma/ruler-black.svg" width="553" height="10" alt="" loading="lazy"/>
   <SectionHeading id="stages-title" eyebrow="05 / Этапы">6 шагов к качественному результату
    <div slot="action" class="stage-controls" role="group" aria-label="Прокрутка этапов">
-    <button type="button" data-prev aria-label="Предыдущие этапы" aria-controls="stages-track" disabled><Icon name="arrow-latex"/></button>
-    <button type="button" data-next aria-label="Следующие этапы" aria-controls="stages-track"><Icon name="arrow-latex"/></button>
+    <button class="slider-button" type="button" data-prev aria-label="Предыдущие этапы" aria-controls="stages-track" disabled><Icon name="arrow-latex"/></button>
+    <button class="slider-button" type="button" data-next aria-label="Следующие этапы" aria-controls="stages-track"><Icon name="arrow-latex"/></button>
    </div>
   </SectionHeading>
   <div class="stage-viewport" id="stages-track" tabindex="0" role="region" aria-label="Шесть этапов работы"><ol>{stages.map(stage=><li><WorkStage {...stage}/></li>)}</ol></div>
@@ -35,10 +36,10 @@ class WorkStages extends HTMLElement{
 if(!customElements.get('work-stages'))customElements.define('work-stages',WorkStages);
 </script>
 <style>
-.stages{padding:80px 0;background:var(--color-green);overflow:hidden}
+.stages{padding:80px 0;background:var(--color-green);overflow:visible}
 work-stages{display:block;position:relative}.ruler{position:absolute;width:553px;height:10px;right:0;top:-20px}
-.stage-controls{display:flex;gap:8px}.stage-controls button{display:grid;place-items:center;width:36px;height:36px;padding:6px;background:var(--color-black);color:var(--color-white);border:0;border-radius:4px}.stage-controls button:hover:not(:disabled){color:var(--color-green)}.stage-controls button:disabled{opacity:.5}.stage-controls [data-prev] :global(.icon){transform:rotate(90deg)}.stage-controls [data-next] :global(.icon){transform:rotate(-90deg)}
-.stage-viewport{overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;margin-top:24px;overscroll-behavior-x:contain}.stage-viewport::-webkit-scrollbar{display:none}
-@media(min-width:80rem){.stage-viewport{margin-right:calc((var(--container) - 100vw)/2);padding-right:calc((100vw - var(--container))/2)}}
+.stage-controls{display:flex;gap:8px}.stage-controls [data-prev] :global(.icon){transform:rotate(90deg)}.stage-controls [data-next] :global(.icon){transform:rotate(-90deg)}
+.stage-viewport{overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;margin-top:24px;overscroll-behavior-x:contain;width:calc(100% + max(16px,(100vw - var(--container))/2));padding-right:max(16px,(100vw - var(--container))/2)}.stage-viewport::-webkit-scrollbar{display:none}
+
 ol{display:flex;gap:12px;list-style:none;margin:0;padding:0;width:max-content}li{width:300px;scroll-snap-align:start}@media(max-width:58rem){li{width:260px}}
 </style>

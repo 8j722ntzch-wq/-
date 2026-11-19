@@ -3,6 +3,7 @@ import SocialButton from '../ui/SocialButton.astro';
 import Button from '../ui/Button.astro';
 import ActionLink from '../ui/ActionLink.astro';
 import { services } from '../../data/home';
+import CopyContact from '../ui/CopyContact.astro';
 interface Props { email?:string;phone?:string;hours?:string[];socials?:{label:string;icon:'instagram'|'telegram'|'youtube';href:string}[];maps?:{label:string;icon:'yandex'|'google';href:string}[];dialogId?:string;home?:boolean;policyDialog?:string;siteNavigation?:boolean; }
 const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=false,policyDialog,siteNavigation=false}=Astro.props;
 ---
@@ -10,7 +11,7 @@ const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=fals
  <div class="footer-inner">
   <div class="footer-top">
    <div class="footer-contact">
-    <div class="contact-lines">{email&&<p class="contact-line">{email}</p>}{phone&&<p class="contact-line">{phone}</p>}</div>
+    <div class="contact-lines">{email&&<p class="contact-line"><CopyContact value={email}/></p>}{phone&&<p class="contact-line"><CopyContact value={phone.replace(/[^+0-9]/g,'')} display={phone}/></p>}</div>
     {(socials.length>0||home)&&<div class="socials">
      {socials.map(s=><SocialButton name={s.icon} href={s.href} label={s.label}/>)}
      {home&&!socials.length&&(['instagram','telegram','youtube'] as const).map(icon=><SocialButton name={icon} label={icon}/>)}
@@ -26,7 +27,7 @@ const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=fals
   </div>
   <div class="wordmark">Мастерская</div>
   <div class="footer-bottom">
-   <div class="footer-legal"><div><a href="/policy/#privacy">Политика конфиденциальности</a><a href="/policy/#personal-data">Политика обработки персональных данных</a></div><p>Мастерская © {new Date().getFullYear()} Все права защищены</p></div>
+   <div class="footer-legal"><div><a href="/policy/#privacy">Политика конфиденциальности</a><a href="/documents/personal-data-policy.pdf" target="_blank" rel="noopener noreferrer">Политика обработки персональных данных</a></div><p>Мастерская © {new Date().getFullYear()} Все права защищены</p></div>
    <ActionLink href="#top" variant="linear" size="m" icon iconDirection="up">Вернуться наверх</ActionLink>
   </div>
  </div>
@@ -42,7 +43,7 @@ const {email,phone,hours=[],socials=[],maps=[],dialogId='consultation',home=fals
 .footer-links{display:grid;gap:4px;justify-items:start}.footer-links a,.footer-service{font:700 16px/1.25 var(--font-body);text-decoration:none}.footer-service{border:0;padding:0;background:none;color:inherit;text-align:left}.footer-links a:hover,.footer-service:hover{text-decoration:underline;color:var(--color-green)}
 .maps{display:grid;gap:12px;margin-top:26px}.map-links{display:grid;gap:4px}.map-links a,.map-links>span{display:flex;align-items:center;gap:6px;font-size:14px;text-decoration:none}.hours{display:grid;gap:4px;margin-top:16px}.hours h3{margin-bottom:8px}.footer-hours{font-size:14px}
 .wordmark{font:700 clamp(28px,8.6vw,120px)/1.3 var(--font-body);margin-top:12px}
-.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:11px;font-size:12px}.footer-legal{display:grid;gap:22px;text-transform:uppercase;color:var(--color-gray-4)}.footer-legal>div{display:flex;gap:16px}.footer-legal a{text-decoration:none}.footer-legal a:hover{text-decoration:underline}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:11px;font-size:12px}.footer-legal{display:grid;gap:22px;text-transform:uppercase;color:var(--color-gray-4)}.footer-legal>div{display:flex;gap:16px}.footer-legal a{text-decoration:none}.footer-legal a:hover,.footer-legal a:focus-visible{text-decoration:underline;color:var(--color-green)}
 .footer-bottom :global(.button){color:var(--color-white);--button-border:var(--color-gray-6)}.footer-bottom :global(.button:hover){color:var(--color-black)}.footer :global(.button--solid:hover){color:var(--color-green);border-color:var(--color-green)}
 @media(max-width:56rem){.footer-top{grid-template-columns:1fr 1fr;gap:32px}.footer-contact{grid-column:1/-1}.footer-bottom,.footer-legal>div{flex-wrap:wrap}.wordmark{margin-top:32px;font-size:9vw}}
 </style>

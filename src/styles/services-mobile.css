@@ -22,6 +22,10 @@
  .service-page .service-content .button--split .button__label{font-size:12px}
  .service-page .service-portfolio .heading__row{align-items:flex-end;flex-wrap:nowrap;gap:8px}
  .service-page .service-portfolio .portfolio-grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ /* Keep project metadata stacked on Mobile: the full price must not
+    extend outside the 340px card when one value is long. */
+ .service-page .service-portfolio .portfolio-meta{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:4px}
+ .service-page .service-portfolio .portfolio-meta>span{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere}
  .service-page .portfolio-all{font-size:12px;line-height:16px;white-space:nowrap}
  .service-page .portfolio-all__desktop{display:none}
  .service-page .portfolio-all__mobile{display:inline}
@@ -30,6 +34,30 @@
  /* Figma: price rows 30px, horizontal scroll only within 340px content column.
     Standard table width 806px = 176px label + seven 90px data columns. */
  .service-page .price-group--service{min-width:0;max-width:100%}
+ .service-page--repair .repair-groups{min-width:0;width:100%}
+ /* The opened repair categories must be a mobile 340px table, not a
+    desktop 806/1236px table pushed into a mobile viewport. */
+ .service-page--repair .repair-groups .price-group--service{width:100%;min-width:0}
+ .service-page--repair .repair-groups .price-group.price-group--service summary{height:30px!important;min-height:30px!important;max-height:30px;padding:0}
+ .service-page--repair .repair-groups .price-group--service .table-scroll{
+  width:100%;max-width:100%;overflow-x:visible
+ }
+ .service-page--repair .repair-groups .price-group--service table{
+  width:100%;min-width:0;table-layout:fixed
+ }
+ .service-page--repair .repair-groups .price-group--service col:first-child{width:calc(100% - 84px)!important}
+ .service-page--repair .repair-groups .price-group--service col:not(:first-child){width:84px!important}
+ .service-page--repair .repair-groups .price-group--service th,
+ .service-page--repair .repair-groups .price-group--service td{
+  min-width:0;white-space:normal;overflow-wrap:anywhere;font:500 14px/17.5px var(--font-body)
+ }
+ .service-page--repair .repair-groups .price-group--service th{font-weight:700}
+ /* Typography from Figma 236:23433: 14px / 1.25 with an 8px rhythm. */
+ .service-page--repair .service-content .service-copy{font:500 14px/17.5px var(--font-body)}
+ .service-page--repair .service-content .service-copy :is(p,li,ul){
+  font-size:14px;line-height:17.5px;font-weight:500
+ }
+
  .service-page .price-group--service .table-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
  .service-page .price-group--service table{width:806px;min-width:806px;table-layout:fixed}
  .service-page .price-group--service col:first-child{width:176px!important}
@@ -51,8 +79,9 @@
 
  /* Six print-format cards: Mobile 260×304, controls beneath track, scroll step 272px. */
  .service-page--printing print-formats{display:flex;flex-direction:column;gap:24px}
- .service-page--printing .format-track{order:0;grid-auto-columns:260px;gap:12px;width:100%}
- .service-page--printing .format-controls{order:1;position:static;justify-content:flex-end;gap:8px}
+ .service-page--printing .formats-heading{display:contents}
+ .service-page--printing .format-track{order:1;grid-auto-columns:260px;gap:12px;width:100%}
+ .service-page--printing .format-controls{order:2;position:static;align-self:flex-end;justify-content:flex-end;gap:8px}
 
  /* Two existing 340×458 / 340×438 portfolio cards followed by the 340×574 application. */
  .service-page #forms .application{min-height:574px;padding:20px;gap:40px;grid-template-columns:minmax(0,1fr)}

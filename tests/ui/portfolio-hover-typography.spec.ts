@@ -50,14 +50,14 @@ test('portfolio card hover from the photograph underlines only project name and 
     await expect(project).toHaveCSS('text-decoration-line', 'none');
     await expect(quantity).toHaveCSS('text-decoration-line', 'none');
 
-    await card.locator('.portfolio-image img').hover();
+    await card.locator('.portfolio-card__overlay').hover();
     await expect(project).toHaveCSS('text-decoration-line', 'underline');
     await expect(quantity).toHaveCSS('text-decoration-line', 'underline');
     await expect(projectLabel).toHaveCSS('text-decoration-line', 'none');
     await expect(quantityLabel).toHaveCSS('text-decoration-line', 'none');
 
     // The same state must persist when hovering other areas of the container.
-    await card.locator('.portfolio-meta').hover();
+    await card.locator('.portfolio-card__overlay').hover();
     await expect(project).toHaveCSS('text-decoration-line', 'underline');
     await expect(quantity).toHaveCSS('text-decoration-line', 'underline');
     await card.locator('.portfolio-volume strong').hover();
@@ -68,10 +68,10 @@ test('portfolio card hover from the photograph underlines only project name and 
 
 test('portfolio all six placements share hover behavior and keyboard focus styles', async ({ page }) => {
   await page.goto('/portfolio/');
-  const cards = page.locator('.portfolio-catalog__item .portfolio-card');
+  const cards = page.locator('.portfolio-catalog__item:visible .portfolio-card');
   await expect(cards).toHaveCount(6);
   for (const card of await cards.all()) {
-    await card.locator('.portfolio-image img').hover();
+    await card.locator('.portfolio-card__overlay').hover();
     await expect(card.locator('.portfolio-project-value')).toHaveCSS('text-decoration-line', 'underline');
     await expect(card.locator('.portfolio-volume-value')).toHaveCSS('text-decoration-line', 'underline');
   }
@@ -87,7 +87,7 @@ test('portfolio values remain correctly highlighted in the 390px variant', async
   await page.setViewportSize({ width: 390, height: 880 });
   await page.goto('/portfolio/');
   const card = page.locator('.portfolio-catalog__item .portfolio-card').first();
-  await card.locator('.portfolio-image').hover();
+  await card.locator('.portfolio-card__overlay').hover();
   await expect(card.locator('.portfolio-project-value')).toHaveCSS('text-decoration-line', 'underline');
   await expect(card.locator('.portfolio-volume-value')).toHaveCSS('text-decoration-line', 'underline');
   await expect(card.locator('h3 strong')).toHaveCSS('text-decoration-line', 'none');

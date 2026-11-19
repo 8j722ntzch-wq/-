@@ -7,6 +7,7 @@ import SectionHeading from '../../components/ui/SectionHeading.astro';
 import SocialButton from '../../components/ui/SocialButton.astro';
 import YandexCityMap from '../../components/blocks/YandexCityMap.astro';
 import ConsultationDialog from '../../components/dialogs/ConsultationDialog.astro';
+import CopyContact from '../../components/ui/CopyContact.astro';
 
 const dialogId='contacts-consultation';
 const links=[
@@ -31,8 +32,8 @@ const socialChannels=[
       <div class="contacts-grid">
         <div class="contacts-details">
           <div class="contacts-details__lines">
-            <p>info@masterskaya.by</p>
-            <p>+375 (29) 777-77-77</p>
+            <p><CopyContact value="info@masterskaya.by"/></p>
+            <p><CopyContact value="+375297777777" display="+375 (29) 777-77-77"/></p>
           </div>
           <div class="contacts-socials" aria-label="Социальные сети">
             {socialChannels.map(channel=>
@@ -70,6 +71,7 @@ const socialChannels=[
 .contacts-details__lines{display:grid;gap:4px;font:700 32px/1.3 var(--font-body);overflow-wrap:anywhere}
 .contacts-socials{display:flex;align-items:center;gap:12px}
 .contacts-socials__item{display:block;flex:none}.contacts-socials__item :global(.social-button){border-color:var(--color-gray-3)}
+.contacts-socials__item :global(.social-button:hover),.contacts-socials__item :global(.social-button:focus-visible){border-color:transparent;background:var(--color-green);color:var(--color-black)}
 .contacts-meta{grid-column:span 3;display:grid;align-content:start;gap:12px}
 .contacts-meta__group{display:grid;justify-items:start;gap:4px;font:500 14px/1.25 var(--font-body)}
 .contacts-meta__group h2{margin-bottom:8px;color:var(--color-gray-5);font:600 14px/1.3 var(--font-heading);letter-spacing:0em}

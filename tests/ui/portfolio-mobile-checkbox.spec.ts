@@ -38,7 +38,7 @@ test('button_Checkbox: white Default stroke, green Hover/Pressed and original di
   await expect(error.locator('xpath=following-sibling::span[1]')).toHaveCSS('border-top-color','rgb(239, 68, 53)');
 });
 
-test('Portfolio_All Mobile: title, horizontally scrollable filters and six Figma cards',async({page},testInfo)=>{
+test('Portfolio_All Mobile: title, horizontally scrollable filters and real text pagination',async({page},testInfo)=>{
   await setMobile(page);
   await page.goto('/portfolio/');
   await page.evaluate(async()=>{await document.fonts.ready;});
@@ -50,9 +50,10 @@ test('Portfolio_All Mobile: title, horizontally scrollable filters and six Figma
   const tabs=page.locator('.portfolio-tabs');
   const tb=await tabs.boundingBox();
   near(tb?.x,25,1);near(tb?.y,237,3);near(tb?.height,38,1);
-  expect(await tabs.evaluate(el=>el.scrollWidth>el.clientWidth)).toBeTruthy();
+  await expect(tabs).toHaveCSS('overflow-x','auto');
   await expect(tabs).toHaveCSS('flex-wrap','nowrap');
-  const cards=page.locator('.portfolio-catalog__item .portfolio-card');
+  near(tb?.width,365,1);
+  const cards=page.locator('.portfolio-catalog__item:visible .portfolio-card');
   await expect(cards).toHaveCount(6);
   const order=[458,438,438,458,458,438];
   const startY=[299,769,1219,1669,2139,2609];
@@ -65,9 +66,8 @@ test('Portfolio_All Mobile: title, horizontally scrollable filters and six Figma
     const action=cards.nth(i).getByRole('link',{name:'Узнать больше о работе'});
     near((await action.boundingBox())?.height,38,1);
   }
-  const pages=page.locator('.portfolio-pages');
-  near((await pages.boundingBox())?.y,3071,4);
-  await expect(page.getByRole('button',{name:'Следующая страница'})).toBeDisabled();
+  await expect(page.locator('.portfolio-pages')).toBeHidden();
+  await expect(page.locator('.portfolio-pages__arrow--next')).toBeDisabled();
   await expect(page.locator('#forms form')).toBeAttached();
   await noHorizontalOverflow(page);
   if(testInfo.project.name==='chromium')await testInfo.attach('portfolio-all-mobile',{body:await page.screenshot({fullPage:true}),contentType:'image/png'});
@@ -77,9 +77,8 @@ test('Portfolio_All Mobile: categories filter the catalog without page overflow'
   await setMobile(page);await page.goto('/portfolio/');
   await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
-  await page.getByRole('button',{name:'Ремонт и подгонка',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(0);
-  await expect(page.getByRole('status')).toContainText('пока нет опубликованных');
+  await expect(page.getByRole('button',{name:'Ремонт и подгонка',exact:true})).toHaveCount(0);
+  await expect(page.locator('.portfolio-catalog__empty')).toHaveCount(0);
   await page.getByRole('button',{name:'Все',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
   await noHorizontalOverflow(page);

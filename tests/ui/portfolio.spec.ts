@@ -12,13 +12,14 @@ test('portfolio catalog: Figma preview placements, filters and correct case rout
   await expect(page.getByRole('button',{name:'Машинная вышивка',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Нанесение страз',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
-  await page.getByRole('button',{name:'Ремонт и подгонка',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(0);
-  await expect(page.getByRole('status')).toContainText('пока нет опубликованных');
+  await expect(page.locator('.portfolio-tabs .portfolio-tab')).toHaveCount(3);
+  await expect(page.locator('.portfolio-tabs .portfolio-tab')).toHaveText(['Все','Машинная вышивка','Нанесение страз']);
+  await expect(page.getByRole('button',{name:'Ремонт и подгонка',exact:true})).toHaveCount(0);
+  await expect(page.locator('.portfolio-catalog__empty')).toHaveCount(0);
   await page.getByRole('button',{name:'Все',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
-  await expect(page.getByRole('button',{name:'Следующая страница'})).toBeDisabled();
-  await expect(page.getByRole('button',{name:'Предыдущая страница'})).toBeDisabled();
+  await expect(page.locator('.portfolio-pages')).toBeHidden();
+  await expect(page.locator('.portfolio-pages__arrow--next')).toBeDisabled();
   for(const project of portfolioProjects){
     await expect(page.locator('.portfolio-catalog__item a[href="'+project.href+'"]').first()).toBeVisible();
   }
@@ -35,7 +36,7 @@ for(const project of portfolioProjects){
     await expect(page.locator('meta[name=robots]')).toHaveAttribute('content',/noindex/);
     const crumbs=page.getByRole('navigation',{name:'Хлебные крошки'});
     await expect(crumbs.getByRole('link',{name:/Портфолио/})).toHaveAttribute('href','/portfolio/');
-    await expect(crumbs.getByRole('link',{name:new RegExp(project.tag)})).toHaveAttribute('href',project.serviceHref);
+    await expect(crumbs.getByRole('link',{name:new RegExp(project.tag)})).toHaveAttribute('href','/portfolio/?category='+encodeURIComponent(project.tag));
     const hero=page.locator('.project-overview__image');
     await expect(hero).toHaveAttribute('src',project.image);
     await expect.poll(()=>hero.evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBeTruthy();
