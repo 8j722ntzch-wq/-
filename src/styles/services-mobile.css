@@ -12,6 +12,13 @@
  .service-page .service-copy h2{font:700 20px/26px var(--font-heading)}
  .service-page .service-copy h3{font:700 16px/20px var(--font-heading)}
  .service-page .service-copy ul{padding-left:16px;line-height:18px}
+ /* Stabilize Cyrillic wrapping at 390px without reducing the 14px text size. */
+ /* Text-fit is calibrated per text run in Chromium/Firefox rather than
+    shrinking the type or compressing all list items indiscriminately. */
+ .service-page--rhinestones .service-content .service-copy .copy-lines li:first-child{letter-spacing:-.35px}
+ .service-page--rhinestones .service-content .service-copy .copy-lines li:last-child{letter-spacing:-.12px}
+ .service-page--rhinestones .service-content .service-copy .copy-group>p:last-child{letter-spacing:-.12px}
+ .service-page--embroidery .service-content .price-group--service td[colspan]{letter-spacing:-.2px}
  .service-page--repair .service-copy .copy-group .copy-group{display:block}
  .service-page--repair .service-copy .copy-group .copy-group p{display:inline}
  .service-page--repair .service-copy .copy-group .copy-group p+p::before{content:' '}
@@ -59,6 +66,12 @@
  }
 
  .service-page .price-group--service .table-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+ /* Keep price-table content independently scrollable, but let its scrollport
+    extend 25px beyond the 340px content column to the right viewport edge.
+    The repair table deliberately keeps its established 340px layout. */
+ .service-page:not(.service-page--repair) .price-group--service .table-scroll{
+  width:calc(100% + 25px);max-width:none
+ }
  .service-page .price-group--service table{width:806px;min-width:806px;table-layout:fixed}
  .service-page .price-group--service col:first-child{width:176px!important}
  .service-page .price-group--service col:not(:first-child){width:90px!important}
@@ -80,7 +93,7 @@
  /* Six print-format cards: Mobile 260×304, controls beneath track, scroll step 272px. */
  .service-page--printing print-formats{display:flex;flex-direction:column;gap:24px}
  .service-page--printing .formats-heading{display:contents}
- .service-page--printing .format-track{order:1;grid-auto-columns:260px;gap:12px;width:100%}
+ .service-page--printing .format-track{order:1;grid-auto-columns:260px;gap:12px;width:calc(100% + 25px);max-width:none}
  .service-page--printing .format-controls{order:2;position:static;align-self:flex-end;justify-content:flex-end;gap:8px}
 
  /* Two existing 340×458 / 340×438 portfolio cards followed by the 340×574 application. */

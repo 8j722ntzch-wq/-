@@ -126,7 +126,11 @@ test('Eight-per-page pagination stays hidden for six works, appears for nine car
 });
 
 test('Header phone copies number, and footer confirmation disappears after five seconds',async({page,context})=>{
- await context.grantPermissions(['clipboard-read','clipboard-write']);
+ await page.addInitScript(() => {
+   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+    writeText:async (value:string)=>{(window as Window & {__copied?:string}).__copied=value;},
+   }});
+  });
  await page.clock.install();
  await page.setViewportSize({width:1470,height:900});
  await page.goto('/contacts/');
@@ -134,7 +138,7 @@ test('Header phone copies number, and footer confirmation disappears after five 
  const phone=header.getByRole('button',{name:/Скопировать/});
  await phone.hover();await expect(phone).toHaveCSS('text-decoration-line','underline');
  await phone.click();
- expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('+375297777777');
+ expect(await page.evaluate(()=>(window as Window & {__copied?:string}).__copied)).toBe('+375297777777');
  const footer=page.locator('footer');
  const contact=footer.getByRole('button',{name:/Скопировать.*info@masterskaya.by/});
  await contact.click();

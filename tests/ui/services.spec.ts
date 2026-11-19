@@ -54,7 +54,7 @@ test('printing reaches all six original illustrations and returns to the beginni
 });
 test('homepage and footer link to each separate service',async({page})=>{
  for(const service of servicePages){
-  await page.goto('/');await page.locator(`#services a[href="/services/${service.slug}/"]`).click();
+  await page.goto('/');await page.locator(`#services a[href="/services/${service.slug}/"]`).first().click();
   await expect(page).toHaveURL(new RegExp(`/services/${service.slug}/$`));
   await page.locator('header .logo').click();await expect(page.locator('#services')).toBeAttached();
  }

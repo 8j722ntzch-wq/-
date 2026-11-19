@@ -32,6 +32,8 @@ class ConsultationForm extends HTMLElement {
   const result = form.querySelector<HTMLParagraphElement>('.form-result')!;
   const consent = form.querySelector<HTMLInputElement>('[name=consent]')!;
   const context = form.querySelector<HTMLInputElement>('[name=context]')!;
+  // Capture the on-site page where the visitor opens the form.
+  let sourcePage = window.location.pathname;
   const website = form.querySelector<HTMLInputElement>('[name=website]')!;
   let requestId = crypto.randomUUID();
   let sending = false;
@@ -43,6 +45,7 @@ class ConsultationForm extends HTMLElement {
 
   this.closest('dialog')?.addEventListener('prepare-form', event => {
    const {service, context: formContext} = (event as CustomEvent<{service?:string;context?:string}>).detail;
+   sourcePage = window.location.pathname;
    const selectedService = service || this.dataset.defaultService;
    if (selectedService) form.querySelectorAll<HTMLInputElement>('[name=services]').forEach(input => {
     input.checked = input.value === selectedService;
@@ -82,6 +85,7 @@ class ConsultationForm extends HTMLElement {
     services,
     consent: consent.checked,
     context: context.value,
+    source_page: this.closest('dialog') ? sourcePage : window.location.pathname,
     website: website.value,
    };
    sending = true;
@@ -143,6 +147,16 @@ consultation-form{display:block;min-width:0}form{display:grid;gap:16px}.form-fie
 </style>
 
 <style>
+/* Popup-only interactive state: outline and text both use the lime accent,
+   while the inline homepage and service forms keep their current variants. */
+@media(hover:hover) and (pointer:fine){
+ .consultation-form--dialog .button--solid[type=submit]:hover:not(:disabled){
+  background:transparent;border-color:var(--color-green);color:var(--color-green)
+ }
+}
+.consultation-form--dialog .button--solid[type=submit]:focus-visible:not(:disabled){
+ background:transparent;border-color:var(--color-green);color:var(--color-green)
+}
 /* The consultation popup is an exact Mobile 340×550 component in Figma.
  * Keep compact service pills and its solid submit button limited to the dialog;
  * embedded application forms retain their existing layout and wording. */

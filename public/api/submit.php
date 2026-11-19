@@ -101,6 +101,7 @@ try {
     $name = $body['name'] ?? null;
     $phone = $body['phone'] ?? null;
     $context = $body['context'] ?? '';
+    $sourcePage = $body['source_page'] ?? '';
     $services = $body['services'] ?? [];
     $requestId = $body['request_id'] ?? null;
 
@@ -111,6 +112,12 @@ try {
     $digits = preg_replace('/[^0-9]/', '', $phone);
     if ($digits === null || strlen($digits) < 7 || strlen($digits) > 15) reply(422, 'invalid_phone');
     if (!validText($context, 180)) reply(422, 'invalid_context');
+    // Only a relative site pathname: never accept external URLs, queries or fragments.
+    // Empty is allowed for older site versions and is labelled as unspecified.
+    if (!validText($sourcePage, 160)
+        || ($sourcePage !== '' && !preg_match('~^/(?:[a-z0-9-]+/)*$~D', $sourcePage))) {
+        reply(422, 'invalid_source_page');
+    }
     if (($body['consent'] ?? null) !== true) reply(422, 'consent_required');
     if (!is_string($requestId) ||
         !preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/iD', $requestId)) {
@@ -169,12 +176,31 @@ try {
     if (!saveState($requestFile, 'pending')) reply(503, 'storage_unavailable');
 
     $serviceText = $services ? implode(', ', $services) : 'Не выбрана';
+    $pageLabels = [
+        '/' => 'Главная',
+        '/contacts/' => 'Контакты',
+        '/policy/' => 'Политика',
+        '/portfolio/' => 'Портфолио',
+        '/portfolio/ruckit/' => 'Портфолио — Ruckit',
+        '/portfolio/hello-kitty/' => 'Портфолио — Hello Kitty',
+        '/services/repair/' => 'Ремонт и подгонка',
+        '/services/embroidery/' => 'Машинная вышивка',
+        '/services/printing/' => 'Печать на одежде',
+        '/services/patches/' => 'Шевроны и нашивки',
+        '/services/rhinestones/' => 'Нанесение страз',
+    ];
+    $pageTitle = $pageLabels[$sourcePage] ?? 'Другая страница';
+    $pageText = $sourcePage === ''
+        ? 'Не указана'
+        : escapeTelegram($pageTitle) . ' — <a href="https://baltmotors.by'
+            . escapeTelegram($sourcePage) . '">открыть страницу</a>';
     $time = (new DateTimeImmutable('now', new DateTimeZone('Europe/Minsk')))->format('d.m.Y, H:i');
     $message = "📩 <b>Новая заявка с сайта</b>\n\n"
         . "<b>Тип:</b> Консультация\n"
         . "<b>Имя:</b> " . escapeTelegram(trim($name)) . "\n"
         . "<b>Телефон:</b> " . escapeTelegram(trim($phone)) . "\n"
         . "<b>Услуги:</b> " . escapeTelegram($serviceText) . "\n"
+        . "<b>Страница:</b> " . $pageText . "\n"
         . (trim($context) !== '' ? "<b>Контекст:</b> " . escapeTelegram(trim($context)) . "\n" : '')
         . "\n<b>Время:</b> " . $time;
 

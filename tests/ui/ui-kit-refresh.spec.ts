@@ -44,6 +44,9 @@ test('frame_Discount Desktop is centered and 32px high, desktop mega-menu suppor
   await expect(trigger).toHaveAttribute('aria-expanded','true');
   const mega=header.locator('[data-desktop-mega]');
   await expect(mega).toBeVisible();
+  const shadow=await mega.evaluate(el=>getComputedStyle(el).boxShadow);
+  expect(shadow).toMatch(/rgba?\(13, 13, 13/);
+  expect(shadow).not.toContain('0, 109, 255');
   if(testInfo.project.name==='chromium')await testInfo.attach('desktop-services-expanded', {body:await page.screenshot(),contentType:'image/png'});
   const cards=mega.locator('.service-menu-item');
   await expect(cards).toHaveCount(5);
@@ -81,7 +84,9 @@ test('Header/Menu Mobile has both main and services states with Figma dimensions
   await expect(header.locator('[data-mobile-nav]')).toBeVisible();
   const headerTop=(await header.boundingBox())!.y;
   const ctaTop=(await header.locator('.mobile-panel__bottom .button').boundingBox())!.y;
-  expect(ctaTop-headerTop).toBeCloseTo(708,0);
+  // Account for the persistent 57px promo above the mobile navigation.
+   const promoHeight=(await page.locator('.promo').boundingBox())!.height;
+   expect(ctaTop-headerTop).toBeCloseTo(708-promoHeight,0);
   if(testInfo.project.name==='chromium')await testInfo.attach('mobile-main-menu', {body:await page.screenshot(),contentType:'image/png'});
   const servicesButton=header.locator('[data-mobile-services]');
   await expect(servicesButton).toHaveCSS('font-size','28px');
@@ -140,7 +145,7 @@ test('block_Footer and button_Socials Mobile variants are 40px and preserve lega
   }
   await expect(footer.locator('.wordmark')).toHaveCSS('font-size','50px');
   await expect(footer.locator('.footer-contact .button')).toHaveCSS('min-height','38px');
-  await expect(footer.locator('a[href="/policy/#personal-data"]')).toBeVisible();
+  await expect(footer.locator('a[href="/documents/personal-data-policy.pdf"]')).toBeVisible();
   await expect(footer.locator('a[href="/contacts/"]')).toBeVisible();
   if(testInfo.project.name==='chromium')await testInfo.attach('mobile-footer', {body:await footer.screenshot(),contentType:'image/png'});
 });
