@@ -75,7 +75,8 @@ const dialogId='home-consultation';
 @media(max-width:58rem){
  .homepage{gap:64px;padding-bottom:64px}
  .home-section{gap:20px}
- .homepage>.container,.audiences>.container{width:min(var(--container),calc(100% - 50px))}
+ .homepage>.container,.audiences>.container{width:min(var(--container),calc(100% - 50px));min-width:0}
+ .questions{min-width:0;grid-template-columns:minmax(0,1fr)}
  .audiences{padding:64px 0}
  .ruler{max-width:100%}
  .portfolio-all{white-space:normal}
