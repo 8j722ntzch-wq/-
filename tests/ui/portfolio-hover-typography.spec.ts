@@ -40,7 +40,7 @@ test('all local Astro text styles are normalized from -2% to 0%', async ({ page 
 test('portfolio card hover from the photograph underlines only project name and quantity', async ({ page }) => {
   await page.goto('/');
   const cards = page.locator('#portfolio .portfolio-card');
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(6);
   for (const card of await cards.all()) {
     const project = card.locator('.portfolio-project-value');
     const quantity = card.locator('.portfolio-volume-value');
