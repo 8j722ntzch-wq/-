@@ -77,7 +77,12 @@ test('Mobile printing: six original 260px cards scroll with 36px controls',async
  const prev=page.getByRole('button',{name:'Предыдущие форматы'});
  const next=page.getByRole('button',{name:'Следующие форматы'});
  await expect(prev).toBeDisabled();
- for(let i=0;i<6;i++){if(await next.isDisabled())break;await next.click();}
+ for(let i=0;i<6;i++){
+  if(await next.isDisabled())break;
+  const before=await track.evaluate(el=>el.scrollLeft);
+  await next.click();
+  await expect.poll(()=>track.evaluate(el=>el.scrollLeft)).toBeGreaterThan(before);
+ }
  await expect(next).toBeDisabled();
  await expect(track.locator('article').last()).toBeInViewport({ratio:1});
  await track.focus();await page.keyboard.press('ArrowLeft');
