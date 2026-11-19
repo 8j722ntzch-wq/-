@@ -1,0 +1,173 @@
+name: Deploy password-protected Masterskaya staging
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: masterskaya-staging-deployment
+  cancel-in-progress: false
+
+jobs:
+  staging:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Build a staging-only site, keeping the production release gate intact
+        env:
+          PUBLIC_FORM_DELIVERY_ENABLED: 'true'
+          UI_KIT_BUILD: '0'
+          PUBLIC_YANDEX_MAPS_API_KEY: ${{ vars.YANDEX_MAPS_API_KEY }}
+        run: |
+          set -euo pipefail
+          npx astro build --outDir dist-staging
+          rm -rf -- dist-staging/preview-login
+          test -f dist-staging/index.html
+          test -f dist-staging/api/submit.php
+          test -f dist-staging/documents/personal-data-policy.pdf
+          test -f dist-staging/robots.txt
+          test ! -e dist-staging/.htaccess
+          test ! -e dist-staging/_preview
+          test ! -e dist-staging/__ui
+          grep -q 'noindex, nofollow' dist-staging/index.html
+          grep -q 'data-delivery="enabled"' dist-staging/index.html
+          php -l dist-staging/api/submit.php
+      - name: Install clients for the existing hoster.by SFTP server
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends openssh-client sshpass lftp
+      - name: Check Basic Auth for HTML and static assets, then deploy without deleting host files
+        shell: bash
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+          for name in SFTP_HOST SFTP_USERNAME SSHPASS SFTP_KNOWN_HOSTS; do
+            if [[ -z "${!name:-}" ]]; then echo "::error::Missing SFTP secret: $name"; exit 1; fi
+          done
+          [[ "$SFTP_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.-]*$ ]] || exit 1
+          [[ "$SFTP_USERNAME" =~ ^[A-Za-z0-9_][A-Za-z0-9_.@-]*$ ]] || exit 1
+          port="${SFTP_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port >= 1 && 10#$port <= 65535 )) || exit 1
+          workdir="$(mktemp -d)"
+          test_name="__masterskaya_auth_probe_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+          printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$workdir/known_hosts"
+          known_host="$SFTP_HOST"
+          if [[ "$port" != 22 ]]; then known_host="[$SFTP_HOST]:$port"; fi
+          ssh-keygen -F "$known_host" -f "$workdir/known_hosts" >/dev/null || {
+            echo "::error::Server host key is not pinned"; exit 1;
+          }
+
+          sftp_run() {
+            sshpass -e sftp -P "$port" \
+              -oBatchMode=no -oStrictHostKeyChecking=yes \
+              -oUserKnownHostsFile="$workdir/known_hosts" \
+              -oGlobalKnownHostsFile=/dev/null \
+              -oConnectTimeout=20 -oConnectionAttempts=1 \
+              -oNumberOfPasswordPrompts=1 \
+              -oPreferredAuthentications=password,keyboard-interactive \
+              -oPubkeyAuthentication=no \
+              -b "$1" "$SFTP_USERNAME@$SFTP_HOST" > "$workdir/sftp-log" 2>&1
+          }
+
+          cleanup() {
+            if [[ -d "$workdir" ]]; then
+              printf '%s\n' \
+                "rm www/baltmotors.by/assets/figma/$test_name.jpg" \
+                "rm www/baltmotors.by/_astro/$test_name.css" \
+                "rm www/baltmotors.by/documents/$test_name.pdf" \
+                'bye' > "$workdir/cleanup.sftp"
+              sftp_run "$workdir/cleanup.sftp" || true
+              rm -rf -- "$workdir"
+            fi
+          }
+          trap cleanup EXIT
+
+          # The existing private password file and live .htaccess MUST survive deployment.
+          printf '%s\n' \
+            'ls www/baltmotors.by/.htaccess' \
+            'ls www/.masterskaya-preview.htpasswd' \
+            'bye' > "$workdir/preflight.sftp"
+          if ! sftp_run "$workdir/preflight.sftp"; then
+            echo "::error::Basic Auth configuration was not found; no deployment"; exit 1;
+          fi
+
+          printf 'authorization-probe\n' > "$workdir/probe"
+          printf '%s\n' \
+            '-mkdir www/baltmotors.by/assets' \
+            '-mkdir www/baltmotors.by/assets/figma' \
+            '-mkdir www/baltmotors.by/_astro' \
+            '-mkdir www/baltmotors.by/documents' \
+            "put $workdir/probe www/baltmotors.by/assets/figma/$test_name.jpg" \
+            "put $workdir/probe www/baltmotors.by/_astro/$test_name.css" \
+            "put $workdir/probe www/baltmotors.by/documents/$test_name.pdf" \
+            'bye' > "$workdir/probe.sftp"
+          if ! sftp_run "$workdir/probe.sftp"; then
+            echo "::error::Cannot place safe probe files; no deployment"; exit 1;
+          fi
+
+          for path in \
+            "/" \
+            "/assets/figma/$test_name.jpg" \
+            "/_astro/$test_name.css" \
+            "/documents/$test_name.pdf"; do
+            status="$(curl --silent --show-error --connect-timeout 8 --max-time 20 \
+              -o /dev/null -w '%{http_code}' "https://baltmotors.by$path?staging=$GITHUB_RUN_ID")"
+            if [[ "$status" != 401 ]]; then
+              echo "::error::Unauthenticated path $path returned HTTP $status, expected 401. No deployment."
+              exit 1
+            fi
+            echo "AUTH_PROTECTED $path HTTP_401"
+          done
+
+          # SFTP upload never deletes remote files. Do not upload a root .htaccess
+          # or touch the private parent directory holding the Basic Auth password.
+          cat > "$workdir/deploy.lftp" <<EOF
+          set cmd:fail-exit true
+          set net:max-retries 1
+          set net:timeout 30
+          set sftp:connect-program "sshpass -e ssh -a -x -oBatchMode=no -oStrictHostKeyChecking=yes -oUserKnownHostsFile=$workdir/known_hosts -oGlobalKnownHostsFile=/dev/null -oConnectTimeout=20 -oConnectionAttempts=1 -oNumberOfPasswordPrompts=1 -oPreferredAuthentications=password,keyboard-interactive -oPubkeyAuthentication=no"
+          open -u "$SFTP_USERNAME" "sftp://$SFTP_HOST:$port"
+          mirror -R --no-perms --parallel=3 --exclude-glob .htaccess --exclude-glob .htpasswd dist-staging www/baltmotors.by
+          bye
+          EOF
+          if ! lftp -f "$workdir/deploy.lftp" > "$workdir/lftp-log" 2>&1; then
+            echo "::error::Staging SFTP upload failed. The protected site may contain a partial update."
+            tail -n 20 "$workdir/lftp-log" | sed -E 's#(sftp://)[^/]+#\1[REDACTED]#g'
+            exit 1
+          fi
+          echo "STAGING_FILES_UPLOADED"
+
+          # Direct content URLs must remain inaccessible without credentials.
+          css="$(find dist-staging/_astro -maxdepth 1 -type f -name '*.css' -print -quit)"
+          for path in "/" "/index.html" "/assets/figma/portfolio-ruckit.jpg" \
+            "/documents/personal-data-policy.pdf" "/api/submit.php" \
+            "/_astro/$(basename "$css")"; do
+            status="$(curl --silent --show-error --connect-timeout 8 --max-time 20 \
+              -o /dev/null -w '%{http_code}' "https://baltmotors.by$path?staging=$GITHUB_RUN_ID")"
+            if [[ "$status" != 401 ]]; then
+              echo "::error::Post-deploy resource $path returned HTTP $status without password."
+              exit 1
+            fi
+            echo "STAGING_PROTECTED $path HTTP_401"
+          done
+          echo "Password-protected staging uploaded. No host .htaccess or private password file changed." >> "$GITHUB_STEP_SUMMARY"
