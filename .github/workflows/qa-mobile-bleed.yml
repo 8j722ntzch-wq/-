@@ -1,0 +1,31 @@
+name: Temporary mobile full-bleed and portfolio CTA validation
+on:
+  push:
+    branches: [qa/mobile-bleed-20261119]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build:kit
+      - run: npx playwright install chromium
+      - run: npx playwright test tests/ui/mobile-scroll-portfolio.spec.ts tests/ui/portfolio-print-refinements.spec.ts tests/ui/services-mobile.spec.ts tests/ui/mobile-bleed-visual-qa.spec.ts --project=chromium --reporter=list
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mobile-bleed-qa
+          retention-days: 5
+          path: |
+            test-results/
+            playwright-report/
