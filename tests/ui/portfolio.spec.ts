@@ -19,7 +19,7 @@ test('portfolio catalog: Figma preview placements, filters and correct case rout
   await page.getByRole('button',{name:'Все',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
   await expect(page.locator('.portfolio-pages')).toBeHidden();
-  await expect(page.getByRole('button',{name:'Следующая страница'})).toBeDisabled();
+  await expect(page.locator('.portfolio-pages__arrow--next')).toBeDisabled();
   for(const project of portfolioProjects){
     await expect(page.locator('.portfolio-catalog__item a[href="'+project.href+'"]').first()).toBeVisible();
   }
