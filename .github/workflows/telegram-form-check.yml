@@ -49,4 +49,9 @@ jobs:
           # A synthetic request must still fail closed without the private config.
           payload='{"request_id":"9e5e9424-1c75-41f1-8cb0-42c4dff31666","name":"Test","phone":"+375 (29) 123-45-67","services":["Машинная вышивка"],"context":"","consent":true,"website":""}'
           test "$(request -X POST -H 'Origin: https://baltmotors.by' -H 'Content-Type: application/json' -d "$payload")" = "503"
+          # On-site page paths are accepted; external links or injected URLs are rejected.
+          valid_page='{"request_id":"9e5e9424-1c75-41f1-8cb0-42c4dff31666","name":"Test","phone":"+375 (29) 123-45-67","services":["Машинная вышивка"],"context":"","source_page":"/services/embroidery/","consent":true,"website":""}'
+          invalid_page='{"request_id":"9e5e9424-1c75-41f1-8cb0-42c4dff31666","name":"Test","phone":"+375 (29) 123-45-67","services":["Машинная вышивка"],"context":"","source_page":"https://example.com/","consent":true,"website":""}'
+          test "$(request -X POST -H 'Origin: https://baltmotors.by' -H 'Content-Type: application/json' -d "$valid_page")" = "503"
+          test "$(request -X POST -H 'Origin: https://baltmotors.by' -H 'Content-Type: application/json' -d "$invalid_page")" = "422"
           echo "PHP syntax and endpoint validation passed without bot secrets."
