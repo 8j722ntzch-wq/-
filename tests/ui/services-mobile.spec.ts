@@ -18,6 +18,38 @@ async function mobile(page:Page,slug:string){
  await page.goto('/services/'+slug+'/');
  await page.evaluate(async()=>{await document.fonts.ready;});
 }
+// TEMP QA ONLY — inspect rendered mobile geometry and accessible links.
+test('DIAGNOSTIC mobile service geometry and portfolio actions',async({page})=>{
+ for(const slug of ['repair','embroidery','printing','patches','rhinestones']){
+  await mobile(page,slug);
+  const links=page.locator('.service-portfolio').getByRole('link');
+  const info=await page.evaluate(()=>{
+   const section=document.querySelector('.service-content')!;
+   const portfolio=document.querySelector('.service-portfolio')!;
+   const details=(el:Element)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);
+     return {tag:el.tagName,cls:String(el.className),top:Math.round(r.top+scrollY),height:Math.round(r.height),width:Math.round(r.width),display:s.display,marginTop:s.marginTop,marginBottom:s.marginBottom};
+   };
+   return {content:details(section),children:[...section.children].map(details),
+     portfolio:details(portfolio),anchors:[...portfolio.querySelectorAll('a')].map(a=>({text:a.textContent,html:a.outerHTML.slice(0,450),role:a.getAttribute('role'),display:getComputedStyle(a).display}))};
+  });
+  console.log('DIAG_MOBILE '+slug+' ROLE_LINKS='+await links.count()+' '+JSON.stringify(info));
+ }
+});
+test('DIAGNOSTIC print slider movement and hit targets',async({page})=>{
+ await mobile(page,'printing');
+ const track=page.locator('.format-track');
+ const next=page.getByRole('button',{name:'Следующие форматы'});
+ const geom=()=>track.evaluate(el=>({scrollLeft:el.scrollLeft,client:el.clientWidth,scroll:el.scrollWidth,
+  rect:el.getBoundingClientRect().toJSON(),cards:[...el.children].map(c=>({left:c.getBoundingClientRect().left,right:c.getBoundingClientRect().right}))}));
+ console.log('DIAG_SLIDER initial '+JSON.stringify(await geom()));
+ for(let i=0;i<7;i++){
+  console.log('DIAG_SLIDER before '+i+' disabled='+await next.isDisabled());
+  if(await next.isDisabled())break;
+  try{await next.click({timeout:2500});}catch(e){console.log('DIAG_SLIDER CLICK_FAIL '+String(e).slice(0,650));break;}
+  await page.waitForTimeout(160);
+  console.log('DIAG_SLIDER after '+i+' '+JSON.stringify(await geom()));
+ }
+});
 for(const service of servicePages){
  test(`Mobile service ${service.slug}: layout, typography, portfolio, application and actions`,async({page},testInfo)=>{
   await mobile(page,service.slug);
