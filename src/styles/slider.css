@@ -1,0 +1,23 @@
+/* Shared component button_Slider (Figma 24:632, 24:638): 36x36, default/hover/disabled. */
+.slider-button{
+ display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;padding:0;
+ border:1.5px solid transparent;border-radius:4px;
+ background:var(--color-black);color:var(--color-white);cursor:pointer;
+ transition:background-color var(--motion-fast),color var(--motion-fast),border-color var(--motion-fast);
+}
+@media(hover:hover) and (pointer:fine){
+ .slider-button:hover:not(:disabled){
+  background:transparent;border-color:var(--color-black);color:var(--color-black);
+ }
+}
+.slider-button:focus-visible{
+ background:transparent;border-color:var(--color-black);color:var(--color-black);
+ outline:var(--focus-outline);outline-offset:3px;
+}
+.slider-button:active:not(:disabled){
+ background:transparent;border-color:var(--color-black);color:var(--color-black);
+}
+.slider-button:disabled{
+ background:transparent;border-color:var(--color-gray-3);color:var(--color-gray-3);
+ opacity:1;cursor:not-allowed;
+}
