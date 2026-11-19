@@ -6,11 +6,10 @@ export const portfolioProjects = projects.map((project, index) => ({
   slug: index === 0 ? 'ruckit' : 'hello-kitty',
   serviceHref: index === 0 ? '/services/embroidery/' : '/services/rhinestones/',
 }));
-export const portfolioCategories = [
-  'Все', 'Ремонт и подгонка', 'Машинная вышивка', 'Печать на одежде',
-  'Шевроны и нашивки', 'Нанесение страз',
-] as const;
 export const previewPortfolio = [0,1,1,0,0,1].map((index,position) => ({
   ...portfolioProjects[index],
   previewPosition:position,
 }));
+
+// Only show tabs for categories that actually have published portfolio items.
+export const portfolioCategories = ['Все', ...new Set(previewPortfolio.map(project => project.tag))];

@@ -11,7 +11,6 @@ import { portfolioCategories, previewPortfolio } from '../../data/portfolio';
   <div class="portfolio-catalog__grid">
     {previewPortfolio.map(project=><div class="portfolio-catalog__item" data-category={project.tag} data-preview-position={project.previewPosition}><PortfolioCard {...project} home /></div>)}
   </div>
-  <p class="portfolio-catalog__empty" role="status" hidden>В этой категории пока нет опубликованных примеров работ.</p>
   <nav class="portfolio-pages" aria-label="Страницы портфолио">
     <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--previous" aria-label="Предыдущая страница" data-page-change="-1" disabled><Icon name="arrow-latex"/></button>
     <span class="portfolio-pages__numbers">
@@ -25,14 +24,17 @@ class PortfolioCatalog extends HTMLElement {
   connectedCallback(){
     const tabs=Array.from(this.querySelectorAll<HTMLButtonElement>('[data-filter]'));
     const items=Array.from(this.querySelectorAll<HTMLElement>('.portfolio-catalog__item'));
-    const empty=this.querySelector<HTMLElement>('.portfolio-catalog__empty')!;
     const pages=this.querySelector<HTMLElement>('.portfolio-pages')!;
     const numberButtons=Array.from(this.querySelectorAll<HTMLButtonElement>('.portfolio-pages__numbers button'));
     const previous=this.querySelector<HTMLButtonElement>('[data-page-change="-1"]')!;
     const next=this.querySelector<HTMLButtonElement>('[data-page-change="1"]')!;
     // Four real pages from the available preview positions; no fabricated work.
     const maxPages=4;
-    let category='Все',currentPage=1;
+    const categoryFromUrl=()=>{
+      const requested=new URL(window.location.href).searchParams.get('category');
+      return tabs.some(tab=>tab.dataset.filter===requested)?requested!:'Все';
+    };
+    let category=categoryFromUrl(),currentPage=1;
     const render=()=>{
       const filtered=items.filter(item=>category==='Все'||item.dataset.category===category);
       const count=Math.min(maxPages,Math.max(1,filtered.length));
@@ -44,7 +46,6 @@ class PortfolioCatalog extends HTMLElement {
       const visible=new Set(filtered.slice(start,start+itemsOnPage));
       items.forEach(item=>{item.hidden=!visible.has(item);});
       tabs.forEach(tab=>tab.setAttribute('aria-pressed',String(tab.dataset.filter===category)));
-      empty.hidden=filtered.length>0;
       pages.hidden=filtered.length===0;
       previous.disabled=currentPage===1;
       next.disabled=currentPage===count;
@@ -63,12 +64,27 @@ class PortfolioCatalog extends HTMLElement {
       const tab=target?.closest<HTMLButtonElement>('[data-filter]');
       const number=target?.closest<HTMLButtonElement>('[data-page]');
       const arrow=target?.closest<HTMLButtonElement>('[data-page-change]');
-      if(tab){category=tab.dataset.filter||'Все';currentPage=1;render();}
+      if(tab){
+        const selected=tab.dataset.filter||'Все';
+        if(selected!==category){
+          category=selected;
+          currentPage=1;
+          const url=new URL(window.location.href);
+          if(category==='Все')url.searchParams.delete('category');
+          else url.searchParams.set('category',category);
+          window.history.pushState({portfolioCategory:category},'',url.pathname+url.search+url.hash);
+          render();
+        }
+      }
       else if(number){currentPage=Number(number.dataset.page);render();}
       else if(arrow&&!arrow.disabled){currentPage+=Number(arrow.dataset.pageChange);render();}
     });
+    const onHistoryChange=()=>{category=categoryFromUrl();currentPage=1;render();};
+    window.addEventListener('popstate',onHistoryChange);
+    this.addEventListener('portfolio-catalog-disconnect',()=>window.removeEventListener('popstate',onHistoryChange),{once:true});
     render();
   }
+  disconnectedCallback(){this.dispatchEvent(new Event('portfolio-catalog-disconnect'));}
 }
 if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-catalog',PortfolioCatalog);
 </script>
@@ -80,7 +96,6 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
 .portfolio-tab:hover:not([aria-pressed=true]){background:var(--color-white)}
 .portfolio-catalog__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .portfolio-catalog__item{min-width:0;width:100%}
-.portfolio-catalog__empty{padding:36px;border:1.5px solid var(--color-gray-3);border-radius:4px;font:500 16px/1.25 var(--font-body)}
 .portfolio-pages{display:flex;justify-content:center;align-items:center;gap:24px;margin-top:48px}
 .portfolio-pages__numbers{display:flex;gap:12px;align-items:center}
 .portfolio-pages__number{display:inline-flex;align-items:center}
@@ -96,7 +111,7 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
    single-row scrollable tabs and 24px before pagination. */
 @media(max-width:58rem){
  .portfolio-catalog{width:100%;min-width:0}
- .portfolio-tabs{width:100%;max-width:100%;height:38px;min-height:38px;display:flex;flex-wrap:nowrap;align-items:stretch;gap:4px;margin-bottom:24px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity}
+ .portfolio-tabs{width:calc(100% + 25px);max-width:none;margin-right:-25px;padding-right:25px;height:38px;min-height:38px;display:flex;flex-wrap:nowrap;align-items:stretch;gap:4px;margin-bottom:24px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity;scroll-padding-right:25px;-webkit-overflow-scrolling:touch}
  .portfolio-tabs::-webkit-scrollbar{display:none}
  .portfolio-tab{flex:0 0 auto;min-height:38px;padding:9px 10px;font:700 12px/1.2 var(--font-body);white-space:nowrap;scroll-snap-align:start}
  .portfolio-catalog__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}

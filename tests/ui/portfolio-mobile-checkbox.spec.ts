@@ -50,8 +50,9 @@ test('Portfolio_All Mobile: title, horizontally scrollable filters and real text
   const tabs=page.locator('.portfolio-tabs');
   const tb=await tabs.boundingBox();
   near(tb?.x,25,1);near(tb?.y,237,3);near(tb?.height,38,1);
-  expect(await tabs.evaluate(el=>el.scrollWidth>el.clientWidth)).toBeTruthy();
+  await expect(tabs).toHaveCSS('overflow-x','auto');
   await expect(tabs).toHaveCSS('flex-wrap','nowrap');
+  near(tb?.width,365,1);
   const cards=page.locator('.portfolio-catalog__item:visible .portfolio-card');
   await expect(cards).toHaveCount(2);
   const order=[458,438];
@@ -80,9 +81,8 @@ test('Portfolio_All Mobile: categories filter the catalog without page overflow'
   await setMobile(page);await page.goto('/portfolio/');
   await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
-  await page.getByRole('button',{name:'Ремонт и подгонка',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(0);
-  await expect(page.getByRole('status')).toContainText('пока нет опубликованных');
+  await expect(page.getByRole('button',{name:'Ремонт и подгонка',exact:true})).toHaveCount(0);
+  await expect(page.locator('.portfolio-catalog__empty')).toHaveCount(0);
   await page.getByRole('button',{name:'Все',exact:true}).click();
   await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
   await noHorizontalOverflow(page);

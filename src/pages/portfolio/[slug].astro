@@ -28,7 +28,7 @@ const links=[
     <div class="portfolio-detail__intro">
       <nav class="container portfolio-breadcrumbs" aria-label="Хлебные крошки">
         <a href="/portfolio/">Портфолио<span><Icon name="arrow" size={14}/></span></a>
-        <a href={project.serviceHref}>{project.tag}<span><Icon name="arrow" size={14}/></span></a>
+        <a href={`/portfolio/?category=${encodeURIComponent(project.tag)}`}>{project.tag}<span><Icon name="arrow" size={14}/></span></a>
         <span aria-current="page">{project.title}</span>
       </nav>
       <section class="container project-overview" aria-labelledby="project-title">
@@ -95,6 +95,5 @@ const links=[
  #forms :global(.application-copy>p:last-of-type){font-size:14px;line-height:1.25}
  #forms :global(consultation-form form){gap:12px}
  #forms :global(.consent-copy){font-size:12px;line-height:1.25}
- #forms :global(.button--solid){min-height:38px;font-size:12px}
 }
 </style>
