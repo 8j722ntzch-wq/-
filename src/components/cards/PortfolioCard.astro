@@ -63,6 +63,10 @@ const {title,image,imageAlt,audience,price,quantity,ownItem=false,tag,href,tone=
 
 /* container_Портфолио (Mobile): 340×458 Ruckit / 340×438 Hello Kitty.
    Photo 340×280, meta at y=292, descriptions at y=348, CTA 38px. */
+@media(min-width:58.01rem){
+ /* Cancel the outer 12px flex gap between project row and volume row. */
+ .portfolio-card__bottom{margin-top:-12px}
+}
 @media(max-width:58rem){
  .portfolio-card__bottom{gap:12px}
  .portfolio-card{width:100%;max-width:none;height:458px;min-height:458px;gap:0}
