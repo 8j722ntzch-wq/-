@@ -134,23 +134,14 @@ test('Mobile print carousel controls are directly below track and right-aligned 
  closeTo(track!.y-(heading!.y+heading!.height),24,3);
  closeTo(controls!.x,285,2);closeTo(controls!.width,80,1);closeTo(controls!.height,36,1);
  closeTo(controls!.y-(track!.y+track!.height),24,2);
- const computed=await page.evaluate(()=>{
-  const main=document.querySelector<HTMLElement>('main.service-page');
-  const grid=document.querySelector<HTMLElement>('.service-portfolio .portfolio-grid');
-  const card=document.querySelector<HTMLElement>('.service-portfolio .portfolio-card');
-  const meta=document.querySelector<HTMLElement>('.service-portfolio .portfolio-meta');
-  const span=meta?.querySelector<HTMLElement>('span');
-  return {
-   viewport:innerWidth,main:main?.className,
-   gridColumns:grid&&getComputedStyle(grid).gridTemplateColumns,
-   gridWidth:grid?.getBoundingClientRect().width,
-   cardWidth:card?.getBoundingClientRect().width,
-   metaDirection:meta&&getComputedStyle(meta).flexDirection,
-   metaWidth:meta?.getBoundingClientRect().width,
-   spanRect:span&&[span.getBoundingClientRect().left,span.getBoundingClientRect().right],
-   styleHrefs:[...document.styleSheets].map(x=>x.href).filter(Boolean),
-  };
- });
- console.log('PRINTING MOBILE COMPUTED',JSON.stringify(computed));
+ const grid=page.locator('.service-portfolio .portfolio-grid');
+ const layout=await grid.evaluate(el=>({
+  columns:getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length,
+  width:el.getBoundingClientRect().width,
+  cards:[...el.querySelectorAll<HTMLElement>('.portfolio-card')].map(card=>card.getBoundingClientRect().width),
+ }));
+ expect(layout.columns).toBe(1);
+ closeTo(layout.width,340,1);
+ for(const width of layout.cards)closeTo(width,340,1);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
 });
