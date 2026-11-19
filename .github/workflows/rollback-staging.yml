@@ -1,8 +1,6 @@
 name: Emergency rollback of exposed staging assets
 
 on:
-  push:
-    branches: [master]
   workflow_dispatch:
 
 permissions:
