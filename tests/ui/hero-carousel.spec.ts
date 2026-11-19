@@ -117,3 +117,43 @@ test('Reduced-motion mode keeps the carousel static and shows a complete active 
   await expect(hero).toHaveAttribute('data-hero-active','3');
   await expect(hero.locator('.hero-progress__step').nth(3).locator('.hero-progress__fill')).toHaveCSS('animation-name','none');
 });
+
+
+test('All Hero text stays separate from the button and stitch on Desktop and Mobile',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const width of [1470,390]){
+  await page.setViewportSize({width,height:900});
+  await page.goto('/');
+  const hero=page.locator('.hero');
+  for(let slide=0;slide<4;slide++){
+   await hero.locator('[data-hero-page="'+slide+'"]').evaluate((el:HTMLButtonElement)=>el.click());
+   const positions=await hero.evaluate(root=>{
+    const bounds=(sel:string)=>root.querySelector(sel)?.getBoundingClientRect();
+    const h=bounds('h1'),p=bounds('.hero-copy p'),btn=bounds('.hero-copy button'),seam=bounds('.stitch--green');
+    return {headlineBottom:h?.bottom,paragraphTop:p?.top,paragraphBottom:p?.bottom,
+      buttonTop:btn?.top,buttonBottom:btn?.bottom,seamTop:seam?.top};
+   });
+   expect(positions.headlineBottom!).toBeLessThanOrEqual(positions.paragraphTop!);
+   expect(positions.paragraphBottom!).toBeLessThanOrEqual(positions.buttonTop!);
+   expect(positions.buttonBottom!).toBeLessThan(positions.seamTop!);
+  }
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+ }
+});
+test('Manual Hero pause and resume works with the 20-second slide interval',async({page})=>{
+ await page.clock.install();
+ await page.goto('/');
+ const hero=page.locator('.hero');
+ const playback=hero.locator('[data-hero-playback]');
+ await expect(playback).toBeVisible();
+ await expect(playback).toHaveAttribute('aria-pressed','false');
+ await playback.click();
+ await expect(playback).toHaveAttribute('aria-pressed','true');
+ await expect(playback).toHaveAttribute('aria-label','Возобновить автоматическое переключение слайдов');
+ await page.clock.runFor(21_000);
+ await expect(hero).toHaveAttribute('data-hero-active','0');
+ await playback.click();
+ await expect(playback).toHaveAttribute('aria-pressed','false');
+ await page.clock.runFor(20_500);
+ await expect(hero).toHaveAttribute('data-hero-active','1');
+});
