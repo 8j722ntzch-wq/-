@@ -71,8 +71,8 @@ const sections=[
 </SiteLayout>
 <style>
 .policy-page{display:grid;gap:64px;padding:40px 0 80px}
-.policy-document{display:grid;gap:24px}
-.policy-document h1{font:700 36px/1.25 var(--font-heading)}
+.policy-document{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.policy-document h1{width:100%;min-width:0;font:700 36px/1.25 var(--font-heading)}
 .policy-lead{font:500 16px/1.25 var(--font-body);color:var(--color-gray-5)}
 .policy-sections{display:grid;gap:16px}
 .policy-section{display:grid;gap:12px}
