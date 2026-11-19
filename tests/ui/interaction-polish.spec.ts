@@ -104,6 +104,7 @@ test('Checked checkbox has no white border and application submit hover stays li
 test('Sending a form shows no temporary delivery text but still displays genuine success',async({page})=>{
   await page.goto('/');
   const form=page.locator('#forms form');
+  await page.locator('#forms consultation-form').evaluate(el=>{(el as HTMLElement).dataset.delivery='enabled';});
   await form.getByRole('textbox',{name:'Ваше имя'}).fill('Проверка');
   await form.getByRole('textbox',{name:'Ваш номер телефона'}).fill('+375 (29) 777-77-77');
   await form.locator('input[name="consent"]').check();
@@ -130,18 +131,22 @@ test('Placeholder social icons have green hover states without invented external
 });
 
 test('Email and phone copy their actual values from the contacts page and footer',async({page,context})=>{
-  await context.grantPermissions(['clipboard-read','clipboard-write']);
+  await page.addInitScript(() => {
+   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+    writeText:async (value:string)=>{(window as Window & {__copied?:string}).__copied=value;},
+   }});
+  });
   await page.goto('/contacts/');
   const contacts=page.locator('.contacts-details__lines');
   const email=contacts.getByRole('button',{name:/Скопировать в буфер обмена: info@masterskaya.by/});
   await email.hover();
   await expect(email).toHaveCSS('text-decoration-line','underline');
   await email.click();
-  expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('info@masterskaya.by');
+  expect(await page.evaluate(()=>(window as Window & {__copied?:string}).__copied)).toBe('info@masterskaya.by');
   const phone=contacts.getByRole('button',{name:/Скопировать в буфер обмена: \+375/});
   await phone.click();
-  expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('+375297777777');
+  expect(await page.evaluate(()=>(window as Window & {__copied?:string}).__copied)).toBe('+375297777777');
   const footer=page.locator('footer');
   await footer.getByRole('button',{name:/Скопировать в буфер обмена: info@masterskaya.by/}).click();
-  expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('info@masterskaya.by');
+  expect(await page.evaluate(()=>(window as Window & {__copied?:string}).__copied)).toBe('info@masterskaya.by');
 });
