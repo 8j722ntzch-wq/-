@@ -41,4 +41,10 @@ const links=[{label:'Услуги',href:'/#services'},{label:'О нас',href:'/
 </SiteLayout>
 <style>
 .service-page{--gradient-application:linear-gradient(114.4556deg,var(--color-blue) 71.635%,rgb(197 238 105 / .8) 100%);display:flex;flex-direction:column;gap:80px;padding:40px 0 80px}.service-content,.service-portfolio{display:grid;gap:24px}.service-copy{font:500 16px/1.25 var(--font-body)}.service-copy :global(.copy-group){display:grid;gap:12px}.service-copy :global(.copy-group .copy-group){gap:8px}.service-copy :global(ul){list-style:disc;margin:0;padding-left:24px}.service-copy :global(h2){font:700 24px/1.25 var(--font-heading)}.service-copy :global(h3){font:700 20px/1.3 var(--font-heading)}.service-page--repair .service-copy :global(.copy-group){gap:8px}.service-page--repair .service-copy :global(.copy-group .copy-group){gap:0}.service-portfolio .portfolio-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.table-heading{margin-bottom:-12px}.service-page--rhinestones .service-copy:nth-child(5){margin-top:-12px}.portfolio-all__mobile{display:none}.portfolio-all{display:flex;align-items:center;gap:6px;border:0;background:none;text-decoration:none;font:500 14px/1.25 var(--font-body);padding:0;color:var(--color-black)}.portfolio-all .portfolio-all__icon{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--color-black);color:var(--color-green)}.portfolio-all:hover{text-decoration:underline}.gallery{display:grid;gap:28px}.gallery figure{margin:0}.gallery img{width:100%;border-radius:4px}.gallery figcaption{margin-top:12px}.preview-copy{display:grid;gap:16px;line-height:1.5}#forms,#portfolio{scroll-margin-top:24px}
+
+/* Keep mobile work cards one per row. A scoped page style must override the
+   desktop grid's scoped selector; generic imported CSS loses in cascade. */
+@media(max-width:58rem){
+ .service-portfolio .portfolio-grid{grid-template-columns:minmax(0,1fr)}
+}
 </style>
