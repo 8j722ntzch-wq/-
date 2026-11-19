@@ -5,22 +5,21 @@ test('portfolio catalog: Figma preview placements, filters and correct case rout
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto('/portfolio/');
   await expect(page.getByRole('heading',{level:1,name:'Наши работы'})).toBeVisible();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
+  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
   await expect(page.getByRole('button',{name:'Все',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
+  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
   await expect(page.getByRole('button',{name:'Машинная вышивка',exact:true})).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Нанесение страз',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
+  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
   await expect(page.locator('.portfolio-tabs .portfolio-tab')).toHaveCount(3);
   await expect(page.locator('.portfolio-tabs .portfolio-tab')).toHaveText(['Все','Машинная вышивка','Нанесение страз']);
   await expect(page.getByRole('button',{name:'Ремонт и подгонка',exact:true})).toHaveCount(0);
   await expect(page.locator('.portfolio-catalog__empty')).toHaveCount(0);
   await page.getByRole('button',{name:'Все',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
-  await expect(page.getByRole('button',{name:'Следующая страница'})).toBeEnabled();
-  for(const num of [1,2,3,4])await expect(page.getByRole('button',{name:'Страница '+num})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Предыдущая страница'})).toBeDisabled();
+  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
+  await expect(page.locator('.portfolio-pages')).toBeHidden();
+  await expect(page.locator('.portfolio-pages__arrow--next')).toBeDisabled();
   for(const project of portfolioProjects){
     await expect(page.locator('.portfolio-catalog__item a[href="'+project.href+'"]').first()).toBeVisible();
   }

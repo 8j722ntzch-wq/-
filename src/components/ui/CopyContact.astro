@@ -8,11 +8,13 @@ const {value,display=value}=Astro.props;
 </copy-contact>
 <script>
 class CopyContact extends HTMLElement {
+  private clearFeedbackTimer?: number;
   connectedCallback(){
     const button=this.querySelector<HTMLButtonElement>('.copy-contact__button');
     const feedback=this.querySelector<HTMLElement>('.copy-contact__feedback');
     if(!button||!feedback)return;
     button.addEventListener('click',async()=>{
+      if(this.clearFeedbackTimer)window.clearTimeout(this.clearFeedbackTimer);
       const value=button.dataset.copyValue||'';
       try {
         if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
@@ -34,8 +36,14 @@ class CopyContact extends HTMLElement {
         feedback.textContent='Не удалось скопировать';
         feedback.dataset.state='error';
       }
+      this.clearFeedbackTimer=window.setTimeout(()=>{
+        feedback.textContent='';
+        delete feedback.dataset.state;
+        this.clearFeedbackTimer=undefined;
+      },5000);
     });
   }
+  disconnectedCallback(){if(this.clearFeedbackTimer)window.clearTimeout(this.clearFeedbackTimer);}
 }
 if(!customElements.get('copy-contact'))customElements.define('copy-contact',CopyContact);
 </script>

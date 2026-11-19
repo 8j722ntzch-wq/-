@@ -2,6 +2,7 @@
 import PortfolioCard from '../cards/PortfolioCard.astro';
 import Icon from '../ui/Icon.astro';
 import Button from '../ui/Button.astro';
+import '../../styles/slider.css';
 import { portfolioCategories, previewPortfolio } from '../../data/portfolio';
 ---
 <portfolio-catalog class="portfolio-catalog">
@@ -12,11 +13,11 @@ import { portfolioCategories, previewPortfolio } from '../../data/portfolio';
     {previewPortfolio.map(project=><div class="portfolio-catalog__item" data-category={project.tag} data-preview-position={project.previewPosition}><PortfolioCard {...project} home /></div>)}
   </div>
   <nav class="portfolio-pages" aria-label="Страницы портфолио">
-    <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--previous" aria-label="Предыдущая страница" data-page-change="-1" disabled><Icon name="arrow-latex"/></button>
+    <button type="button" class="slider-button portfolio-pages__arrow portfolio-pages__arrow--previous" aria-label="Предыдущая страница" data-page-change="-1" disabled><Icon name="arrow-latex"/></button>
     <span class="portfolio-pages__numbers">
-      {[1,2,3,4].map(number=><span class="portfolio-pages__number"><Button id={'portfolio-page-'+number} variant="text" size="s">{number}</Button></span>)}
+      {Array.from({length:Math.max(1,Math.ceil(previewPortfolio.length/8))},(_,index)=>index+1).map(number=><span class="portfolio-pages__number"><Button id={'portfolio-page-'+number} variant="text" size="s">{number}</Button></span>)}
     </span>
-    <button type="button" class="portfolio-pages__arrow portfolio-pages__arrow--next" aria-label="Следующая страница" data-page-change="1" disabled><Icon name="arrow-latex"/></button>
+    <button type="button" class="slider-button portfolio-pages__arrow portfolio-pages__arrow--next" aria-label="Следующая страница" data-page-change="1" disabled><Icon name="arrow-latex"/></button>
   </nav>
 </portfolio-catalog>
 <script>
@@ -28,8 +29,8 @@ class PortfolioCatalog extends HTMLElement {
     const numberButtons=Array.from(this.querySelectorAll<HTMLButtonElement>('.portfolio-pages__numbers button'));
     const previous=this.querySelector<HTMLButtonElement>('[data-page-change="-1"]')!;
     const next=this.querySelector<HTMLButtonElement>('[data-page-change="1"]')!;
-    // Four real pages from the available preview positions; no fabricated work.
-    const maxPages=4;
+    // Eight cards per page. Pagination stays hidden until a ninth appears.
+    const pageSize=8;
     const categoryFromUrl=()=>{
       const requested=new URL(window.location.href).searchParams.get('category');
       return tabs.some(tab=>tab.dataset.filter===requested)?requested!:'Все';
@@ -37,21 +38,18 @@ class PortfolioCatalog extends HTMLElement {
     let category=categoryFromUrl(),currentPage=1;
     const render=()=>{
       const filtered=items.filter(item=>category==='Все'||item.dataset.category===category);
-      const count=Math.min(maxPages,Math.max(1,filtered.length));
+      const count=Math.max(1,Math.ceil(filtered.length/pageSize));
       currentPage=Math.min(currentPage,count);
-      const perPage=Math.floor(filtered.length/count);
-      const extra=filtered.length%count;
-      const start=(currentPage-1)*perPage+Math.min(currentPage-1,extra);
-      const itemsOnPage=perPage+(currentPage<=extra?1:0);
-      const visible=new Set(filtered.slice(start,start+itemsOnPage));
+      const visible=new Set(filtered.slice((currentPage-1)*pageSize,currentPage*pageSize));
       items.forEach(item=>{item.hidden=!visible.has(item);});
       tabs.forEach(tab=>tab.setAttribute('aria-pressed',String(tab.dataset.filter===category)));
-      pages.hidden=filtered.length===0;
+      pages.hidden=count<=1;
       previous.disabled=currentPage===1;
       next.disabled=currentPage===count;
       numberButtons.forEach((button,index)=>{
         const number=index+1;
-        button.disabled=number>count||filtered.length===0;
+        button.hidden=number>count;
+        button.disabled=number>count;
         button.dataset.page=String(number);
         button.setAttribute('aria-label','Страница '+number);
         if(number===currentPage&&filtered.length)button.setAttribute('aria-current','page');
@@ -103,8 +101,6 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
 .portfolio-pages__number :global(.button--text[aria-current=page]){font-weight:700;color:var(--color-blue);text-decoration:underline}
 .portfolio-pages__number :global(.button--text:hover:not(:disabled)){color:var(--color-blue);text-decoration:underline}
 .portfolio-pages__number :global(.button--text:disabled){color:var(--color-gray-3);cursor:default}
-.portfolio-pages__arrow{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:4px;background:var(--color-black);color:var(--color-white)}
-.portfolio-pages__arrow:disabled{background:none;color:var(--color-gray-3);border:1.5px solid var(--color-gray-3)}
 .portfolio-pages__arrow--previous :global(.icon){transform:rotate(90deg)}
 .portfolio-pages__arrow--next :global(.icon){transform:rotate(-90deg)}
 /* Portfolio_All (Mobile) Figma 223:21351: 340px viewport, one column,
@@ -118,7 +114,6 @@ if(!customElements.get('portfolio-catalog'))customElements.define('portfolio-cat
  .portfolio-catalog__item{width:100%;max-width:none}
  .portfolio-pages{margin-top:24px;gap:24px}
  .portfolio-pages__numbers{gap:12px}
- .portfolio-pages__arrow{height:36px;width:36px}
 }
 @media(max-width:40rem){
  .portfolio-catalog__grid{grid-template-columns:minmax(0,1fr)}

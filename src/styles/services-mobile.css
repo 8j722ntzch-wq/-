@@ -34,6 +34,30 @@
  /* Figma: price rows 30px, horizontal scroll only within 340px content column.
     Standard table width 806px = 176px label + seven 90px data columns. */
  .service-page .price-group--service{min-width:0;max-width:100%}
+ .service-page--repair .repair-groups{min-width:0;width:100%}
+ /* The opened repair categories must be a mobile 340px table, not a
+    desktop 806/1236px table pushed into a mobile viewport. */
+ .service-page--repair .repair-groups .price-group--service{width:100%;min-width:0}
+ .service-page--repair .repair-groups .price-group.price-group--service summary{height:30px!important;min-height:30px!important;max-height:30px;padding:0}
+ .service-page--repair .repair-groups .price-group--service .table-scroll{
+  width:100%;max-width:100%;overflow-x:visible
+ }
+ .service-page--repair .repair-groups .price-group--service table{
+  width:100%;min-width:0;table-layout:fixed
+ }
+ .service-page--repair .repair-groups .price-group--service col:first-child{width:calc(100% - 84px)!important}
+ .service-page--repair .repair-groups .price-group--service col:not(:first-child){width:84px!important}
+ .service-page--repair .repair-groups .price-group--service th,
+ .service-page--repair .repair-groups .price-group--service td{
+  min-width:0;white-space:normal;overflow-wrap:anywhere;font:500 14px/17.5px var(--font-body)
+ }
+ .service-page--repair .repair-groups .price-group--service th{font-weight:700}
+ /* Typography from Figma 236:23433: 14px / 1.25 with an 8px rhythm. */
+ .service-page--repair .service-content .service-copy{font:500 14px/17.5px var(--font-body)}
+ .service-page--repair .service-content .service-copy :is(p,li,ul){
+  font-size:14px;line-height:17.5px;font-weight:500
+ }
+
  .service-page .price-group--service .table-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
  .service-page .price-group--service table{width:806px;min-width:806px;table-layout:fixed}
  .service-page .price-group--service col:first-child{width:176px!important}

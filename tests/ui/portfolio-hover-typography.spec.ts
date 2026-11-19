@@ -69,7 +69,7 @@ test('portfolio card hover from the photograph underlines only project name and 
 test('portfolio all six placements share hover behavior and keyboard focus styles', async ({ page }) => {
   await page.goto('/portfolio/');
   const cards = page.locator('.portfolio-catalog__item:visible .portfolio-card');
-  await expect(cards).toHaveCount(2);
+  await expect(cards).toHaveCount(6);
   for (const card of await cards.all()) {
     await card.locator('.portfolio-card__overlay').hover();
     await expect(card.locator('.portfolio-project-value')).toHaveCSS('text-decoration-line', 'underline');

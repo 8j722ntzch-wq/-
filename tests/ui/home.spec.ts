@@ -122,12 +122,11 @@ test('privacy links open the policy in a new tab without losing modal form data'
   const name = dialog.getByRole('textbox', { name: 'Ваше имя', exact: true });
   await name.fill('Тест');
   const policy = dialog.getByRole('link', { name: 'политикой обработки персональных данных' });
-  await expect(policy).toHaveAttribute('href', '/policy/#personal-data');
+  await expect(policy).toHaveAttribute('href', '/documents/personal-data-policy.pdf');
   await expect(policy).toHaveAttribute('target', '_blank');
   const [popup] = await Promise.all([page.waitForEvent('popup'), policy.click()]);
   await popup.waitForLoadState('domcontentloaded');
-  await expect(popup).toHaveURL(/\/policy\/#personal-data$/);
-  await expect(popup.getByRole('heading', { name: 'Политика обработки персональных данных' })).toBeVisible();
+  await expect(popup).toHaveURL(/\/documents\/personal-data-policy\.pdf$/);
   await popup.close();
   await expect(dialog).toBeVisible();
   await expect(name).toHaveValue('Тест');

@@ -38,7 +38,7 @@ test('Portfolio cards use full-surface links, responsive widths and synced CTA h
       const cta=el.querySelector('.portfolio-card__bottom .button')!.getBoundingClientRect();
       return cta.top-volume.bottom;
     });
-    expect(gap).toBeCloseTo(12,0);
+    expect(gap).toBeCloseTo(width>928?16:12,0);
   }
   const overlay=page.locator('.portfolio-catalog__item:visible').first().locator('.portfolio-card__overlay');
   const href=await overlay.getAttribute('href');
@@ -46,24 +46,13 @@ test('Portfolio cards use full-surface links, responsive widths and synced CTA h
   await expect(page).toHaveURL(new RegExp(href!.replace(/\//g,'\\/')+'$'));
 });
 
-test('Portfolio pagination uses four existing text-style controls and genuinely paginates six placements',async({page})=>{
-  await page.goto('/portfolio/');
-  const nav=page.getByRole('navigation',{name:'Страницы портфолио'});
-  const numbers=nav.locator('.portfolio-pages__numbers .button--text');
-  await expect(numbers).toHaveCount(4);
-  for(let i=1;i<=4;i++)await expect(nav.getByRole('button',{name:'Страница '+i})).toBeVisible();
-  await expect(nav.getByRole('button',{name:'Страница 1'})).toHaveAttribute('aria-current','page');
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
-  await nav.getByRole('button',{name:'Страница 2'}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(2);
-  await nav.getByRole('button',{name:'Страница 3'}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
-  await nav.getByRole('button',{name:'Страница 4'}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
-  await expect(nav.getByRole('button',{name:'Страница 4'})).toHaveAttribute('aria-current','page');
-  await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
-  await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(1);
-  await expect(nav.getByRole('button',{name:'Страница 4'})).toBeDisabled();
+test('Portfolio shows all six placements and hides navigation until a ninth card exists',async({page})=>{
+ await page.goto('/portfolio/');
+ await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(6);
+ await expect(page.locator('.portfolio-pages')).toBeHidden();
+ await page.getByRole('button',{name:'Машинная вышивка',exact:true}).click();
+ await expect(page.locator('.portfolio-catalog__item:visible')).toHaveCount(3);
+ await expect(page.locator('.portfolio-pages')).toBeHidden();
 });
 
 test('Stages section is no longer clipped by outer container and can be scrolled',async({page})=>{
@@ -107,8 +96,9 @@ test('Checked checkbox has no white border and application submit hover stays li
   await expect(visual).toHaveCSS('border-top-color','rgba(0, 0, 0, 0)');
   const submit=form.locator('[type=submit]');
   await submit.hover();
-  await expect(submit).toHaveCSS('background-color',lime);
-  await expect(submit).toHaveCSS('color','rgb(13, 13, 13)');
+  await expect(submit).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
+  await expect(submit).toHaveCSS('color',lime);
+  await expect(submit).toHaveCSS('border-top-color',lime);
 });
 
 test('Sending a form shows no temporary delivery text but still displays genuine success',async({page})=>{

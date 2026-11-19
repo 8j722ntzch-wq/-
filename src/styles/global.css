@@ -26,3 +26,11 @@ fieldset { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; animation: none !important; }
 }
+
+
+/* Both top bars remain visible after scroll; match their 32/57px heights. */
+:root{--promo-sticky-height:32px}
+body > .promo{position:sticky!important;top:0!important;z-index:90}
+body > site-header.site-header{position:sticky!important;top:var(--promo-sticky-height)!important;z-index:89}
+html{scroll-padding-top:calc(var(--promo-sticky-height) + 64px)}
+@media(max-width:40rem){:root{--promo-sticky-height:57px}}
