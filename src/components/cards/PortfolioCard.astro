@@ -1,10 +1,11 @@
 ---
-import { portfolioSrcset } from '../../data/portfolio-images';
+import { portfolioPhotos } from '../../data/portfolio-images';
+import SitePhoto from '../ui/SitePhoto.astro';
 import Icon from '../ui/Icon.astro';
 import Button from '../ui/Button.astro';
 import ActionLink from '../ui/ActionLink.astro';
 interface Props {
-  title:string;image:string;imageAlt:string;audience:string;price:string;quantity:string;
+  title:string;image:keyof typeof portfolioPhotos;imageAlt:string;audience:string;price:string;quantity:string;
   ownItem?:boolean;tag:string;href?:string;tone?:'blue'|'pink';dialogId?:string;home?:boolean;
 }
 const {title,image,imageAlt,audience,price,quantity,ownItem=false,tag,href,tone='blue',dialogId='consultation',home=false}=Astro.props;
@@ -18,7 +19,7 @@ const {title,image,imageAlt,audience,price,quantity,ownItem=false,tag,href,tone=
     ? <a href={href} class="portfolio-card__overlay" aria-label={`Открыть проект: ${title}`}></a>
     : <button type="button" class="portfolio-card__overlay" aria-label={`Оставить заявку по проекту: ${title}`} data-open-dialog={dialogId} data-service={tag} data-context={'Проект: '+title}></button>}
   <div class="portfolio-image">
-    <img src={image} srcset={await portfolioSrcset(image)} sizes="(max-width: 40rem) calc(100vw - 50px), (max-width: 1268px) 50vw, 612px" width="612" height="344" alt={imageAlt} loading="lazy"/>
+    <SitePhoto src={portfolioPhotos[image]} widths={[400, 612]} sizes="(max-width: 40rem) calc(100vw - 50px), (max-width: 1268px) 50vw, 612px" alt={imageAlt} loading="lazy"/>
     <span class:list={['portfolio-tag','portfolio-tag--'+tone]}>{tag}</span>
   </div>
   <div class="portfolio-meta">

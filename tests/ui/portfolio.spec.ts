@@ -38,7 +38,9 @@ for(const project of portfolioProjects){
     await expect(crumbs.getByRole('link',{name:/Портфолио/})).toHaveAttribute('href','/portfolio/');
     await expect(crumbs.getByRole('link',{name:new RegExp(project.tag)})).toHaveAttribute('href','/portfolio/?category='+encodeURIComponent(project.tag));
     const hero=page.locator('.project-overview__image');
-    await expect(hero).toHaveAttribute('src',project.image);
+    await expect(hero).toHaveAttribute('src', new RegExp('portfolio-' + project.image + '\\..+\\.webp$'));
+    await expect(hero).toHaveAttribute('draggable', 'false');
+    expect(await hero.evaluate(img => img.dispatchEvent(new MouseEvent('contextmenu', {cancelable: true, bubbles: true})))).toBe(false);
     await expect.poll(()=>hero.evaluate((el:HTMLImageElement)=>el.complete&&el.naturalWidth>0)).toBeTruthy();
     const imageBox=await hero.boundingBox();
     expect(imageBox).not.toBeNull();

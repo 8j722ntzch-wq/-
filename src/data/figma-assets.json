@@ -207,14 +207,14 @@
     "id": "70:3748",
     "width": 612,
     "height": 344,
-    "src": "/assets/figma/portfolio-ruckit.jpg"
+    "src": "src/assets/photos/portfolio-ruckit.jpg"
   },
   {
     "name": "portfolio-hello-kitty",
     "id": "72:3755",
     "width": 612,
     "height": 344,
-    "src": "/assets/figma/portfolio-hello-kitty.jpg"
+    "src": "src/assets/photos/portfolio-hello-kitty.jpg"
   },
   {
     "name": "hero-grid",
@@ -263,7 +263,7 @@
     "id": "61:2376",
     "width": 1863,
     "height": 844,
-    "src": "/assets/figma/home-hero.webp"
+    "src": "src/assets/photos/home-hero.webp"
   },
   {
     "name": "instagram-20",

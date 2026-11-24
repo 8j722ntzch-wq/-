@@ -111,6 +111,10 @@ jobs:
               find dist-live -type f ! -name '*.html' -print0
               find dist-live -type f -name '*.html' -print0
             )
+            # Retire the three former public originals after replacement HTML is live.
+            for source in home-hero.webp portfolio-ruckit.jpg portfolio-hello-kitty.jpg; do
+              printf -- '-rm "assets/figma/%s"\n' "$source"
+            done
             printf '%s\n' 'bye'
           } > "$tmp/deploy.sftp"
           sshpass -e sftp -P "$port" \
@@ -133,7 +137,7 @@ jobs:
           set -euo pipefail
           tmp="$(mktemp -d)"
           trap 'rm -rf "$tmp"' EXIT
-          for entry in 'HOME|/' 'PORTFOLIO|/portfolio/' 'POLICY|/policy/' 'ROBOTS|/robots.txt' 'SITEMAP|/sitemap.xml' 'IMAGE|/assets/figma/portfolio-ruckit.jpg' 'PDF|/documents/personal-data-policy.pdf'; do
+          for entry in 'HOME|/' 'PORTFOLIO|/portfolio/' 'POLICY|/policy/' 'ROBOTS|/robots.txt' 'SITEMAP|/sitemap.xml' 'PDF|/documents/personal-data-policy.pdf'; do
             IFS='|' read -r label path <<< "$entry"
             status="$(curl -sS -L --max-redirs 2 --connect-timeout 10 --max-time 25 \
               -D "$tmp/$label.headers" -o "$tmp/$label.body" -w '%{http_code}' \
@@ -154,7 +158,8 @@ jobs:
           grep -aq '^%PDF' "$tmp/PDF.body" || {
             echo "::error::PDF did not load correctly"; exit 1;
           }
-          [[ "$(head -c 3 "$tmp/IMAGE.body" | od -An -tx1 | tr -d ' \n')" == ffd8ff ]] || {
-            echo "::error::Portfolio image response is not a JPEG"; exit 1;
-          }
+          for source in home-hero.webp portfolio-ruckit.jpg portfolio-hello-kitty.jpg; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "https://baltmotors.by/assets/figma/$source?release=$GITHUB_RUN_ID")"
+            [[ "$status" == 404 || "$status" == 403 || "$status" == 410 ]] || exit 1
+          done
           printf '%s\n' 'PUBLIC_MASTER_VERIFIED'

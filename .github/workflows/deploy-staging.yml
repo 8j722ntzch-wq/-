@@ -166,7 +166,7 @@ jobs:
 
           # Direct content URLs must remain inaccessible without credentials.
           css="$(find dist-staging/_astro -maxdepth 1 -type f -name '*.css' -print -quit)"
-          for path in "/" "/index.html" "/assets/figma/portfolio-ruckit.jpg" \
+          for path in "/" "/index.html" "/assets/figma/hero-grid.svg" \
             "/documents/personal-data-policy.pdf" "/api/submit.php" \
             "/_astro/$(basename "$css")"; do
             status="$(curl --silent --show-error --connect-timeout 8 --max-time 20 \

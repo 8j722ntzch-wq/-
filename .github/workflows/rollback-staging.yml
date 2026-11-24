@@ -32,7 +32,7 @@ jobs:
           npx astro build --outDir dist-staging
           rm -rf -- dist-staging/preview-login
           test -f dist-staging/index.html
-          test -f dist-staging/assets/figma/portfolio-ruckit.jpg
+          test -f dist-staging/assets/figma/hero-grid.svg
       - name: Remove uploaded staging files but preserve host Basic Auth configuration
         shell: bash
         env:
@@ -82,7 +82,7 @@ jobs:
             echo "::error::Rollback SFTP failed"; exit 1;
           fi
           echo "STAGING_FILE_ROLLBACK_COMPLETE"
-          for path in "/assets/figma/portfolio-ruckit.jpg" "/documents/personal-data-policy.pdf" "/api/submit.php"; do
+          for path in "/assets/figma/hero-grid.svg" "/documents/personal-data-policy.pdf" "/api/submit.php"; do
             status="$(curl -sS --connect-timeout 8 --max-time 20 -o /dev/null -w '%{http_code}' "https://baltmotors.by$path?rollback=$GITHUB_RUN_ID")"
             if [[ "$status" == 200 ]]; then
               echo "::error::Public staging content still available at $path; contact hoster.by immediately."

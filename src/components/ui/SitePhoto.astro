@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes: string;
+  widths: number[];
+  quality?: number;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'auto' | 'low';
+}
+const { quality = 85, loading = 'lazy', ...photo } = Astro.props;
+---
+<Image {...photo} format="webp" quality={quality} loading={loading}
+  data-site-photo draggable="false" oncontextmenu="return false" />
+
+<style>
+  [data-site-photo] {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+</style>
