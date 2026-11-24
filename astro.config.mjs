@@ -4,7 +4,7 @@ export default defineConfig({
   site: 'https://baltmotors.by',
   output: 'static',
   trailingSlash: 'always',
-  build: { inlineStylesheets: 'never' },
+  build: { inlineStylesheets: 'auto' },
   integrations: [{
     name: 'local-component-library',
     hooks: {

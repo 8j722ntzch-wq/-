@@ -3,7 +3,7 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import TextField from '../../components/ui/TextField.astro';
 import Button from '../../components/ui/Button.astro';
 ---
-<SiteLayout title="Закрытый предпросмотр — Мастерская" description="Вход в закрытую демонстрационную версию сайта Мастерская.">
+<SiteLayout publicPage={false} title="Закрытый предпросмотр — Мастерская" description="Вход в закрытую демонстрационную версию сайта Мастерская.">
   <main id="content" class="preview-login">
     <section class="preview-login__panel" aria-labelledby="preview-login-title">
       <div class="preview-login__intro">

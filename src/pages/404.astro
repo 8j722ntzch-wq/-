@@ -15,7 +15,7 @@ const links=[
   {label:'Контакты',href:'/contacts/'},
 ];
 ---
-<SiteLayout title="Страница не найдена — Мастерская" description="Ошибка 404: запрошенная страница не найдена. Вернитесь на главную страницу мастерской.">
+<SiteLayout publicPage={false} title="Страница не найдена — Мастерская" description="Ошибка 404: запрошенная страница не найдена. Вернитесь на главную страницу мастерской.">
   <PromoBar text="Скидка 100 BYN на первый заказ до 1 декабря" href="/#forms"/>
   <Header links={links} phone="+375 (29) 777-77-77" logoHref="/" dialogId={dialogId}/>
   <main id="content" class="not-found">

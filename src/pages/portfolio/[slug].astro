@@ -1,4 +1,5 @@
 ---
+import { portfolioSrcset } from '../../data/portfolio-images';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Header from '../../components/blocks/Header.astro';
 import PromoBar from '../../components/blocks/PromoBar.astro';
@@ -40,7 +41,7 @@ const links=[
           <span><Icon name={project.audience==='Бизнесу'?'business':'personal'} size={20}/>{project.audience}</span>
           <span><Icon name="price" size={20}/>{project.price}</span>
         </div>
-        <img class="project-overview__image" src={project.image} width="1236" height="695" alt={project.imageAlt} fetchpriority="high"/>
+        <img class="project-overview__image" src={project.image} srcset={await portfolioSrcset(project.image)} sizes="(max-width: 58rem) calc(100vw - 50px), 1236px" width="1236" height="695" alt={project.imageAlt} fetchpriority="high"/>
       </section>
       <ProjectStory/>
     </div>

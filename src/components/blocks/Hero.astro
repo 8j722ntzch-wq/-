@@ -1,4 +1,6 @@
 ---
+import { Picture } from 'astro:assets';
+import heroPhoto from '../../../public/assets/figma/home-hero.webp';
 import Button from '../ui/Button.astro';
 import {heroSlides, type HeroSlide} from '../../data/hero';
 
@@ -32,7 +34,9 @@ const first = pages[0];
 >
   <div class="hero-gradient-overlay" aria-hidden="true"></div>
   <img class="hero-grid" src="/assets/figma/hero-grid.svg" width="473" height="549" alt="" />
-  <img class="hero-photo" src="/assets/figma/home-hero.webp" width="1863" height="844"
+  <Picture class="hero-photo" src={heroPhoto} formats={['avif']} fallbackFormat="webp" quality={68}
+       widths={[691, 1236, 1382, 1863]} sizes="(max-width: 58rem) 691px, (max-width: 1268px) calc(100vw - 32px), 1236px"
+       loading="eager"
        alt="Мастер показывает худи с нашивкой в швейной мастерской" fetchpriority="high" />
   <div class="hero-copy">
     <h1 id={titleId}><span data-hero-before>{first.before}</span><mark data-hero-accent>{first.highlight}</mark><span data-hero-after>{first.after}</span></h1>

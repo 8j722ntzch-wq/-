@@ -30,7 +30,22 @@ type MapsApi={
   YMapDefaultFeaturesLayer?:new ()=>unknown;
 };
 class YandexCityMap extends HTMLElement{
+  private observer?: IntersectionObserver;
   connectedCallback(){
+    if (!this.dataset.apiKey || this.dataset.mapStarted) return;
+    const start = () => {
+      this.observer?.disconnect();
+      this.dataset.mapStarted = 'true';
+      this.loadMap();
+    };
+    if (!('IntersectionObserver' in window)) return start();
+    this.observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) start();
+    }, {rootMargin: '300px'});
+    this.observer.observe(this);
+  }
+  disconnectedCallback(){ this.observer?.disconnect(); }
+  private loadMap(){
     const key=this.dataset.apiKey;
     if(!key)return;
     const root=this.querySelector<HTMLElement>('[data-yandex-canvas]');

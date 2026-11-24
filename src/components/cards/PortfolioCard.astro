@@ -1,4 +1,5 @@
 ---
+import { portfolioSrcset } from '../../data/portfolio-images';
 import Icon from '../ui/Icon.astro';
 import Button from '../ui/Button.astro';
 import ActionLink from '../ui/ActionLink.astro';
@@ -17,7 +18,7 @@ const {title,image,imageAlt,audience,price,quantity,ownItem=false,tag,href,tone=
     ? <a href={href} class="portfolio-card__overlay" aria-label={`Открыть проект: ${title}`}></a>
     : <button type="button" class="portfolio-card__overlay" aria-label={`Оставить заявку по проекту: ${title}`} data-open-dialog={dialogId} data-service={tag} data-context={'Проект: '+title}></button>}
   <div class="portfolio-image">
-    <img src={image} width="612" height="344" alt={imageAlt} loading="lazy"/>
+    <img src={image} srcset={await portfolioSrcset(image)} sizes="(max-width: 40rem) calc(100vw - 50px), (max-width: 1268px) 50vw, 612px" width="612" height="344" alt={imageAlt} loading="lazy"/>
     <span class:list={['portfolio-tag','portfolio-tag--'+tone]}>{tag}</span>
   </div>
   <div class="portfolio-meta">

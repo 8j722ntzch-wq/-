@@ -12,6 +12,9 @@ concurrency:
   group: masterskaya-staging-deployment
   cancel-in-progress: false
 
+env:
+  SITE_INDEXABLE: ${{ vars.SITE_INDEXABLE }}
+
 jobs:
   deploy:
     runs-on: ubuntu-24.04
@@ -43,6 +46,7 @@ jobs:
           test -s dist-live/policy/index.html
           test -s dist-live/api/submit.php
           test -s dist-live/documents/personal-data-policy.pdf
+          python3 scripts/verify-search.py dist-live
           test -s dist-live/robots.txt
           test ! -e dist-live/.htaccess
           test ! -e dist-live/_preview
@@ -125,7 +129,7 @@ jobs:
           set -euo pipefail
           tmp="$(mktemp -d)"
           trap 'rm -rf "$tmp"' EXIT
-          for entry in 'HOME|/' 'PORTFOLIO|/portfolio/' 'POLICY|/policy/' 'IMAGE|/assets/figma/portfolio-ruckit.jpg' 'PDF|/documents/personal-data-policy.pdf'; do
+          for entry in 'HOME|/' 'PORTFOLIO|/portfolio/' 'POLICY|/policy/' 'ROBOTS|/robots.txt' 'SITEMAP|/sitemap.xml' 'IMAGE|/assets/figma/portfolio-ruckit.jpg' 'PDF|/documents/personal-data-policy.pdf'; do
             IFS='|' read -r label path <<< "$entry"
             status="$(curl -sS -L --max-redirs 2 --connect-timeout 10 --max-time 25 \
               -D "$tmp/$label.headers" -o "$tmp/$label.body" -w '%{http_code}' \
@@ -141,9 +145,7 @@ jobs:
           grep -q '<consultation-form' "$tmp/HOME.body" || {
             echo "::error::The published homepage is not the Astro master build"; exit 1;
           }
-          grep -q 'noindex, nofollow' "$tmp/HOME.body" || {
-            echo "::error::Search engine preview protection is missing"; exit 1;
-          }
+          python3 scripts/verify-search.py dist-live --live
           grep -aq '^%PDF' "$tmp/PDF.body" || {
             echo "::error::PDF did not load correctly"; exit 1;
           }
