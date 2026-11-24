@@ -106,7 +106,11 @@ jobs:
               fi
               printf 'put "%s" "%s"\n' "$PWD/$file" "$rel"
               printf 'chmod 644 "%s"\n' "$rel"
-            done < <(find dist-live -type f -print0)
+            done < <(
+              # Publish every dependency before pages that reference its new URL.
+              find dist-live -type f ! -name '*.html' -print0
+              find dist-live -type f -name '*.html' -print0
+            )
             printf '%s\n' 'bye'
           } > "$tmp/deploy.sftp"
           sshpass -e sftp -P "$port" \
@@ -146,6 +150,7 @@ jobs:
             echo "::error::The published homepage is not the Astro master build"; exit 1;
           }
           python3 scripts/verify-search.py dist-live --live
+          grep -Eiq '^x-robots-tag:.*noindex' "$tmp/PDF.headers"
           grep -aq '^%PDF' "$tmp/PDF.body" || {
             echo "::error::PDF did not load correctly"; exit 1;
           }

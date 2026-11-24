@@ -72,6 +72,13 @@ def main():
     if options.live:
         verify_sitemap(live("/sitemap.xml"), expected)
         assert live("/robots.txt") == robots
+        verify_page(live("/portfolio/?utm_source=release-check"), ORIGIN + "/portfolio/")
+        for image in (options.build / "_astro").iterdir():
+            if image.suffix not in {".avif", ".webp"}:
+                continue
+            with urlopen(ORIGIN + "/_astro/" + image.name, timeout=20) as response:
+                assert response.headers.get_content_type() == "image/" + image.suffix[1:], image.name
+                assert response.read() == image.read_bytes(), image.name
     print(f"Verified {len(expected)} canonical URLs; indexing enabled: {INDEXABLE}")
 
 
