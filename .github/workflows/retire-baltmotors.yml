@@ -1,0 +1,108 @@
+name: Retire baltmotors.by old site
+on:
+  push:
+    branches: [maintenance/retire-baltmotors-20261125]
+    paths: ['.github/workflows/retire-baltmotors.yml']
+permissions:
+  contents: read
+concurrency:
+  group: retire-baltmotors
+  cancel-in-progress: false
+jobs:
+  retire:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Install SFTP client
+        run: python -m pip install 'paramiko==3.5.1'
+      - name: Archive old site outside web roots and verify new site
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+        shell: python
+        run: |
+          import os, stat, tempfile, hashlib, urllib.request
+          import paramiko
+          
+          old = 'www/baltmotors.by'
+          new = 'www/markbuhayeu.store'
+          def live(url):
+              with urllib.request.urlopen(url, timeout=30) as r:
+                  assert r.status == 200
+                  return r.read()
+          before = live('https://markbuhayeu.store/')
+          assert b'<consultation-form' in before
+          with tempfile.NamedTemporaryFile(mode='w') as keys:
+              keys.write(os.environ['SFTP_KNOWN_HOSTS'] + '\n')
+              keys.flush()
+              client = paramiko.SSHClient()
+              client.load_host_keys(keys.name)
+              client.set_missing_host_key_policy(paramiko.RejectPolicy())
+              client.connect(os.environ['SFTP_HOST'], port=int(os.environ.get('SFTP_PORT') or '22'),
+                  username=os.environ['SFTP_USERNAME'], password=os.environ['SFTP_PASSWORD'],
+                  look_for_keys=False, allow_agent=False, timeout=20, auth_timeout=20, banner_timeout=20)
+              s = client.open_sftp()
+              s.get_channel().settimeout(30)
+              assert stat.S_ISDIR(s.lstat(old).st_mode), 'Old root must be a real directory'
+              assert stat.S_ISDIR(s.lstat(new).st_mode), 'New root must be a real directory'
+              assert s.normalize(old) != s.normalize(new), 'Roots must differ'
+              with s.open(old+'/index.html','rb') as f:
+                  old_html = f.read(2000000)
+              assert b'<consultation-form' in old_html and b'baltmotors.by' in old_html, 'Unexpected old site'
+              with s.open(new+'/index.html','rb') as f:
+                  new_html = f.read(2000000)
+              assert b'markbuhayeu.store' in new_html, 'Unexpected new site'
+              archive = '.retired-sites'
+              try:
+                  s.lstat(archive)
+              except FileNotFoundError:
+                  s.mkdir(archive, 0o700)
+              assert stat.S_ISDIR(s.lstat(archive).st_mode), 'Archive must not be a symlink'
+              s.chmod(archive, 0o700)
+              target = archive+'/baltmotors.by-'+os.environ['GITHUB_RUN_ID']
+              try:
+                  s.lstat(target)
+              except FileNotFoundError:
+                  pass
+              else:
+                  raise RuntimeError('Archive already exists; refusing to repeat')
+              s.rename(old, target)
+              try:
+                  s.mkdir(old, 0o755)
+                  s.chmod(old, 0o755)
+                  with s.open(target+'/index.html','rb') as f:
+                      assert f.read(2000000) == old_html
+                  assert s.listdir(old) == [], 'Old document root is not empty'
+                  with s.open(new+'/index.html','rb') as f:
+                      assert f.read(2000000) == new_html, 'New site changed'
+              except Exception:
+                  try:
+                      if s.listdir(old) == []:
+                          s.rmdir(old)
+                          s.rename(target, old)
+                  except Exception:
+                      pass
+                  raise
+              print('OLD_DOCUMENT_ROOT_EMPTY')
+              print('BACKUP_DIRECTORY='+target)
+              s.close()
+              client.close()
+          after = live('https://markbuhayeu.store/')
+          assert b'<consultation-form' in after
+          print('NEW_SITE_HTTPS_200')
+          
+      - name: Verify old domain no longer serves website
+        shell: bash
+        run: |
+          set -euo pipefail
+          for protocol in https http; do
+            code="$(curl -sS --max-time 30 -o /tmp/retired-body -w '%{http_code}' "$protocol://baltmotors.by/?retired=$GITHUB_RUN_ID")"
+            echo "OLD_SITE_${protocol}_HTTP_$code"
+            if grep -q '<consultation-form' /tmp/retired-body; then
+              echo "::error::Old site still served"; exit 1
+            fi
+            case "$code" in 403|404|410) ;; *) echo "::error::Unexpected old-domain response"; exit 1;; esac
+          done
