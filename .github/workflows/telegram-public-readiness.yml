@@ -20,7 +20,7 @@ jobs:
           set -euo pipefail
           temp="$(mktemp -d)"
           trap 'rm -rf "$temp"' EXIT
-          url="https://baltmotors.by"
+          url="https://markbuhayeu.store"
           for item in 'HOME|/' 'POLICY|/policy/' 'POLICY_PDF|/documents/personal-data-policy.pdf' 'PHP_ENDPOINT|/api/submit.php'; do
             IFS='|' read -r label path <<< "$item"
             code="$(curl -sS -L --max-redirs 3 --connect-timeout 8 --max-time 20 -o "$temp/$label" -w '%{http_code}' "$url$path" || true)"

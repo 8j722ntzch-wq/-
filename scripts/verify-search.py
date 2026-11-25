@@ -7,7 +7,7 @@ from urllib.parse import urljoin, urlsplit
 from urllib.request import urlopen
 from xml.etree import ElementTree
 
-ORIGIN = "https://baltmotors.by"
+ORIGIN = "https://markbuhayeu.store"
 INDEXABLE = os.environ.get("SITE_INDEXABLE") == "true"
 
 

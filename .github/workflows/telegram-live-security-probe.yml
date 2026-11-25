@@ -22,7 +22,7 @@ jobs:
           trap 'rm -rf "$temp"' EXIT
           for item in 'HOME|/' 'POLICY|/policy/' 'POLICY_PDF|/documents/personal-data-policy.pdf' 'PHP_ENDPOINT|/api/submit.php'; do
             IFS='|' read -r label path <<< "$item"
-            status="$(curl -sS --connect-timeout 8 --max-time 20 -D "$temp/$label.headers" -o "$temp/$label.body" -w '%{http_code}' "https://baltmotors.by$path" || true)"
+            status="$(curl -sS --connect-timeout 8 --max-time 20 -D "$temp/$label.headers" -o "$temp/$label.body" -w '%{http_code}' "https://markbuhayeu.store$path" || true)"
             if [[ ! "$status" =~ ^[0-9]{3}$ ]]; then echo "$label NETWORK_UNAVAILABLE"; continue; fi
             redirect='NO'
             if grep -qi '^location:' "$temp/$label.headers"; then redirect='YES'; fi

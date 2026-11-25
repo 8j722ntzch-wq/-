@@ -1,4 +1,4 @@
-name: Deploy Masterskaya master to baltmotors.by
+name: Deploy Masterskaya master to markbuhayeu.store
 
 on:
   push:
@@ -85,7 +85,7 @@ jobs:
             echo "::error::SFTP host key not pinned"; exit 1;
           }
           {
-            printf '%s\n' 'cd www/baltmotors.by' 'chmod 755 .'
+            printf '%s\n' 'cd www/markbuhayeu.store' 'chmod 755 .'
             # Enumerate parent directories before descendants, even for a fresh host.
             while IFS= read -r -d '' dir; do
               rel="${dir#dist-live/}"
@@ -141,7 +141,7 @@ jobs:
             IFS='|' read -r label path <<< "$entry"
             status="$(curl -sS -L --max-redirs 2 --connect-timeout 10 --max-time 25 \
               -D "$tmp/$label.headers" -o "$tmp/$label.body" -w '%{http_code}' \
-              "https://baltmotors.by$path?release=$GITHUB_RUN_ID")"
+              "https://markbuhayeu.store$path?release=$GITHUB_RUN_ID")"
             if [[ "$status" != 200 ]]; then
               echo "::error::$label must be HTTP 200, received $status"; exit 1
             fi
@@ -159,7 +159,7 @@ jobs:
             echo "::error::PDF did not load correctly"; exit 1;
           }
           for source in home-hero.webp portfolio-ruckit.jpg portfolio-hello-kitty.jpg; do
-            status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "https://baltmotors.by/assets/figma/$source?release=$GITHUB_RUN_ID")"
+            status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "https://markbuhayeu.store/assets/figma/$source?release=$GITHUB_RUN_ID")"
             [[ "$status" == 404 || "$status" == 403 || "$status" == 410 ]] || exit 1
           done
           printf '%s\n' 'PUBLIC_MASTER_VERIFIED'

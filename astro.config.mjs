@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://baltmotors.by',
+  site: 'https://markbuhayeu.store',
   output: 'static',
   trailingSlash: 'always',
   build: { inlineStylesheets: 'auto' },

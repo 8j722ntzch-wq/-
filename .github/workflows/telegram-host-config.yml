@@ -76,7 +76,7 @@ jobs:
           }
 
           # Fail without modifying the host unless the correct site directory is reachable.
-          printf '%s\n' 'ls -la www/baltmotors.by' 'bye' > "$workdir/preflight.sftp"
+          printf '%s\n' 'ls -la www/markbuhayeu.store' 'bye' > "$workdir/preflight.sftp"
           if ! sftp_run "$workdir/preflight.sftp" "$workdir/preflight.log"; then
             echo "::error::Website folder unavailable via SFTP. No host changes made."; exit 1;
           fi
@@ -107,4 +107,4 @@ jobs:
             echo "::error::Private config provisioning failed. Check SFTP write permission without disclosing values."; exit 1;
           fi
           echo "TELEGRAM_HOST_CONFIG_INSTALLED"
-          echo "Private Telegram configuration installed outside /www/baltmotors.by. Values not logged." >> "$GITHUB_STEP_SUMMARY"
+          echo "Private Telegram configuration installed outside /www/markbuhayeu.store. Values not logged." >> "$GITHUB_STEP_SUMMARY"

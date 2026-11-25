@@ -77,7 +77,7 @@ try {
     }
     // Browser submissions from the actual site only; no CORS wildcard.
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    if (!in_array($origin, ['https://baltmotors.by', 'https://www.baltmotors.by'], true)) {
+    if (!in_array($origin, ['https://markbuhayeu.store', 'https://www.markbuhayeu.store'], true)) {
         reply(403, 'origin_not_allowed');
     }
     $type = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -140,7 +140,7 @@ try {
     }
     if (count(array_unique($services)) !== count($services)) reply(422, 'invalid_services');
 
-    // /www/baltmotors.by/api/submit.php -> /www/.masterskaya-private/config.php
+    // /www/markbuhayeu.store/api/submit.php -> /www/.masterskaya-private/config.php
     // The config and state are strictly OUTSIDE the document root.
     $privateDir = dirname(__DIR__, 2) . '/.masterskaya-private';
     $configFile = $privateDir . '/config.php';
@@ -192,7 +192,7 @@ try {
     $pageTitle = $pageLabels[$sourcePage] ?? 'Другая страница';
     $pageText = $sourcePage === ''
         ? 'Не указана'
-        : escapeTelegram($pageTitle) . ' — <a href="https://baltmotors.by'
+        : escapeTelegram($pageTitle) . ' — <a href="https://markbuhayeu.store'
             . escapeTelegram($sourcePage) . '">открыть страницу</a>';
     $time = (new DateTimeImmutable('now', new DateTimeZone('Europe/Minsk')))->format('d.m.Y, H:i');
     $message = "📩 <b>Новая заявка с сайта</b>\n\n"

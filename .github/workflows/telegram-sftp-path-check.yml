@@ -44,7 +44,7 @@ jobs:
           trap 'rm -rf -- "$temp"' EXIT
           printf '%s\n' "$SFTP_KNOWN_HOSTS" > "$temp/known_hosts"
           printf '%s\n' 'pwd' 'ls -la www' 'bye' > "$temp/check-parent.sftp"
-          printf '%s\n' 'pwd' 'ls -la www/baltmotors.by' 'bye' > "$temp/check-site.sftp"
+          printf '%s\n' 'pwd' 'ls -la www/markbuhayeu.store' 'bye' > "$temp/check-site.sftp"
           lookup="$SFTP_HOST"
           if [[ "$port" != "22" ]]; then lookup="[$SFTP_HOST]:$port"; fi
           if ! ssh-keygen -F "$lookup" -f "$temp/known_hosts" >/dev/null; then
